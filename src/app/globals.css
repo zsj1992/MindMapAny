@@ -1,0 +1,205 @@
+@import 'tailwindcss';
+
+/*
+ * 设计令牌。所有颜色只在这里定义一次，组件里一律用语义名（surface / border / brand），
+ * 不直接写 slate-200 这类具体色阶 —— 否则加暗色模式时要改上百处。
+ */
+@theme {
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+
+  /* 品牌色：靛紫，脑图/AI 语境下比蓝色更有辨识度 */
+  --color-brand-50: #f2f1fe;
+  --color-brand-100: #e6e4fd;
+  --color-brand-200: #cfcbfb;
+  --color-brand-300: #aca3f7;
+  --color-brand-400: #8b7bf1;
+  --color-brand-500: #6d5ae6;
+  --color-brand-600: #5b45d6;
+  --color-brand-700: #4c37b8;
+  --color-brand-800: #402f96;
+  --color-brand-900: #362a78;
+
+  /* 强调色：青绿，用于溯源/成功等正向信号，与品牌色形成冷暖对照 */
+  --color-accent-400: #2dd4bf;
+  --color-accent-500: #14b8a6;
+  --color-accent-600: #0d9488;
+}
+
+:root {
+  --bg: #ffffff;
+  --bg-subtle: #fafafa;
+  --bg-muted: #f4f4f5;
+  --surface: #ffffff;
+  --surface-raised: #ffffff;
+  --border: #e6e6ea;
+  --border-strong: #d4d4d8;
+  --text: #18181b;
+  --text-muted: #71717a;
+  --text-subtle: #a1a1aa;
+  --shadow-color: 240 5% 12%;
+  --node-root-bg: #4c37b8;
+  --node-root-text: #ffffff;
+}
+
+.dark {
+  --bg: #0c0c0f;
+  --bg-subtle: #121216;
+  --bg-muted: #1a1a20;
+  --surface: #141419;
+  --surface-raised: #1a1a21;
+  --border: #26262e;
+  --border-strong: #35353f;
+  --text: #f4f4f5;
+  --text-muted: #a1a1aa;
+  --text-subtle: #71717a;
+  --shadow-color: 0 0% 0%;
+  --node-root-bg: #6d5ae6;
+  --node-root-text: #ffffff;
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-bg-subtle: var(--bg-subtle);
+  --color-bg-muted: var(--bg-muted);
+  --color-surface: var(--surface);
+  --color-surface-raised: var(--surface-raised);
+  --color-border-base: var(--border);
+  --color-border-strong: var(--border-strong);
+  --color-text: var(--text);
+  --color-text-muted: var(--text-muted);
+  --color-text-subtle: var(--text-subtle);
+}
+
+@layer base {
+  * {
+    border-color: var(--border);
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    background: var(--bg);
+    color: var(--text);
+    -webkit-font-smoothing: antialiased;
+  }
+  /* 中文正文行高比英文需要更松一点才不挤 */
+  :lang(zh) {
+    line-height: 1.75;
+  }
+  ::selection {
+    background: var(--color-brand-200);
+    color: var(--color-brand-900);
+  }
+  :focus-visible {
+    outline: 2px solid var(--color-brand-500);
+    outline-offset: 2px;
+  }
+}
+
+@layer components {
+  /* Tailwind v4 的 @apply 只认真正的 utility，不能 @apply 自定义类，
+     所以基础样式写在 .btn 上，变体各自只加差异部分，HTML 里两个类一起用。 */
+  .btn {
+    @apply inline-flex items-center justify-center gap-2 rounded-xl text-sm font-medium transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-45;
+  }
+  .btn-primary {
+    @apply bg-brand-600 text-white shadow-sm hover:bg-brand-700 hover:shadow-md active:scale-[0.99];
+  }
+  /* 禁用态不能只降透明度：品牌色底即使半透明也像可点，改成中性灰才读得出来 */
+  .btn-primary:disabled,
+  .btn-primary:disabled:hover {
+    background: var(--bg-muted);
+    color: var(--text-subtle);
+    box-shadow: none;
+    opacity: 1;
+  }
+  .btn-secondary {
+    @apply border bg-surface text-text hover:bg-bg-muted;
+    border-color: var(--border);
+  }
+  .btn-ghost {
+    @apply text-text-muted hover:bg-bg-muted hover:text-text;
+  }
+  .card {
+    @apply rounded-2xl border bg-surface;
+    border-color: var(--border);
+  }
+  .field {
+    @apply w-full rounded-xl border bg-surface px-3.5 py-2.5 text-sm text-text transition-colors placeholder:text-text-subtle;
+    border-color: var(--border);
+  }
+  .field:focus {
+    outline: none;
+    border-color: var(--color-brand-400);
+    box-shadow: 0 0 0 3px var(--color-brand-100);
+  }
+  .dark .field:focus {
+    box-shadow: 0 0 0 3px rgb(109 90 230 / 0.25);
+  }
+}
+
+@layer utilities {
+  /* Hero 背景：两团柔光，比纯色平面有层次又不喧宾夺主 */
+  .hero-glow {
+    background:
+      radial-gradient(60ch 40ch at 15% -10%, rgb(109 90 230 / 0.13), transparent 65%),
+      radial-gradient(50ch 34ch at 88% 4%, rgb(20 184 166 / 0.1), transparent 62%);
+  }
+  .dark .hero-glow {
+    background:
+      radial-gradient(60ch 40ch at 15% -10%, rgb(109 90 230 / 0.22), transparent 65%),
+      radial-gradient(50ch 34ch at 88% 4%, rgb(20 184 166 / 0.13), transparent 62%);
+  }
+  .text-gradient {
+    background: linear-gradient(100deg, var(--color-brand-600), var(--color-brand-400) 55%, var(--color-accent-500));
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .grid-lines {
+    background-image:
+      linear-gradient(var(--border) 1px, transparent 1px),
+      linear-gradient(90deg, var(--border) 1px, transparent 1px);
+    background-size: 28px 28px;
+    mask-image: radial-gradient(70% 60% at 50% 40%, #000 30%, transparent 100%);
+  }
+  .animate-in-up {
+    animation: in-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  @keyframes in-up {
+    from {
+      opacity: 0;
+      transform: translateY(12px);
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .animate-in-up {
+      animation: none;
+    }
+    html {
+      scroll-behavior: auto;
+    }
+  }
+}
+
+/* React Flow 主题对齐：默认样式是浅色写死的，暗色下会刺眼 */
+.react-flow__controls-button {
+  background: var(--surface) !important;
+  border-bottom-color: var(--border) !important;
+  fill: var(--text-muted) !important;
+}
+.react-flow__controls-button:hover {
+  background: var(--bg-muted) !important;
+}
+.react-flow__minimap {
+  background: var(--surface) !important;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+}
+.react-flow__attribution {
+  background: transparent !important;
+  font-size: 10px;
+}
+.react-flow__attribution a {
+  color: var(--text-subtle) !important;
+}
