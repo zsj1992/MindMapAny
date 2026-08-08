@@ -43,27 +43,62 @@ export async function extractWeb(rawUrl: string): Promise<ExtractedDoc> {
  * 把 Readability 产出的 HTML 拍平成段落块，并把最近的标题作为锚点带上，
  * 这样脑图节点能定位回原文的哪一节。
  */
-function htmlToBlocks(content: string): Block[] {
+const SEMANTIC_BLOCK_SELECTOR = 'h1,h2,h3,h4,p,li,blockquote,pre,figcaption';
+const FALLBACK_BLOCK_SELECTOR = `${SEMANTIC_BLOCK_SELECTOR},section,div`;
+
+/**
+ * Readability 能识别文章范围，但部分政府站和公众号编辑器会用层层 section/span
+ * 表示段落。先走标准语义标签；内容明显不足时，再取最深层的 section/div 文本块。
+ * “只取最深层”可以避免把同一段正文从父容器重复提取多次。
+ */
+export function htmlToBlocks(content: string): Block[] {
   const { document } = parseHTML(`<body>${content}</body>`);
+  const semanticBlocks = nodesToBlocks(document, SEMANTIC_BLOCK_SELECTOR, false);
+  const semanticChars = semanticBlocks.reduce((total, block) => total + block.text.length, 0);
+  if (semanticChars >= MIN_ARTICLE_CHARS) return semanticBlocks;
+
+  const fallbackBlocks = nodesToBlocks(document, FALLBACK_BLOCK_SELECTOR, true);
+  const fallbackChars = fallbackBlocks.reduce((total, block) => total + block.text.length, 0);
+  return fallbackChars > semanticChars ? fallbackBlocks : semanticBlocks;
+}
+
+function nodesToBlocks(document: Document, selector: string, deepestOnly: boolean): Block[] {
   const blocks: Block[] = [];
+  const seen = new Set<string>();
   let anchor: string | undefined;
 
-  const nodes = document.querySelectorAll('h1,h2,h3,h4,p,li,blockquote,pre,figcaption');
+  const nodes = document.querySelectorAll(selector);
   for (const el of Array.from(nodes)) {
     const tag = el.tagName.toLowerCase();
-    const text = (el.textContent ?? '').replace(/\s+/g, ' ').trim();
+    const text = normalizeText(el.textContent ?? '');
     if (!text) continue;
+
+    if (deepestOnly) {
+      const hasMeaningfulChildBlock = Array.from(el.querySelectorAll(selector)).some(
+        (child) => child !== el && normalizeText(child.textContent ?? '').length >= 2,
+      );
+      if (hasMeaningfulChildBlock) continue;
+    }
 
     if (/^h[1-4]$/.test(tag)) {
       anchor = text.slice(0, 80);
-      blocks.push({ text, ...(anchor ? { anchor } : {}) });
+      if (!seen.has(text)) {
+        seen.add(text);
+        blocks.push({ text, anchor });
+      }
       continue;
     }
     // 嵌套 li 会被父节点重复捕获一次，跳过已被包含的内容
     if (tag === 'li' && el.parentElement?.closest('li')) continue;
     if (text.length < 2) continue;
+    if (seen.has(text)) continue;
+    seen.add(text);
     blocks.push({ text, ...(anchor ? { anchor } : {}) });
   }
 
   return blocks;
+}
+
+function normalizeText(text: string): string {
+  return text.replace(/\u00a0/g, ' ').replace(/\s+/g, ' ').trim();
 }
