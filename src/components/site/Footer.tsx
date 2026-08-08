@@ -5,19 +5,28 @@ const COLUMNS = [
   {
     title: '产品',
     links: [
-      { label: '功能', href: '/#features' },
+      { label: '工具中心', href: '/tools' },
       { label: '价格', href: '/pricing' },
-      { label: '常见问题', href: '/#faq' },
       { label: '我的脑图', href: '/app/maps' },
+      { label: '常见问题', href: '/#faq' },
     ],
   },
   {
-    title: '用途',
+    title: 'AI 工具',
     links: [
-      { label: 'PDF 转脑图', href: '/app/pdf' },
-      { label: '网页转脑图', href: '/app/web' },
-      { label: 'YouTube 转脑图', href: '/app/youtube' },
-      { label: '长文本转脑图', href: '/app/text' },
+      { label: 'PDF 转思维导图', href: '/tools/pdf-to-mind-map' },
+      { label: '文本转思维导图', href: '/tools/text-to-mind-map' },
+      { label: 'YouTube 转思维导图', href: '/tools/youtube-to-mind-map' },
+      { label: '网页转思维导图', href: '/tools/webpage-to-mind-map' },
+    ],
+  },
+  {
+    title: '学习资源',
+    links: [
+      { label: '博客', href: '/blog' },
+      { label: 'AI 思维导图指南', href: '/blog/ai-mind-map-guide' },
+      { label: 'PDF 转脑图教程', href: '/blog/how-to-convert-pdf-to-mind-map' },
+      { label: '脑图与摘要的区别', href: '/blog/mind-map-vs-summary' },
     ],
   },
 ];
@@ -25,7 +34,7 @@ const COLUMNS = [
 export function Footer() {
   return (
     <footer className="border-t bg-surface" style={{ borderColor: 'var(--border)' }}>
-      <div className="mx-auto grid max-w-7xl gap-10 px-5 py-14 sm:grid-cols-2 lg:grid-cols-4 lg:px-8">
+      <div className="mx-auto grid max-w-7xl gap-10 px-5 py-14 sm:grid-cols-2 lg:grid-cols-5 lg:px-8">
         <div className="lg:col-span-2">
           <Logo />
           <p className="mt-4 max-w-xs text-sm leading-7 text-text-muted">

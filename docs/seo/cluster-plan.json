@@ -1,0 +1,54 @@
+{
+  "generatedAt": "2026-08-08",
+  "method": "intent-first with sampled SERP validation",
+  "volumeSource": null,
+  "volumeNote": "DataForSEO and GSC were unavailable; unknown volumes are deliberately null.",
+  "pillar": {
+    "title": "AI 思维导图完整指南",
+    "keyword": "AI 思维导图",
+    "volume": null,
+    "url": "/blog/ai-mind-map-guide",
+    "status": "written"
+  },
+  "clusters": [
+    {
+      "name": "内容输入工具",
+      "intent": "transactional",
+      "posts": [
+        { "keyword": "PDF 转思维导图", "url": "/tools/pdf-to-mind-map", "status": "written" },
+        { "keyword": "文本转思维导图", "url": "/tools/text-to-mind-map", "status": "written" },
+        { "keyword": "YouTube 转思维导图", "url": "/tools/youtube-to-mind-map", "status": "written" },
+        { "keyword": "网页转思维导图", "url": "/tools/webpage-to-mind-map", "status": "written" }
+      ]
+    },
+    {
+      "name": "学习与研究",
+      "intent": "informational",
+      "posts": [
+        { "keyword": "AI 学习笔记", "url": "/blog/ai-study-notes-guide", "status": "planned" },
+        { "keyword": "论文阅读工作流", "url": "/blog/research-paper-reading-workflow", "status": "planned" },
+        { "keyword": "课程视频笔记", "url": "/blog/youtube-course-notes", "status": "planned" }
+      ]
+    },
+    {
+      "name": "方法与质量",
+      "intent": "informational",
+      "posts": [
+        { "keyword": "PDF 转思维导图教程", "url": "/blog/how-to-convert-pdf-to-mind-map", "status": "written" },
+        { "keyword": "思维导图和摘要的区别", "url": "/blog/mind-map-vs-summary", "status": "written" },
+        { "keyword": "如何用 AI 生成思维导图", "url": "/blog/how-to-create-a-mind-map-with-ai", "status": "planned" },
+        { "keyword": "AI 思维导图质量", "url": "/blog/ai-mind-map-quality-checklist", "status": "planned" }
+      ]
+    },
+    {
+      "name": "选择与比较",
+      "intent": "commercial investigation",
+      "posts": [
+        { "keyword": "AI 思维导图工具", "url": "/blog/best-ai-mind-map-tools", "status": "planned" },
+        { "keyword": "MindMapAny vs Mapify", "url": "/blog/mindmapany-vs-mapify", "status": "planned" },
+        { "keyword": "Mapify 替代品", "url": "/blog/mapify-alternatives", "status": "planned" },
+        { "keyword": "PDF 转思维导图工具", "url": "/blog/best-pdf-to-mind-map-tools", "status": "planned" }
+      ]
+    }
+  ]
+}

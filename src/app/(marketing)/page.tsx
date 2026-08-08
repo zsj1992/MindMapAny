@@ -1,8 +1,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { Faq, Features, HowItWorks } from '@/components/site/Sections';
+import { JsonLd } from '@/components/seo/JsonLd';
 import { Footer } from '@/components/site/Footer';
 import { HeroMap } from '@/components/site/HeroMap';
+import { SITE_URL } from '@/lib/seo/content';
 
 export const metadata: Metadata = {
   title: 'MindMapAny — 把任何内容变成结构清晰、可溯源的脑图',
@@ -12,15 +14,42 @@ export const metadata: Metadata = {
 };
 
 const INPUTS = [
-  { label: '长文本', href: '/app/text' },
-  { label: 'PDF', href: '/app/pdf' },
-  { label: '网页文章', href: '/app/web' },
-  { label: 'YouTube', href: '/app/youtube' },
+  { label: '长文本', href: '/tools/text-to-mind-map' },
+  { label: 'PDF', href: '/tools/pdf-to-mind-map' },
+  { label: '网页文章', href: '/tools/webpage-to-mind-map' },
+  { label: 'YouTube', href: '/tools/youtube-to-mind-map' },
 ];
 
 export default function HomePage() {
   return (
     <>
+      <JsonLd
+        data={[
+          {
+            '@context': 'https://schema.org',
+            '@type': 'Organization',
+            name: 'MindMapAny',
+            url: SITE_URL,
+          },
+          {
+            '@context': 'https://schema.org',
+            '@type': 'WebSite',
+            name: 'MindMapAny',
+            url: SITE_URL,
+            inLanguage: 'zh-CN',
+          },
+          {
+            '@context': 'https://schema.org',
+            '@type': 'SoftwareApplication',
+            name: 'MindMapAny',
+            applicationCategory: 'ProductivityApplication',
+            operatingSystem: 'Web',
+            url: SITE_URL,
+            description: metadata.description,
+            offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', description: '免费试用' },
+          },
+        ]}
+      />
       <main>
         <section className="hero-glow relative overflow-hidden">
           <div className="grid-lines pointer-events-none absolute inset-0 opacity-40" aria-hidden="true" />

@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import type { Metadata } from 'next';
 import { AppSidebar, SidebarTrigger } from '@/components/app/AppSidebar';
 import { Logo } from '@/components/site/Logo';
 import { ThemeToggle } from '@/components/site/ThemeToggle';
@@ -7,6 +8,10 @@ import { getCurrentProfile } from '@/lib/auth/session';
 import type { Plan } from '@/lib/credits';
 
 export const dynamic = 'force-dynamic';
+
+export const metadata: Metadata = {
+  robots: { index: false, follow: false },
+};
 
 /**
  * 工作台外壳：左侧栏 + 顶栏（额度 / 升级 / 账号）。

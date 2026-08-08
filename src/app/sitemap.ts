@@ -1,21 +1,28 @@
 import type { MetadataRoute } from 'next';
 import { listPublicSlugs } from '@/lib/db/repositories/maps';
-import { SOURCE_SLUGS } from '@/lib/sources';
+import { BLOG_POSTS, TOOL_PAGES } from '@/lib/seo/content';
 
 const siteUrl = process.env.SITE_URL ?? 'https://mindmapany.com';
 
 export const revalidate = 3600;
 
-/** 公开分享页是唯一的内容资产，全部进 sitemap */
+/** 只收录公开、独立且有搜索价值的内容页；工作台统一 noindex。 */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base: MetadataRoute.Sitemap = [
     { url: siteUrl, changeFrequency: 'weekly', priority: 1 },
     { url: `${siteUrl}/pricing`, changeFrequency: 'monthly', priority: 0.7 },
-    // 四个来源落地页各自承接一组关键词
-    ...SOURCE_SLUGS.map((slug) => ({
-      url: `${siteUrl}/app/${slug}`,
+    { url: `${siteUrl}/tools`, changeFrequency: 'weekly', priority: 0.9 },
+    ...TOOL_PAGES.map(({ slug }) => ({
+      url: `${siteUrl}/tools/${slug}`,
       changeFrequency: 'monthly' as const,
-      priority: 0.8,
+      priority: 0.85,
+    })),
+    { url: `${siteUrl}/blog`, changeFrequency: 'weekly', priority: 0.8 },
+    ...BLOG_POSTS.map(({ slug, updatedAt }) => ({
+      url: `${siteUrl}/blog/${slug}`,
+      lastModified: new Date(updatedAt),
+      changeFrequency: 'monthly' as const,
+      priority: 0.72,
     })),
   ];
 

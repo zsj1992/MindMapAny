@@ -17,17 +17,17 @@ export default function MarketingLayout({ children }: LayoutProps<'/'>) {
           </Link>
 
           <nav className="hidden items-center gap-7 text-sm font-medium text-text-muted md:flex">
-            <Link href="/#features" className="transition-colors hover:text-text">
-              功能
+            <Link href="/tools" className="transition-colors hover:text-text">
+              工具
             </Link>
-            <Link href="/#faq" className="transition-colors hover:text-text">
-              常见问题
+            <Link href="/blog" className="transition-colors hover:text-text">
+              博客
             </Link>
             <Link href="/pricing" className="transition-colors hover:text-text">
               价格
             </Link>
-            <Link href="/app/maps" className="transition-colors hover:text-text">
-              我的脑图
+            <Link href="/#faq" className="transition-colors hover:text-text">
+              常见问题
             </Link>
           </nav>
 

@@ -11,8 +11,8 @@ const useDrawer = create<{ open: boolean; setOpen: (v: boolean) => void }>((set)
   setOpen: (open) => set({ open }),
 }));
 
-/* 工作台左侧栏：按输入类型分组导航。每个类型一个独立路由，
-   既是产品结构，也顺便是四个可被搜索索引的落地页。 */
+/* 工作台左侧栏：按输入类型分组导航。公开搜索入口位于 /tools，
+   这里的 /app 路由只负责完成生成任务，不参与搜索索引。 */
 
 const icon = (path: ReactNode, className = '') => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className={`h-4 w-4 ${className}`}>
