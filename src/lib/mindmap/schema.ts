@@ -14,12 +14,13 @@ export type Purpose = (typeof PURPOSES)[number];
 
 /** 每档深度对应的层级与节点数预算，同时用于 prompt 和解析后的裁剪 */
 export const DEPTH_BUDGET: Record<Depth, { maxLevel: number; minNodes: number; maxNodes: number }> = {
-  concise: { maxLevel: 3, minNodes: 12, maxNodes: 30 },
-  standard: { maxLevel: 4, minNodes: 30, maxNodes: 60 },
-  detailed: { maxLevel: 5, minNodes: 60, maxNodes: 120 },
+  concise: { maxLevel: 3, minNodes: 10, maxNodes: 25 },
+  standard: { maxLevel: 4, minNodes: 20, maxNodes: 55 },
+  detailed: { maxLevel: 5, minNodes: 45, maxNodes: 110 },
 };
 
-export const MAX_TITLE_LEN = 120;
+// 叶子节点是「标签：一句说明」，比纯标题长，上限相应放宽
+export const MAX_TITLE_LEN = 160;
 export const MAX_SUMMARY_LEN = 400;
 
 /**

@@ -14,6 +14,7 @@
   },
   "dependencies": {
     "@ai-sdk/deepseek": "^3.0.24",
+    "@antv/hierarchy": "^0.7.1",
     "@mozilla/readability": "^0.6.0",
     "@supabase/ssr": "^0.12.4",
     "@supabase/supabase-js": "^2.112.2",

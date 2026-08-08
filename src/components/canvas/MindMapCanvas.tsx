@@ -11,8 +11,9 @@ import {
   type NodeMouseHandler,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { useCallback, useEffect, useMemo, useState } from 'react';
-import { hasChildren, layoutMindMap, visibleNodes, type PositionedNode } from '@/lib/layout';
+import { useCallback, useEffect, useMemo } from 'react';
+import { layoutMindMap, visibleNodes } from '@/lib/layout';
+import { BRANCH_COLORS, branchColorMap } from '@/lib/branchColors';
 import type { MindMap } from '@/lib/mindmap/schema';
 import { useEditor } from '@/store/editor';
 import { MindMapNodeCard, type MindMapNodeData } from './MindMapNodeCard';
@@ -46,7 +47,6 @@ export function MindMapCanvas({ readOnly = false }: { readOnly?: boolean }) {
   const deleteNode = useEditor((s) => s.deleteNode);
   const toggleCollapse = useEditor((s) => s.toggleCollapse);
 
-  const [positions, setPositions] = useState<Map<string, PositionedNode>>(new Map());
   const { fitView } = useReactFlow();
 
   // 结构变化才重排；只改标题不动布局，避免打字时画布乱跳
@@ -55,17 +55,12 @@ export function MindMapCanvas({ readOnly = false }: { readOnly?: boolean }) {
     return `${map.nodes.map((n) => `${n.id}:${n.parentId}:${n.order}:${n.title.length}`).join('|')}#${[...collapsed].sort().join(',')}`;
   }, [map, collapsed]);
 
-  useEffect(() => {
-    if (!map) return;
-    let cancelled = false;
-    layoutMindMap(map, collapsed).then((p) => {
-      if (!cancelled) setPositions(p);
-    });
-    return () => {
-      cancelled = true;
-    };
+  // 布局是纯同步函数，随 structureKey 记忆化即可，不再有「先空白再跳一下」的闪烁
+  const positions = useMemo(
+    () => (map ? layoutMindMap(map, collapsed) : new Map()),
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [structureKey]);
+    [structureKey],
+  );
 
   const { nodes, edges } = useMemo(() => {
     if (!map || !positions.size) return { nodes: [] as Node[], edges: [] as Edge[] };
@@ -77,6 +72,8 @@ export function MindMapCanvas({ readOnly = false }: { readOnly?: boolean }) {
       if (n.parentId) childCount.set(n.parentId, (childCount.get(n.parentId) ?? 0) + 1);
     }
 
+    const colors = branchColorMap(map);
+
     const rfNodes: Node[] = shown.flatMap((n) => {
       const pos = positions.get(n.id);
       if (!pos) return [];
@@ -85,6 +82,8 @@ export function MindMapCanvas({ readOnly = false }: { readOnly?: boolean }) {
         level: levels.get(n.id) ?? 0,
         childCount: childCount.get(n.id) ?? 0,
         collapsed: collapsed.has(n.id),
+        side: pos.side ?? 'right',
+        color: colors.get(n.id) ?? BRANCH_COLORS[0],
         ...(n.summary ? { summary: n.summary } : {}),
         ...(n.source ? { source: n.source } : {}),
       };
@@ -102,13 +101,25 @@ export function MindMapCanvas({ readOnly = false }: { readOnly?: boolean }) {
 
     const rfEdges: Edge[] = shown
       .filter((n) => n.parentId && shownIds.has(n.parentId))
-      .map((n) => ({
-        id: `e-${n.id}`,
-        source: n.parentId!,
-        target: n.id,
-        type: 'smoothstep',
-        style: { stroke: 'var(--border-strong)', strokeWidth: 1.5 },
-      }));
+      .map((n) => {
+        // 左侧子树的连线方向相反：从父节点左侧出，接到子节点右侧
+        const side = positions.get(n.id)?.side ?? 'right';
+        const level = levels.get(n.id) ?? 1;
+        return {
+          id: `e-${n.id}`,
+          source: n.parentId!,
+          target: n.id,
+          sourceHandle: side === 'left' ? 'l' : 'r',
+          targetHandle: side === 'left' ? 'r' : 'l',
+          type: 'bezier',
+          style: {
+            stroke: colors.get(n.id) ?? 'var(--border-strong)',
+            // 越靠近根越粗，视觉上自然形成主干与分枝
+            strokeWidth: Math.max(1.2, 3.4 - level * 0.7),
+            opacity: 0.75,
+          },
+        };
+      });
 
     return { nodes: rfNodes, edges: rfEdges };
   }, [map, positions, collapsed, selectedId]);

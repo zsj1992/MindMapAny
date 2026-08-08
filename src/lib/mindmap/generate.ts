@@ -6,7 +6,7 @@ import { chunkDocument, groupChunks, needsMapReduce } from '@/lib/chunk';
 import type { ExtractedDoc } from '@/lib/extract/types';
 import { buildMindMap } from './outline';
 import { buildReducePrompt, buildSystemPrompt, buildUserPrompt } from './prompt';
-import { DEPTH_BUDGET, type Depth, type MindMap, type Purpose } from './schema';
+import { DEPTH_BUDGET, type Depth, type MindMap, type Purpose, type SourceRef } from './schema';
 
 /**
  * 生成分两条路径：
@@ -49,6 +49,8 @@ export async function generateMindMap(opts: GenerateOptions): Promise<GenerateRe
   const usage = { inputTokens: 0, outputTokens: 0, calls: 0 };
 
   let outline: string;
+  /** 标签 → chunkId，仅 map-reduce 路径需要 */
+  let refByLabel = new Map<string, string>();
 
   if (!needsMapReduce(chunks)) {
     const res = await generateText({
@@ -86,6 +88,10 @@ export async function generateMindMap(opts: GenerateOptions): Promise<GenerateRe
       }),
     );
 
+    // reduce 阶段模型经常在改写节点时把 ^chunkId 丢掉，光靠 prompt 求它求不住。
+    // 先把 map 阶段每条要点的 chunkId 记下来，合并后按标签找回，属于确定性兜底。
+    refByLabel = collectRefs(partials);
+
     const reduce = await generateText({
       model,
       system: buildReducePrompt({ language, depth, purpose }),
@@ -107,6 +113,9 @@ export async function generateMindMap(opts: GenerateOptions): Promise<GenerateRe
     fallbackTitle: doc.title,
     chunkIndex,
   });
+
+  const recovered = recoverSources(map, refByLabel, chunkIndex);
+  if (recovered) warnings.push(`recovered ${recovered} source refs dropped during reduce`);
 
   // 只剩根节点说明模型没按格式输出，宁可报错也不要给用户一张空图
   if (map.nodes.length <= 1) {
@@ -135,4 +144,46 @@ export function streamOutline(opts: GenerateOptions) {
   });
 
   return { result, chunkIndex };
+}
+
+/** 叶子节点写成「标签：说明」，标签是稳定的锚点，用它做跨阶段匹配 */
+function labelOf(title: string): string {
+  const head = title.split(/[：:]/)[0];
+  return head.replace(/\s+/g, '').toLowerCase().slice(0, 24);
+}
+
+/** 从 map 阶段的局部大纲里收集 标签 → chunkId */
+function collectRefs(partials: string[]): Map<string, string> {
+  const refs = new Map<string, string>();
+  for (const part of partials) {
+    for (const raw of part.split('\n')) {
+      const m = raw.match(/^\s*[-*+]\s+(.*?)\s*\^([A-Za-z0-9_-]{1,32})\s*$/);
+      if (!m) continue;
+      const key = labelOf(m[1]);
+      // 同名标签取第一次出现的，避免后面的覆盖掉更贴切的那个
+      if (key && !refs.has(key)) refs.set(key, m[2]);
+    }
+  }
+  return refs;
+}
+
+/** 给合并后丢了溯源的叶子节点补回 chunkId，返回补回的条数 */
+function recoverSources(
+  map: MindMap,
+  refByLabel: Map<string, string>,
+  chunkIndex: Map<string, SourceRef>,
+): number {
+  if (!refByLabel.size) return 0;
+  const parents = new Set(map.nodes.map((n) => n.parentId).filter(Boolean));
+  let count = 0;
+  for (const node of map.nodes) {
+    if (node.source || !node.parentId || parents.has(node.id)) continue;
+    const chunkId = refByLabel.get(labelOf(node.title));
+    const ref = chunkId ? chunkIndex.get(chunkId) : undefined;
+    if (ref) {
+      node.source = ref;
+      count++;
+    }
+  }
+  return count;
 }
