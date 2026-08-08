@@ -112,7 +112,6 @@ export function MindMapCanvas({ readOnly = false }: { readOnly?: boolean }) {
           target: n.id,
           sourceHandle: side === 'left' ? 'l' : 'r',
           targetHandle: side === 'left' ? 'r' : 'l',
-          type: 'bezier',
           style: {
             stroke: colors.get(n.id) ?? 'var(--border-strong)',
             // 越靠近根越粗，视觉上自然形成主干与分枝

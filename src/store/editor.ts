@@ -12,6 +12,8 @@ import type { MindMap, MindMapNode } from '@/lib/mindmap/schema';
 interface EditorState {
   map: MindMap | null;
   collapsed: Set<string>;
+  /** 工具栏层级筛选；null 表示用户做过单节点折叠，99 表示全展开。 */
+  levelLimit: number | null;
   selectedId: string | null;
   editingId: string | null;
   dirty: boolean;
@@ -59,11 +61,12 @@ function nextOrder(nodes: MindMapNode[], parentId: string): number {
 export const useEditor = create<EditorState>((set, get) => ({
   map: null,
   collapsed: new Set(),
+  levelLimit: 99,
   selectedId: null,
   editingId: null,
   dirty: false,
 
-  load: (map) => set({ map, collapsed: new Set(), selectedId: null, editingId: null, dirty: false }),
+  load: (map) => set({ map, collapsed: new Set(), levelLimit: 99, selectedId: null, editingId: null, dirty: false }),
   select: (id) => set({ selectedId: id }),
   beginEdit: (id) => set({ editingId: id, ...(id ? { selectedId: id } : {}) }),
 
@@ -72,7 +75,7 @@ export const useEditor = create<EditorState>((set, get) => ({
       const next = new Set(s.collapsed);
       if (next.has(id)) next.delete(id);
       else next.add(id);
-      return { collapsed: next };
+      return { collapsed: next, levelLimit: null };
     }),
 
   collapseToLevel: (level) =>
@@ -88,9 +91,16 @@ export const useEditor = create<EditorState>((set, get) => ({
         }
         return d;
       };
+      if (level === 99) return { collapsed: new Set<string>(), levelLimit: 99 };
+
+      // UI 的 L1 是根节点，而内部根深度为 0，所以“显示到 L2”应从深度 1 的节点开始折叠。
+      // 只折叠有孩子的节点；折叠叶子不会产生任何视觉变化。
+      const parentIds = new Set(s.map.nodes.map((n) => n.parentId).filter((id): id is string => Boolean(id)));
       const collapsed = new Set<string>();
-      for (const n of s.map.nodes) if (depthOf(n.id) >= level) collapsed.add(n.id);
-      return { collapsed };
+      for (const n of s.map.nodes) {
+        if (parentIds.has(n.id) && depthOf(n.id) >= level - 1) collapsed.add(n.id);
+      }
+      return { collapsed, levelLimit: level };
     }),
 
   renameNode: (id, title) =>
@@ -130,7 +140,14 @@ export const useEditor = create<EditorState>((set, get) => ({
       const node: MindMapNode = { id: newId, parentId: id, title: '新节点', order: nextOrder(s.map.nodes, id) };
       const collapsed = new Set(s.collapsed);
       collapsed.delete(id); // 加了子节点还折叠着会让用户以为没生效
-      return { map: { ...s.map, nodes: [...s.map.nodes, node] }, collapsed, selectedId: newId, editingId: newId, dirty: true };
+      return {
+        map: { ...s.map, nodes: [...s.map.nodes, node] },
+        collapsed,
+        levelLimit: null,
+        selectedId: newId,
+        editingId: newId,
+        dirty: true,
+      };
     });
     return newId;
   },

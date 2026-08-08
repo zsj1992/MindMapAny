@@ -29,6 +29,7 @@ export function Toolbar({
 }) {
   const map = useEditor((s) => s.map);
   const dirty = useEditor((s) => s.dirty);
+  const levelLimit = useEditor((s) => s.levelLimit);
   const collapseToLevel = useEditor((s) => s.collapseToLevel);
   const { getNodes } = useReactFlow();
   const [exporting, setExporting] = useState<string | null>(null);
@@ -66,7 +67,12 @@ export function Toolbar({
             key={l.level}
             type="button"
             onClick={() => collapseToLevel(l.level)}
-            className="rounded-md px-2 py-1 text-[11px] font-medium text-text-muted transition-colors hover:bg-surface hover:text-text hover:shadow-sm"
+            aria-pressed={levelLimit === l.level}
+            className={`rounded-md px-2 py-1 text-[11px] font-medium transition-colors ${
+              levelLimit === l.level
+                ? 'bg-surface text-brand-700 shadow-sm dark:text-brand-300'
+                : 'text-text-muted hover:bg-surface hover:text-text hover:shadow-sm'
+            }`}
             title={l.level === 99 ? '全部展开' : `只展开到第 ${l.level} 层`}
           >
             {l.label}
