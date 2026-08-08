@@ -11,7 +11,8 @@
   },
   // 非密钥的公开配置放这里；DEEPSEEK_API_KEY / BETTER_AUTH_SECRET 等走 wrangler secret
   "vars": {
-    "NEXT_PUBLIC_SITE_URL": "https://mindmapany.com",
+    // 运行时站点地址。不要用 NEXT_PUBLIC_ 前缀 —— 那类变量在构建时就被内联，改不动。
+    "SITE_URL": "https://mindmapany.com",
     "DEEPSEEK_MODEL_FAST": "deepseek-v4-flash",
     "DEEPSEEK_MODEL_QUALITY": "deepseek-v4-pro"
   },
@@ -21,6 +22,10 @@
       "database_name": "mindmapany",
       "database_id": "3d929460-ab2f-412f-ac08-bf6b06b98931"
     }
+  ],
+  "routes": [
+    { "pattern": "mindmapany.com", "custom_domain": true },
+    { "pattern": "www.mindmapany.com", "custom_domain": true }
   ],
   "observability": { "enabled": true }
 }

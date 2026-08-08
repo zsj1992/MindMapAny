@@ -20,7 +20,10 @@ export function getAuth() {
   return betterAuth({
     database: getDb(),
     secret,
-    baseURL: process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000',
+    // 必须用运行时变量：NEXT_PUBLIC_* 由 Next 在构建时内联，
+    // 构建机上读到的是 .env.local 里的 localhost，wrangler 的 vars 覆盖不掉，
+    // 结果就是线上 OAuth 的 redirect_uri 指向 localhost:3000。
+    baseURL: process.env.SITE_URL ?? process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000',
     // MVP 只做 OAuth：魔法链接要额外接邮件服务，先不引入第四个外部依赖
     emailAndPassword: { enabled: false },
     socialProviders: {

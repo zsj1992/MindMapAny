@@ -5,7 +5,7 @@ import { themeScript } from '@/components/site/ThemeToggle';
 
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://mindmapany.com';
+const siteUrl = process.env.SITE_URL ?? 'https://mindmapany.com';
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),

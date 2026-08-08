@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next';
 import { listPublicSlugs } from '@/lib/db/repositories/maps';
 import { SOURCE_SLUGS } from '@/lib/sources';
 
-const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://mindmapany.com';
+const siteUrl = process.env.SITE_URL ?? 'https://mindmapany.com';
 
 export const revalidate = 3600;
 
