@@ -1,9 +1,9 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { SharedMap } from '@/components/SharedMap';
-import { getSupabaseAdmin, isSupabaseConfigured } from '@/lib/db/server';
+import { getPublicBySlug } from '@/lib/db/repositories/maps';
 import { toOutline } from '@/lib/mindmap/outline';
-import { mindMapSchema, type MindMap } from '@/lib/mindmap/schema';
+import type { MindMap } from '@/lib/mindmap/schema';
 
 /**
  * 公开分享页。这是整个产品唯一的自然流量入口 ——
@@ -15,16 +15,12 @@ export const revalidate = 3600;
 type Props = { params: Promise<{ slug: string }> };
 
 async function loadShared(slug: string): Promise<{ map: MindMap; updatedAt: string } | null> {
-  if (!isSupabaseConfigured() || !process.env.SUPABASE_SERVICE_ROLE_KEY) return null;
-  const { data } = await getSupabaseAdmin()
-    .from('maps')
-    .select('data, updated_at, is_public')
-    .eq('share_slug', slug)
-    .eq('is_public', true)
-    .single();
-  if (!data) return null;
-  const parsed = mindMapSchema.safeParse(data.data);
-  return parsed.success ? { map: parsed.data, updatedAt: data.updated_at } : null;
+  try {
+    const found = await getPublicBySlug(slug);
+    return found ? { map: found.map, updatedAt: new Date(found.row.updated_at * 1000).toISOString() } : null;
+  } catch {
+    return null;
+  }
 }
 
 export async function generateMetadata({ params }: Props): Promise<Metadata> {

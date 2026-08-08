@@ -1,5 +1,5 @@
 import type { MetadataRoute } from 'next';
-import { getSupabaseAdmin, isSupabaseConfigured } from '@/lib/db/server';
+import { listPublicSlugs } from '@/lib/db/repositories/maps';
 import { SOURCE_SLUGS } from '@/lib/sources';
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL ?? 'https://mindmapany.com';
@@ -18,21 +18,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     })),
   ];
 
-  if (!isSupabaseConfigured() || !process.env.SUPABASE_SERVICE_ROLE_KEY) return base;
-
   try {
-    const { data } = await getSupabaseAdmin()
-      .from('maps')
-      .select('share_slug, updated_at')
-      .eq('is_public', true)
-      .order('updated_at', { ascending: false })
-      .limit(5000);
-
-    for (const row of data ?? []) {
-      if (!row.share_slug) continue;
+    for (const { slug, updatedAt } of await listPublicSlugs()) {
       base.push({
-        url: `${siteUrl}/m/${row.share_slug}`,
-        lastModified: new Date(row.updated_at),
+        url: `${siteUrl}/m/${slug}`,
+        lastModified: new Date(updatedAt * 1000),
         changeFrequency: 'monthly',
         priority: 0.6,
       });

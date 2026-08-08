@@ -1,11 +1,13 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { ANON_TRIAL_LIMITS, checkGate, estimateCredits, type Plan } from '@/lib/credits';
+import { ANON_TRIAL_LIMITS, checkGate, estimateCredits } from '@/lib/credits';
 import { extractPdf } from '@/lib/extract/pdf';
 import { ExtractError, totalChars, type ExtractedDoc, type InputKind } from '@/lib/extract/types';
 import { extractWeb } from '@/lib/extract/web';
 import { extractYoutube, isYoutubeUrl } from '@/lib/extract/youtube';
-import { getCurrentUser, getSupabaseAdmin, isSupabaseConfigured } from '@/lib/db/server';
+import { getCurrentProfile } from '@/lib/auth/session';
+import { chargeCredits } from '@/lib/db/repositories/profiles';
+import { record as recordJob } from '@/lib/db/repositories/jobs';
 import { generateMindMap, type ModelTier } from '@/lib/mindmap/generate';
 import { DEPTHS, PURPOSES, type Depth, type Purpose } from '@/lib/mindmap/schema';
 
@@ -60,8 +62,9 @@ export async function POST(req: Request) {
     if (!chars) return fail(422, 'empty', '未提取到可用内容');
 
     // ── 配额校验 ──
-    const user = await getCurrentUser();
-    const profile = user ? await loadProfile(user.id) : null;
+    const session = await getCurrentProfile();
+    const user = session?.user ?? null;
+    const profile = session?.profile ?? null;
     const tier = params.tier as ModelTier;
 
     if (!user) {
@@ -104,12 +107,13 @@ export async function POST(req: Request) {
     await recordJob({
       userId: user?.id ?? null,
       status: 'succeeded',
-      kind,
-      url: doc.url ?? null,
-      chars,
-      tier: effectiveTier,
-      usage,
-      cost,
+      sourceKind: kind,
+      sourceUrl: doc.url ?? null,
+      sourceChars: chars,
+      modelTier: effectiveTier,
+      inputTokens: usage.inputTokens,
+      outputTokens: usage.outputTokens,
+      creditsCharged: cost,
       warnings,
       durationMs: Date.now() - started,
     });
@@ -120,13 +124,9 @@ export async function POST(req: Request) {
     await recordJob({
       userId: null,
       status: 'failed',
-      kind,
-      url: doc?.url ?? null,
-      chars: doc ? totalChars(doc) : null,
-      tier: null,
-      usage: null,
-      cost: 0,
-      warnings: [],
+      sourceKind: kind,
+      sourceUrl: doc?.url ?? null,
+      sourceChars: doc ? totalChars(doc) : null,
       durationMs: Date.now() - started,
       errorCode: code,
       errorMessage: message,
@@ -186,64 +186,4 @@ function describeError(err: unknown): { status: number; code: string; message: s
   }
   console.error('[generate]', err);
   return { status: 500, code: 'internal', message: '服务异常，请稍后重试' };
-}
-
-async function loadProfile(userId: string): Promise<{ plan: Plan; credits: number } | null> {
-  if (!isSupabaseConfigured()) return null;
-  const { data } = await getSupabaseAdmin()
-    .from('profiles')
-    .select('plan, credits')
-    .eq('id', userId)
-    .single();
-  return data ? { plan: data.plan as Plan, credits: data.credits } : null;
-}
-
-async function chargeCredits(userId: string, amount: number) {
-  // 生成成功后才扣，失败不收费；并发下多扣一次好过漏扣，MVP 不上分布式锁
-  const admin = getSupabaseAdmin();
-  const { data } = await admin.from('profiles').select('credits').eq('id', userId).single();
-  if (!data) return;
-  await admin
-    .from('profiles')
-    .update({ credits: Math.max(0, data.credits - amount) })
-    .eq('id', userId);
-}
-
-interface JobRecord {
-  userId: string | null;
-  status: 'succeeded' | 'failed';
-  kind: InputKind;
-  url: string | null;
-  chars: number | null;
-  tier: ModelTier | null;
-  usage: { inputTokens: number; outputTokens: number } | null;
-  cost: number;
-  warnings: string[];
-  durationMs: number;
-  errorCode?: string;
-  errorMessage?: string;
-}
-
-/** 记账失败不能影响主流程 —— 用户已经拿到脑图了 */
-async function recordJob(job: JobRecord) {
-  if (!isSupabaseConfigured() || !process.env.SUPABASE_SERVICE_ROLE_KEY) return;
-  try {
-    await getSupabaseAdmin().from('jobs').insert({
-      user_id: job.userId,
-      status: job.status,
-      source_kind: job.kind,
-      source_url: job.url,
-      source_chars: job.chars,
-      model_tier: job.tier,
-      input_tokens: job.usage?.inputTokens ?? 0,
-      output_tokens: job.usage?.outputTokens ?? 0,
-      credits_charged: job.cost,
-      duration_ms: job.durationMs,
-      error_code: job.errorCode ?? null,
-      error_message: job.errorMessage ?? null,
-      warnings: job.warnings,
-    });
-  } catch (e) {
-    console.error('[jobs] record failed', e);
-  }
 }

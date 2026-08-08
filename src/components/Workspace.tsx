@@ -81,7 +81,8 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
           });
         }
 
-        const body = await res.json();
+        // Workers 的类型定义里 json() 返回 unknown，比浏览器的 any 严格，这里显式收窄
+        const body = (await res.json()) as Partial<GenerateResponse> & { error?: { message?: string; code?: string } };
         if (!res.ok) {
           setError(body?.error?.message ?? '生成失败，请重试');
           return;
@@ -116,7 +117,7 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
             headers: { 'content-type': 'application/json' },
             body: JSON.stringify({ map, sourceKind }),
           });
-      const body = await res.json();
+      const body = (await res.json()) as { id?: string; error?: { code?: string } };
       if (!res.ok) {
         setError(body?.error?.code === 'login_required' ? '请先登录再保存' : '保存失败');
         return;
@@ -140,7 +141,7 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
       headers: { 'content-type': 'application/json' },
       body: JSON.stringify({ isPublic: true }),
     });
-    const body = await res.json();
+    const body = (await res.json()) as { shareSlug?: string };
     if (res.ok && body.shareSlug) setShareUrl(`${location.origin}/m/${body.shareSlug}`);
   }, [savedId, save]);
 

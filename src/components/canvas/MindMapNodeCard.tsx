@@ -1,7 +1,7 @@
 'use client';
 
 import { Handle, Position, type NodeProps } from '@xyflow/react';
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import { formatTimestamp } from '@/lib/chunk';
 import type { NodeSide } from '@/lib/layout';
 import type { SourceRef } from '@/lib/mindmap/schema';
@@ -39,21 +39,21 @@ export function MindMapNodeCard({ id, data, selected }: NodeProps & { data: Mind
   const toggleCollapse = useEditor((s) => s.toggleCollapse);
 
   const isEditing = editingId === id;
-  const [draft, setDraft] = useState(data.title);
+  // 非受控输入：草稿只存在 DOM 里，不进 React state。
+  // 受控写法要在 effect 里把 title 同步进 state，多一轮渲染且容易和外部改动不同步。
   const inputRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
-    if (isEditing) {
-      setDraft(data.title);
-      // 进入编辑立刻全选，用户通常是要整句重写而不是改一个字
-      requestAnimationFrame(() => {
-        inputRef.current?.focus();
-        inputRef.current?.select();
-      });
-    }
-  }, [isEditing, data.title]);
+    if (!isEditing) return;
+    // 进入编辑立刻全选，用户通常是要整句重写而不是改一个字
+    requestAnimationFrame(() => {
+      inputRef.current?.focus();
+      inputRef.current?.select();
+    });
+  }, [isEditing]);
 
   const commit = () => {
+    const draft = inputRef.current?.value ?? '';
     if (draft.trim() && draft !== data.title) renameNode(id, draft);
     beginEdit(null);
   };
@@ -108,8 +108,8 @@ export function MindMapNodeCard({ id, data, selected }: NodeProps & { data: Mind
       {isEditing ? (
         <textarea
           ref={inputRef}
-          value={draft}
-          onChange={(e) => setDraft(e.target.value)}
+          key={data.title}
+          defaultValue={data.title}
           onBlur={commit}
           onKeyDown={(e) => {
             e.stopPropagation(); // 别让画布快捷键吃掉输入
@@ -119,7 +119,7 @@ export function MindMapNodeCard({ id, data, selected }: NodeProps & { data: Mind
             }
             if (e.key === 'Escape') beginEdit(null);
           }}
-          rows={Math.max(1, Math.ceil(draft.length / 15))}
+          rows={Math.max(1, Math.ceil(data.title.length / 15))}
           className="w-full resize-none bg-transparent leading-snug outline-none"
         />
       ) : (

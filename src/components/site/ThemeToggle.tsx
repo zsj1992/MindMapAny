@@ -1,22 +1,31 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useSyncExternalStore } from 'react';
 
 type Theme = 'light' | 'dark';
 
-/** 主题在 layout 的内联脚本里就已经定好，这里只负责切换和图标状态 */
-export function ThemeToggle() {
-  const [theme, setTheme] = useState<Theme>('light');
+/**
+ * 主题的唯一真相是 <html> 上的 class（layout 里的内联脚本在首屏前就设好了）。
+ * 用 useSyncExternalStore 直接订阅它，而不是在 effect 里 setState 同步一份副本 ——
+ * 后者会多一轮渲染，而且和外部改动容易不同步。
+ */
+function subscribe(onChange: () => void): () => void {
+  const observer = new MutationObserver(onChange);
+  observer.observe(document.documentElement, { attributes: true, attributeFilter: ['class'] });
+  return () => observer.disconnect();
+}
 
-  useEffect(() => {
-    setTheme(document.documentElement.classList.contains('dark') ? 'dark' : 'light');
-  }, []);
+export function ThemeToggle() {
+  const theme = useSyncExternalStore<Theme>(
+    subscribe,
+    () => (document.documentElement.classList.contains('dark') ? 'dark' : 'light'),
+    () => 'light', // 服务端渲染时的兜底；真实值由内联脚本在水合前写好
+  );
 
   const toggle = () => {
     const next: Theme = theme === 'dark' ? 'light' : 'dark';
     document.documentElement.classList.toggle('dark', next === 'dark');
     localStorage.setItem('theme', next);
-    setTheme(next);
   };
 
   return (

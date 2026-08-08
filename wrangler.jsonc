@@ -1,0 +1,26 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "mindmapany",
+  "main": ".open-next/worker.js",
+  "compatibility_date": "2026-08-01",
+  // nodejs_compat 必须开：Next 运行时和我们的 PDF 解析都依赖 Node API 垫片
+  "compatibility_flags": ["nodejs_compat"],
+  "assets": {
+    "directory": ".open-next/assets",
+    "binding": "ASSETS"
+  },
+  // 非密钥的公开配置放这里；DEEPSEEK_API_KEY / BETTER_AUTH_SECRET 等走 wrangler secret
+  "vars": {
+    "NEXT_PUBLIC_SITE_URL": "https://mindmapany.com",
+    "DEEPSEEK_MODEL_FAST": "deepseek-v4-flash",
+    "DEEPSEEK_MODEL_QUALITY": "deepseek-v4-pro"
+  },
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "mindmapany",
+      "database_id": "3d929460-ab2f-412f-ac08-bf6b06b98931"
+    }
+  ],
+  "observability": { "enabled": true }
+}

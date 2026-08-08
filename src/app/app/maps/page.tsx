@@ -1,28 +1,18 @@
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
-import { getCurrentUser, getSupabaseServer, isSupabaseConfigured } from '@/lib/db/server';
+import { getCurrentUser } from '@/lib/auth/session';
+import { listOwned } from '@/lib/db/repositories/maps';
 
 export const dynamic = 'force-dynamic';
 
 const KIND_LABEL: Record<string, string> = { text: '文本', pdf: 'PDF', web: '网页', youtube: 'YouTube' };
 
 export default async function MapsPage() {
-  if (!isSupabaseConfigured()) {
-    return <Empty message="数据库未配置，暂时无法保存脑图。" />;
-  }
   const user = await getCurrentUser();
   if (!user) redirect('/login?next=/app/maps');
 
-  const supabase = await getSupabaseServer();
-  const { data: maps } = await supabase
-    .from('maps')
-    .select('id, title, source_kind, share_slug, is_public, updated_at')
-    .order('updated_at', { ascending: false })
-    .limit(100);
-
-  if (!maps?.length) {
-    return <Empty message="还没有保存的脑图。" />;
-  }
+  const maps = await listOwned(user.id).catch(() => []);
+  if (!maps.length) return <Empty message="还没有保存的脑图。" />;
 
   return (
     <main className="mx-auto max-w-3xl px-4 py-10">
@@ -33,12 +23,12 @@ export default async function MapsPage() {
             <Link href={`/app/map/${m.id}`} className="min-w-0 flex-1">
               <span className="block truncate text-sm font-medium">{m.title}</span>
               <span className="mt-0.5 block text-xs text-text-subtle">
-                {KIND_LABEL[m.source_kind] ?? m.source_kind} ·{' '}
-                {new Date(m.updated_at).toLocaleDateString('zh-CN')}
+                {KIND_LABEL[m.sourceKind] ?? m.sourceKind} ·{' '}
+                {new Date(m.updatedAt * 1000).toLocaleDateString('zh-CN')}
               </span>
             </Link>
-            {m.is_public && m.share_slug && (
-              <Link href={`/m/${m.share_slug}`} className="text-xs text-text-subtle transition-colors hover:text-text">
+            {m.isPublic && m.shareSlug && (
+              <Link href={`/m/${m.shareSlug}`} className="text-xs text-text-subtle transition-colors hover:text-text">
                 公开链接
               </Link>
             )}

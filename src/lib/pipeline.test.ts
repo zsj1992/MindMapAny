@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { chunkDocument, formatTimestamp, groupChunks, needsMapReduce } from './chunk';
 import { groupCues, parseVideoId } from './extract/youtube';
-import { assertPublicUrl, ipIsPrivate } from './extract/ssrf';
+import { assertPublicUrl, ipIsPrivate, ipVersion } from './extract/ssrf';
 import { ExtractError, type ExtractedDoc } from './extract/types';
 import { buildMindMap } from './mindmap/outline';
 
@@ -18,6 +18,11 @@ import { buildMindMap } from './mindmap/outline';
   for (const ip of ['8.8.8.8', '1.1.1.1', '2001:4860:4860::8888']) {
     assert.equal(ipIsPrivate(ip), false, `${ip} 应被判为公网`);
   }
+  // 自己实现的 IP 版本判断（Workers 上没有 node:net）
+  assert.equal(ipVersion('1.2.3.4'), 4);
+  assert.equal(ipVersion('999.1.1.1'), 0);
+  assert.equal(ipVersion('::1'), 6);
+  assert.equal(ipVersion('example.com'), 0);
 
   const blocked = [
     'http://127.0.0.1/admin',

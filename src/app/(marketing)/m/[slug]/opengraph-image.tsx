@@ -1,6 +1,5 @@
 import { ImageResponse } from 'next/og';
-import { getSupabaseAdmin, isSupabaseConfigured } from '@/lib/db/server';
-import { mindMapSchema } from '@/lib/mindmap/schema';
+import { getPublicBySlug } from '@/lib/db/repositories/maps';
 
 /**
  * 分享卡片。不截画布（服务端没有浏览器），而是用一级主题重绘一张摘要图 ——
@@ -16,16 +15,10 @@ export default async function OgImage({ params }: { params: Promise<{ slug: stri
   let title = 'MapAny';
   let topics: string[] = [];
 
-  if (isSupabaseConfigured() && process.env.SUPABASE_SERVICE_ROLE_KEY) {
-    const { data } = await getSupabaseAdmin()
-      .from('maps')
-      .select('data')
-      .eq('share_slug', slug)
-      .eq('is_public', true)
-      .single();
-    const parsed = data ? mindMapSchema.safeParse(data.data) : null;
-    if (parsed?.success) {
-      const map = parsed.data;
+  try {
+    const found = await getPublicBySlug(slug);
+    if (found) {
+      const map = found.map;
       title = map.title;
       const rootId = map.nodes.find((n) => n.parentId === null)?.id;
       topics = map.nodes
@@ -34,6 +27,8 @@ export default async function OgImage({ params }: { params: Promise<{ slug: stri
         .slice(0, 5)
         .map((n) => n.title);
     }
+  } catch {
+    // 取不到就用兜底文案，OG 图不能因为查库失败而整体 500
   }
 
   return new ImageResponse(

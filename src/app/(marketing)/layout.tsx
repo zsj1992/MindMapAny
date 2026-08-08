@@ -1,12 +1,10 @@
 import Link from 'next/link';
 import { Logo } from '@/components/site/Logo';
 import { ThemeToggle } from '@/components/site/ThemeToggle';
-import { getCurrentUser } from '@/lib/db/server';
+import { HeaderAuth } from '@/components/auth/HeaderAuth';
 
 /** 对外站点的页头：导航 + 入口 CTA。登录后 CTA 直接指向工作台。 */
-export default async function MarketingLayout({ children }: LayoutProps<'/'>) {
-  const user = await getCurrentUser().catch(() => null);
-
+export default function MarketingLayout({ children }: LayoutProps<'/'>) {
   return (
     <>
       <header
@@ -29,20 +27,7 @@ export default async function MarketingLayout({ children }: LayoutProps<'/'>) {
 
           <div className="ml-auto flex items-center gap-2">
             <ThemeToggle />
-            {user ? (
-              <Link href="/app/new" className="btn btn-primary h-9 px-4">
-                进入工作台
-              </Link>
-            ) : (
-              <>
-                <Link href="/login" className="btn btn-ghost h-9 px-3">
-                  登录
-                </Link>
-                <Link href="/app/new" className="btn btn-primary h-9 px-4">
-                  免费开始
-                </Link>
-              </>
-            )}
+            <HeaderAuth />
           </div>
         </div>
       </header>

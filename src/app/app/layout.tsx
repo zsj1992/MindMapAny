@@ -2,8 +2,9 @@ import Link from 'next/link';
 import { AppSidebar, SidebarTrigger } from '@/components/app/AppSidebar';
 import { Logo } from '@/components/site/Logo';
 import { ThemeToggle } from '@/components/site/ThemeToggle';
+import { SignOutButton } from '@/components/auth/SignOutButton';
+import { getCurrentProfile } from '@/lib/auth/session';
 import type { Plan } from '@/lib/credits';
-import { getCurrentUser, getSupabaseServer, isSupabaseConfigured } from '@/lib/db/server';
 
 export const dynamic = 'force-dynamic';
 
@@ -14,8 +15,9 @@ export const dynamic = 'force-dynamic';
  * 强制登录才让用，会把「打开就能试」这个最大的转化优势扔掉。
  */
 export default async function AppLayout({ children }: LayoutProps<'/app'>) {
-  const user = await getCurrentUser().catch(() => null);
-  const profile = user ? await loadProfile(user.id) : null;
+  const session = await getCurrentProfile();
+  const user = session?.user ?? null;
+  const profile = session?.profile ?? null;
 
   return (
     <div className="flex h-screen flex-col">
@@ -51,8 +53,9 @@ export default async function AppLayout({ children }: LayoutProps<'/app'>) {
                 className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-100 text-xs font-medium text-brand-700 dark:bg-brand-900/50 dark:text-brand-200"
                 title={user.email ?? ''}
               >
-                {(user.email ?? '?').slice(0, 1).toUpperCase()}
+                {(user.name ?? user.email ?? '?').slice(0, 1).toUpperCase()}
               </span>
+              <SignOutButton className="btn btn-ghost h-9 px-2 text-xs" />
             </>
           ) : (
             <Link href="/login?next=/app/new" className="btn btn-primary h-9 px-4 text-xs">
@@ -75,13 +78,3 @@ function formatCredits(profile: { plan: Plan; credits: number }): string {
   return `${profile.credits}`;
 }
 
-async function loadProfile(userId: string): Promise<{ plan: Plan; credits: number } | null> {
-  if (!isSupabaseConfigured()) return null;
-  try {
-    const supabase = await getSupabaseServer();
-    const { data } = await supabase.from('profiles').select('plan, credits').eq('id', userId).single();
-    return data ? { plan: data.plan as Plan, credits: data.credits } : null;
-  } catch {
-    return null;
-  }
-}

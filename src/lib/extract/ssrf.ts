@@ -1,12 +1,17 @@
-import { lookup } from 'node:dns/promises';
-import { isIP } from 'node:net';
 import { ExtractError } from './types';
 
 /**
  * 抓取任意用户 URL = 把服务端当成代理，必须挡 SSRF。
  * 关键点：不能只校验字符串，要把域名解析成 IP 再判断，
  * 否则攻击者用一个解析到 169.254.169.254 的域名就绕过去了。
+ *
+ * 域名解析走 DoH 而不是 node:dns —— Cloudflare Workers 没有 node:dns，
+ * 实测在 workerd 上解析结果会被误判成内网，导致所有网页抓取失败。
+ * DoH 是纯 HTTP 调用，Node 和 Workers 两端同一套代码。
  */
+
+const DOH_ENDPOINT = process.env.DOH_ENDPOINT ?? 'https://cloudflare-dns.com/dns-query';
+const DOH_TIMEOUT_MS = 5_000;
 
 const ALLOWED_PROTOCOLS = new Set(['http:', 'https:']);
 const ALLOWED_PORTS = new Set(['', '80', '443', '8080', '8443']);
@@ -37,11 +42,56 @@ function ipv6IsPrivate(ip: string): boolean {
   return false;
 }
 
+/** 自己判断 IP 版本，不依赖 node:net —— Workers 上不保证有 */
+export function ipVersion(value: string): 0 | 4 | 6 {
+  if (/^\d{1,3}(\.\d{1,3}){3}$/.test(value)) {
+    return value.split('.').every((p) => Number(p) <= 255) ? 4 : 0;
+  }
+  if (/^[0-9a-fA-F:]+$/.test(value) && value.includes(':')) return 6;
+  return 0;
+}
+
 export function ipIsPrivate(ip: string): boolean {
-  const v = isIP(ip);
+  const v = ipVersion(ip);
   if (v === 4) return ipv4IsPrivate(ip);
   if (v === 6) return ipv6IsPrivate(ip);
   return true;
+}
+
+interface DohAnswer {
+  type: number;
+  data: string;
+}
+
+/**
+ * 用 DoH 查 A 和 AAAA。两条都查是必须的：
+ * 只查 A 的话，攻击者用一个只有 AAAA 记录且指向内网的域名就能绕过。
+ */
+async function resolveHost(host: string): Promise<string[]> {
+  const query = async (type: 'A' | 'AAAA'): Promise<string[]> => {
+    const url = `${DOH_ENDPOINT}?name=${encodeURIComponent(host)}&type=${type}`;
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), DOH_TIMEOUT_MS);
+    try {
+      const res = await fetch(url, {
+        headers: { accept: 'application/dns-json' },
+        signal: controller.signal,
+      });
+      if (!res.ok) return [];
+      const body = (await res.json()) as { Answer?: DohAnswer[] };
+      // type 1 = A，28 = AAAA；CNAME(5) 等中间记录直接忽略
+      return (body.Answer ?? [])
+        .filter((a) => a.type === 1 || a.type === 28)
+        .map((a) => a.data);
+    } catch {
+      return [];
+    } finally {
+      clearTimeout(timer);
+    }
+  };
+
+  const [v4, v6] = await Promise.all([query('A'), query('AAAA')]);
+  return [...v4, ...v6];
 }
 
 /** 校验单个 URL：协议、端口、DNS 解析后的所有 IP 都必须是公网 */
@@ -64,7 +114,7 @@ export async function assertPublicUrl(raw: string): Promise<URL> {
   }
 
   const host = url.hostname.replace(/^\[|\]$/g, '');
-  if (isIP(host)) {
+  if (ipVersion(host) !== 0) {
     if (ipIsPrivate(host)) throw new ExtractError('blocked_url', '不允许访问内网地址');
     return url;
   }
@@ -72,13 +122,12 @@ export async function assertPublicUrl(raw: string): Promise<URL> {
     throw new ExtractError('blocked_url', '不允许访问内网地址');
   }
 
-  let records: { address: string }[];
-  try {
-    records = await lookup(host, { all: true });
-  } catch {
+  const addresses = await resolveHost(host);
+  if (!addresses.length) {
     throw new ExtractError('fetch_failed', '域名解析失败');
   }
-  if (!records.length || records.some((r) => ipIsPrivate(r.address))) {
+  // 只要有任何一条记录指向内网就整体拒绝，不做部分放行
+  if (addresses.some(ipIsPrivate)) {
     throw new ExtractError('blocked_url', '该域名指向内网地址');
   }
   return url;
