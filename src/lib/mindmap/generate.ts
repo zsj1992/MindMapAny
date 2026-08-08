@@ -4,8 +4,14 @@ import { resolveModelConfig, type ModelTier } from '@/lib/ai/model';
 export type { ModelTier };
 import { chunkDocument, groupChunks, needsMapReduce } from '@/lib/chunk';
 import type { ExtractedDoc } from '@/lib/extract/types';
-import { buildMindMap } from './outline';
-import { buildReducePrompt, buildSystemPrompt, buildUserPrompt } from './prompt';
+import { applyHierarchyPlan, buildMindMap, inspectHierarchy } from './outline';
+import {
+  buildHierarchyPlanPrompt,
+  buildHierarchyPlanUserPrompt,
+  buildReducePrompt,
+  buildSystemPrompt,
+  buildUserPrompt,
+} from './prompt';
 import { DEPTH_BUDGET, type Depth, type MindMap, type Purpose, type SourceRef } from './schema';
 
 /**
@@ -106,13 +112,47 @@ export async function generateMindMap(opts: GenerateOptions): Promise<GenerateRe
     usage.outputTokens += reduce.usage?.outputTokens ?? 0;
   }
 
-  const { map, warnings } = buildMindMap(outline, {
+  const built = buildMindMap(outline, {
     language,
     depth,
     purpose,
     fallbackTitle: doc.title,
     chunkIndex,
   });
+
+  const initialQuality = inspectHierarchy(built.map);
+  if (initialQuality.needsRepair) {
+    try {
+      const planned = await generateText({
+        model,
+        system: buildHierarchyPlanPrompt({ language, purpose }),
+        prompt: buildHierarchyPlanUserPrompt(built.map),
+        maxOutputTokens: 1600,
+        abortSignal: signal,
+        ...(providerOptions ? { providerOptions } : {}),
+      });
+      usage.calls++;
+      usage.inputTokens += planned.usage?.inputTokens ?? 0;
+      usage.outputTokens += planned.usage?.outputTokens ?? 0;
+
+      const applied = applyHierarchyPlan(built.map, planned.text);
+      const plannedQuality = applied ? inspectHierarchy(applied.map) : null;
+      if (applied && plannedQuality && plannedQuality.score > initialQuality.score) {
+        built.map = applied.map;
+        built.warnings.push(
+          `hierarchy grouped (${initialQuality.score} -> ${plannedQuality.score}; ${applied.groups} groups; ${Math.round(applied.coverage * 100)}% planned)`,
+        );
+      } else {
+        built.warnings.push(`hierarchy plan rejected (${initialQuality.score} -> ${plannedQuality?.score ?? 0})`);
+      }
+    } catch (error) {
+      if (signal?.aborted) throw error;
+      // 初次生成仍是一张可用导图；修复失败不应把整个请求变成 500。
+      built.warnings.push(`hierarchy repair failed: ${error instanceof Error ? error.message : String(error)}`);
+    }
+  }
+
+  const { map, warnings } = built;
 
   const recovered = recoverSources(map, refByLabel, chunkIndex);
   if (recovered) warnings.push(`recovered ${recovered} source refs dropped during reduce`);

@@ -8,20 +8,26 @@ export default function MarketingLayout({ children }: LayoutProps<'/'>) {
   return (
     <>
       <header
-        className="sticky top-0 z-40 border-b bg-bg/80 backdrop-blur-md"
+        className="sticky top-0 z-40 border-b bg-surface/90 backdrop-blur-xl"
         style={{ borderColor: 'var(--border)' }}
       >
-        <div className="mx-auto flex h-14 max-w-6xl items-center gap-6 px-4">
+        <div className="mx-auto flex h-16 max-w-7xl items-center gap-8 px-5 lg:px-8">
           <Link href="/" className="shrink-0">
             <Logo />
           </Link>
 
-          <nav className="hidden items-center gap-5 text-sm text-text-muted sm:flex">
+          <nav className="hidden items-center gap-7 text-sm font-medium text-text-muted md:flex">
             <Link href="/#features" className="transition-colors hover:text-text">
               功能
             </Link>
             <Link href="/#faq" className="transition-colors hover:text-text">
               常见问题
+            </Link>
+            <Link href="/pricing" className="transition-colors hover:text-text">
+              价格
+            </Link>
+            <Link href="/app/maps" className="transition-colors hover:text-text">
+              我的脑图
             </Link>
           </nav>
 

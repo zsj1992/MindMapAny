@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { buildMindMap, parseOutline, toOutline } from './outline';
+import { applyHierarchyPlan, buildMindMap, inspectHierarchy, parseOutline, toOutline } from './outline';
 import { toTree, type SourceRef } from './schema';
 
 const chunkIndex = new Map<string, SourceRef>([
@@ -95,6 +95,57 @@ const chunkIndex = new Map<string, SourceRef>([
     again.nodes.map((n) => n.title),
     map.nodes.map((n) => n.title),
   );
+}
+
+// 星爆型结构会被标记，分类优先的三级结构不会误报
+{
+  const flat = buildMindMap(
+    ['# 住宿规则', ...Array.from({ length: 12 }, (_, i) => `- 条款${i + 1}：具体说明 ^c1`)].join('\n'),
+    { language: 'zh-CN', depth: 'standard', purpose: 'general', chunkIndex },
+  ).map;
+  const flatQuality = inspectHierarchy(flat);
+  assert.equal(flatQuality.needsRepair, true);
+  assert.equal(flatQuality.rootChildren, 12);
+  assert.equal(flatQuality.maxDepth, 1);
+
+  const grouped = buildMindMap(
+    [
+      '# 住宿规则',
+      '- 申请管理',
+      '  - 申请时间：须在截止日期前提交 ^c1',
+      '  - 资格要求：申请人须符合住宿条件 ^c1',
+      '- 行为规范',
+      '  - 安静时段：夜间不得制造噪音 ^c2',
+      '  - 访客管理：访客须登记后进入 ^c2',
+      '- 费用责任',
+      '  - 住宿费用：费用须按期缴纳 ^c1',
+      '  - 损坏赔偿：人为损坏须承担费用 ^c2',
+      '- 退宿管理',
+      '  - 退宿申请：应按流程提前申请 ^c1',
+      '  - 物品清理：离开前须清空个人物品 ^c2',
+    ].join('\n'),
+    { language: 'zh-CN', depth: 'standard', purpose: 'general', chunkIndex },
+  ).map;
+  const groupedQuality = inspectHierarchy(grouped);
+  assert.equal(groupedQuality.needsRepair, false);
+  assert.ok(groupedQuality.score > flatQuality.score);
+
+  const plan = JSON.stringify({
+    groups: [
+      { title: '申请管理', parentNodeId: 'n2', nodeIds: ['n3', 'n4'] },
+      { title: '行为规范', parentNodeId: null, nodeIds: ['n5', 'n6', 'n7'] },
+      { title: '费用责任', parentNodeId: null, nodeIds: ['n8', 'n9', 'n10'] },
+      { title: '退宿管理', parentNodeId: null, nodeIds: ['n11', 'n12', 'n13'] },
+    ],
+  });
+  const applied = applyHierarchyPlan(flat, `\`\`\`json\n${plan}\n\`\`\``);
+  assert.ok(applied);
+  assert.equal(applied.groups, 4);
+  assert.equal(applied.map.nodes.filter((node) => node.parentId === applied.map.nodes[0].id).length, 4);
+  assert.equal(applied.map.nodes.find((node) => node.id === 'n3')?.parentId, 'n2');
+  assert.equal(applied.map.nodes.filter((node) => node.id === 'n2').length, 1);
+  assert.equal(applied.map.nodes.filter((node) => node.source).length, 12);
+  assert.equal(inspectHierarchy(applied.map).needsRepair, false);
 }
 
 console.log('✓ outline parser: all cases passed');

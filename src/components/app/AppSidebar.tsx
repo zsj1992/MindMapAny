@@ -94,7 +94,7 @@ export function AppSidebar() {
   const setOpen = useDrawer((s) => s.setOpen);
 
   const nav = (
-    <nav className="flex h-full flex-col gap-6 overflow-y-auto p-3">
+    <nav className="flex h-full flex-col gap-7 overflow-y-auto px-3 py-5">
       <div className="space-y-0.5">
         {PRIMARY.map((item) => (
           <NavLink key={item.href} {...item} active={pathname === item.href} onNavigate={() => setOpen(false)} />
@@ -102,7 +102,7 @@ export function AppSidebar() {
       </div>
 
       <div>
-        <p className="px-3 pb-1.5 text-[11px] font-medium uppercase tracking-wide text-text-subtle">按来源</p>
+        <p className="px-3 pb-2 text-[10px] font-bold uppercase tracking-[0.14em] text-text-subtle">内容来源</p>
         <div className="space-y-0.5">
           {SOURCES.map((item) => (
             <NavLink key={item.href} {...item} active={pathname === item.href} onNavigate={() => setOpen(false)} />
@@ -111,12 +111,12 @@ export function AppSidebar() {
       </div>
 
       <div>
-        <p className="px-3 pb-1.5 text-[11px] font-medium uppercase tracking-wide text-text-subtle">即将支持</p>
+        <p className="px-3 pb-2 text-[10px] font-bold uppercase tracking-[0.14em] text-text-subtle">即将支持</p>
         <div className="space-y-0.5">
           {PLANNED.map((label) => (
             <span
               key={label}
-              className="flex cursor-not-allowed items-center gap-2.5 rounded-lg px-3 py-2 text-sm text-text-subtle"
+              className="flex cursor-not-allowed items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] text-text-subtle"
               title="当前版本尚未支持"
             >
               <span className="opacity-50">{ICONS.lock}</span>
@@ -134,7 +134,7 @@ export function AppSidebar() {
         <div className="fixed inset-0 z-50 lg:hidden">
           <button type="button" aria-label="关闭导航" className="absolute inset-0 bg-black/40" onClick={() => setOpen(false)} />
           <aside
-            className="absolute left-0 top-0 h-full w-64 border-r bg-surface"
+            className="absolute left-0 top-0 h-full w-72 border-r bg-surface shadow-2xl"
             style={{ borderColor: 'var(--border)' }}
           >
             {nav}
@@ -143,7 +143,7 @@ export function AppSidebar() {
       )}
 
       <aside
-        className="hidden w-60 shrink-0 border-r bg-bg-subtle lg:block"
+        className="hidden w-64 shrink-0 border-r bg-surface lg:block"
         style={{ borderColor: 'var(--border)' }}
       >
         {nav}
@@ -169,10 +169,11 @@ function NavLink({
     <Link
       href={href}
       onClick={onNavigate}
-      className={`flex items-center gap-2.5 rounded-lg px-3 py-2 text-sm transition-colors ${
-        active ? 'bg-surface font-medium text-text shadow-sm' : 'text-text-muted hover:bg-surface/70 hover:text-text'
+      className={`relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium transition-all ${
+        active ? 'bg-brand-50 text-brand-700 shadow-sm dark:bg-brand-900/30 dark:text-brand-200' : 'text-text-muted hover:bg-bg-subtle hover:text-text'
       }`}
     >
+      {active && <span className="absolute left-0 h-5 w-0.5 rounded-full bg-brand-600" />}
       {icon}
       {label}
     </Link>

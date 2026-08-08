@@ -30,21 +30,23 @@ export function GeneratingState() {
   const progress = Math.min(94, 100 * (1 - Math.exp(-elapsed / 22000)));
 
   return (
-    <div className="card mx-auto w-full max-w-2xl p-8">
+    <div className="app-panel mx-auto w-full max-w-3xl rounded-[1.4rem] border bg-surface p-8">
       <div className="flex items-center gap-3">
+        <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-brand-50 dark:bg-brand-900/30">
         <svg viewBox="0 0 24 24" className="h-5 w-5 animate-spin text-brand-500" fill="none">
           <circle cx="12" cy="12" r="9" stroke="currentColor" strokeOpacity="0.2" strokeWidth="3" />
           <path d="M21 12a9 9 0 00-9-9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
         </svg>
+        </span>
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-medium">{stage.label}</p>
+          <p className="text-sm font-semibold">{stage.label}</p>
           <p className="mt-0.5 text-xs tabular-nums text-text-subtle">已用 {Math.round(elapsed / 1000)} 秒</p>
         </div>
       </div>
 
-      <div className="mt-5 h-1.5 overflow-hidden rounded-full bg-bg-muted">
+      <div className="mt-6 h-1.5 overflow-hidden rounded-full bg-bg-muted">
         <div
-          className="h-full rounded-full bg-brand-500 transition-all duration-500 ease-out"
+          className="h-full rounded-full bg-gradient-to-r from-brand-500 to-accent-500 transition-all duration-500 ease-out"
           style={{ width: `${progress}%` }}
         />
       </div>

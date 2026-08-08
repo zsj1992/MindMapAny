@@ -6,6 +6,7 @@ const COLUMNS = [
     title: '产品',
     links: [
       { label: '功能', href: '/#features' },
+      { label: '价格', href: '/pricing' },
       { label: '常见问题', href: '/#faq' },
       { label: '我的脑图', href: '/app/maps' },
     ],
@@ -23,12 +24,12 @@ const COLUMNS = [
 
 export function Footer() {
   return (
-    <footer className="border-t bg-bg-subtle" style={{ borderColor: 'var(--border)' }}>
-      <div className="mx-auto grid max-w-6xl gap-10 px-4 py-14 sm:grid-cols-2 lg:grid-cols-4">
+    <footer className="border-t bg-surface" style={{ borderColor: 'var(--border)' }}>
+      <div className="mx-auto grid max-w-7xl gap-10 px-5 py-14 sm:grid-cols-2 lg:grid-cols-4 lg:px-8">
         <div className="lg:col-span-2">
           <Logo />
-          <p className="mt-3 max-w-xs text-sm leading-relaxed text-text-muted">
-            把任何内容变成结构清晰、可溯源的脑图。
+          <p className="mt-4 max-w-xs text-sm leading-7 text-text-muted">
+            把复杂内容变成清晰、可编辑、可追溯的知识结构。
           </p>
         </div>
 

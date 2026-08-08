@@ -20,9 +20,9 @@ export default async function AppLayout({ children }: LayoutProps<'/app'>) {
   const profile = session?.profile ?? null;
 
   return (
-    <div className="flex h-screen flex-col">
+    <div className="flex h-screen flex-col bg-bg">
       <header
-        className="flex h-14 shrink-0 items-center gap-3 border-b bg-surface px-3 sm:px-4"
+        className="flex h-16 shrink-0 items-center gap-3 border-b bg-surface px-3 sm:px-5"
         style={{ borderColor: 'var(--border)' }}
       >
         <SidebarTrigger />
@@ -32,11 +32,11 @@ export default async function AppLayout({ children }: LayoutProps<'/app'>) {
 
         <div className="ml-auto flex items-center gap-2">
           <span
-            className="hidden items-center gap-1.5 rounded-lg border px-2.5 py-1.5 text-xs tabular-nums text-text-muted sm:flex"
+            className="hidden items-center gap-2 rounded-lg border bg-bg-subtle px-3 py-2 text-xs font-medium tabular-nums text-text-muted sm:flex"
             style={{ borderColor: 'var(--border)' }}
             title={profile ? '剩余积分' : '未登录：按试用额度使用'}
           >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-3.5 w-3.5 text-brand-500">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-3.5 w-3.5 text-accent-500">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z" />
             </svg>
             {profile ? formatCredits(profile) : '试用'}
@@ -46,11 +46,11 @@ export default async function AppLayout({ children }: LayoutProps<'/app'>) {
 
           {user ? (
             <>
-              <Link href="/pricing" className="btn btn-primary h-9 px-3.5 text-xs">
+              <Link href="/pricing" className="btn btn-secondary h-9 px-3.5 text-xs">
                 升级
               </Link>
               <span
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-brand-100 text-xs font-medium text-brand-700 dark:bg-brand-900/50 dark:text-brand-200"
+                className="flex h-9 w-9 items-center justify-center rounded-full bg-[#102f53] text-xs font-bold text-white"
                 title={user.email ?? ''}
               >
                 {(user.name ?? user.email ?? '?').slice(0, 1).toUpperCase()}
@@ -67,7 +67,7 @@ export default async function AppLayout({ children }: LayoutProps<'/app'>) {
 
       <div className="flex min-h-0 flex-1">
         <AppSidebar />
-        <main className="min-w-0 flex-1 overflow-y-auto bg-bg">{children}</main>
+        <main className="surface-grid min-w-0 flex-1 overflow-y-auto bg-bg">{children}</main>
       </div>
     </div>
   );
@@ -77,4 +77,3 @@ function formatCredits(profile: { plan: Plan; credits: number }): string {
   if (profile.plan === 'unlimited') return '无限';
   return `${profile.credits}`;
 }
-

@@ -1,0 +1,155 @@
+import type { Metadata } from 'next';
+import Link from 'next/link';
+import { PLAN_CREDITS, PLAN_LIMITS, type Plan } from '@/lib/credits';
+
+export const metadata: Metadata = {
+  title: '价格与套餐',
+  description: '查看 MindMapAny 免费版、Basic、Pro 与 Unlimited 套餐的积分、模型和文档上限。',
+  alternates: { canonical: '/pricing' },
+};
+
+const PLANS = [
+  {
+    plan: 'free',
+    name: 'Free',
+    eyebrow: '免费内测',
+    description: '完整体验四种内容输入，适合偶尔整理文章和资料。',
+    creditLabel: '注册赠送积分',
+    extras: ['文本 / PDF / 网页 / YouTube', '编辑、导出与公开分享'],
+    action: '免费开始',
+    href: '/app/new',
+  },
+  {
+    plan: 'basic',
+    name: 'Basic',
+    eyebrow: '即将开放',
+    description: '面向日常学习和办公，更充足的月度使用额度。',
+    creditLabel: '积分 / 月',
+    extras: ['四种内容输入', '保存、分享与多格式导出'],
+    action: '即将开放',
+  },
+  {
+    plan: 'pro',
+    name: 'Pro',
+    eyebrow: '推荐方案',
+    description: '为深度研究和长文档设计，解锁高质量模型。',
+    creditLabel: '积分 / 月',
+    extras: ['详细脑图模式', '优先处理复杂长文档'],
+    action: '即将开放',
+    featured: true,
+  },
+  {
+    plan: 'unlimited',
+    name: 'Unlimited',
+    eyebrow: '重度使用',
+    description: '面向高频创作者与研究人员，不再计算月度积分。',
+    creditLabel: '不限积分',
+    extras: ['全部 Pro 能力', '公平使用原则下不限额度'],
+    action: '即将开放',
+  },
+] as const satisfies ReadonlyArray<{
+  plan: Plan;
+  name: string;
+  eyebrow: string;
+  description: string;
+  creditLabel: string;
+  extras: readonly string[];
+  action: string;
+  href?: string;
+  featured?: boolean;
+}>;
+
+function creditsLabel(plan: Plan): string {
+  const value = PLAN_CREDITS[plan];
+  return Number.isFinite(value) ? value.toLocaleString() : '∞';
+}
+
+function coreLimits(plan: Plan): string[] {
+  const limits = PLAN_LIMITS[plan];
+  return [
+    limits.tiers.includes('quality') ? '快速 + 高质量 AI 模型' : '快速 AI 模型',
+    `最长 ${limits.maxChars.toLocaleString()} 字符`,
+    `PDF 最多 ${limits.maxPdfPages} 页`,
+  ];
+}
+
+export default function PricingPage() {
+  return (
+    <main>
+      <section className="hero-glow relative overflow-hidden border-b" style={{ borderColor: 'var(--border)' }}>
+        <div className="grid-lines pointer-events-none absolute inset-0 opacity-35" aria-hidden="true" />
+        <div className="relative mx-auto max-w-4xl px-5 py-16 text-center sm:py-20">
+          <span className="eyebrow">简单、透明、按需升级</span>
+          <h1 className="mt-5 text-4xl font-bold tracking-[-0.04em] sm:text-5xl">从免费体验开始</h1>
+          <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-text-muted">
+            目前所有用户都处于免费内测阶段。付费订阅上线前，我们不会展示无法购买的价格，也不会突然扣费。
+          </p>
+          <div className="mt-7 inline-flex items-center gap-2 rounded-full border bg-surface px-4 py-2 text-xs font-semibold text-text-muted shadow-sm">
+            <span className="h-2 w-2 rounded-full bg-accent-500" />
+            注册即赠 30 积分，四种输入均可体验
+          </div>
+        </div>
+      </section>
+
+      <section className="mx-auto max-w-7xl px-5 py-14 sm:py-20 lg:px-8">
+        <div className="grid items-stretch gap-4 md:grid-cols-2 xl:grid-cols-4">
+          {PLANS.map((plan) => (
+            <article
+              key={plan.name}
+              className={`relative flex flex-col overflow-hidden rounded-2xl border bg-surface p-6 shadow-sm ${
+                'featured' in plan && plan.featured
+                  ? 'border-brand-500 shadow-xl shadow-brand-900/10 ring-1 ring-brand-500'
+                  : ''
+              }`}
+            >
+              {'featured' in plan && plan.featured && (
+                <div className="-mx-6 -mt-6 mb-5 bg-brand-600 px-4 py-2 text-center text-[11px] font-bold tracking-wide text-white">
+                  MOST POPULAR
+                </div>
+              )}
+              <div className="text-[11px] font-bold uppercase tracking-[0.14em] text-brand-600 dark:text-brand-300">
+                {plan.eyebrow}
+              </div>
+              <h2 className="mt-2 text-2xl font-bold tracking-tight">{plan.name}</h2>
+              <p className="mt-3 min-h-14 text-sm leading-6 text-text-muted">{plan.description}</p>
+
+              <div className="mt-6 border-y py-5" style={{ borderColor: 'var(--border)' }}>
+                <div className="flex items-end gap-2">
+                  <span className="text-4xl font-bold tracking-[-0.04em]">{creditsLabel(plan.plan)}</span>
+                  <span className="pb-1 text-xs font-medium text-text-muted">{plan.creditLabel}</span>
+                </div>
+              </div>
+
+              <ul className="mt-6 flex-1 space-y-3">
+                {[...coreLimits(plan.plan), ...plan.extras].map((item) => (
+                  <li key={item} className="flex items-start gap-2.5 text-sm leading-6 text-text-muted">
+                    <span className="mt-0.5 font-bold text-accent-500">✓</span>
+                    {item}
+                  </li>
+                ))}
+              </ul>
+
+              {'href' in plan ? (
+                <Link href={plan.href} className="btn btn-primary mt-7 h-11 w-full">
+                  {plan.action} <span aria-hidden="true">→</span>
+                </Link>
+              ) : (
+                <span className="btn mt-7 h-11 w-full cursor-default border bg-bg-subtle text-text-subtle">
+                  {plan.action}
+                </span>
+              )}
+            </article>
+          ))}
+        </div>
+
+        <div className="mt-10 rounded-2xl border bg-surface p-6 sm:flex sm:items-center sm:justify-between sm:gap-8 sm:p-8">
+          <div>
+            <h2 className="text-lg font-bold">团队或机构需要更高额度？</h2>
+            <p className="mt-2 text-sm leading-6 text-text-muted">团队方案将在支付系统上线后开放，包含统一额度管理和专属支持。</p>
+          </div>
+          <Link href="/app/new" className="btn btn-secondary mt-5 h-11 shrink-0 px-5 sm:mt-0">先体验产品</Link>
+        </div>
+      </section>
+    </main>
+  );
+}

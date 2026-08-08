@@ -71,28 +71,28 @@ export function MindMapNodeCard({ id, data, selected }: NodeProps & { data: Mind
    *   其余  无边框，只在靠父节点那侧压一条分支色的线 —— 和竞品一样轻，
    *         节点多的时候方框会把画面切得很碎
    */
-  const base = 'group relative text-sm transition-shadow';
+  const base = 'group relative text-sm transition-all duration-150';
   const shell = isRoot
-    ? 'rounded-2xl px-4 py-3 font-medium text-white shadow-md'
+    ? 'rounded-2xl px-5 py-3.5 font-semibold text-white shadow-lg'
     : isBranch
-      ? 'rounded-xl border-2 bg-surface px-3.5 py-2.5 font-medium shadow-sm hover:shadow-md'
-      : 'bg-surface/85 px-3 py-2 leading-snug backdrop-blur-[2px]';
+      ? 'rounded-xl border bg-surface px-4 py-3 font-semibold shadow-md hover:-translate-y-px hover:shadow-lg'
+      : 'border bg-surface/95 px-3.5 py-2.5 leading-snug shadow-sm backdrop-blur-[2px] hover:shadow-md';
 
   const style: React.CSSProperties = {
-    width: 232,
+    width: 240,
     ...(isRoot ? { background: data.color } : {}),
     ...(isBranch ? { borderColor: data.color } : {}),
     ...(!isRoot && !isBranch
       ? {
           [collapseOnLeft ? 'borderRight' : 'borderLeft']: `2.5px solid ${data.color}`,
-          borderRadius: collapseOnLeft ? '8px 3px 3px 8px' : '3px 8px 8px 3px',
+          borderRadius: '9px',
         }
       : {}),
   };
 
   return (
     <div
-      className={`${base} ${shell} ${selected ? 'ring-2 ring-offset-2 ring-offset-[var(--bg)]' : ''}`}
+      className={`${base} ${shell} ${selected ? 'ring-2 ring-offset-2 ring-offset-[var(--bg-subtle)]' : ''}`}
       style={{ ...style, ...(selected ? { ['--tw-ring-color' as string]: data.color } : {}) }}
       onDoubleClick={(e) => {
         e.stopPropagation();

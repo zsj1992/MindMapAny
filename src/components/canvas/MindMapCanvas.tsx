@@ -11,7 +11,7 @@ import {
   type NodeMouseHandler,
 } from '@xyflow/react';
 import '@xyflow/react/dist/style.css';
-import { useCallback, useEffect, useMemo } from 'react';
+import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { layoutMindMap, visibleNodes } from '@/lib/layout';
 import { BRANCH_COLORS, branchColorMap } from '@/lib/branchColors';
 import type { MindMap } from '@/lib/mindmap/schema';
@@ -48,6 +48,7 @@ export function MindMapCanvas({ readOnly = false }: { readOnly?: boolean }) {
   const toggleCollapse = useEditor((s) => s.toggleCollapse);
 
   const { fitView } = useReactFlow();
+  const fittedMapRef = useRef<string | null>(null);
 
   // 结构变化才重排；只改标题不动布局，避免打字时画布乱跳
   const structureKey = useMemo(() => {
@@ -124,10 +125,15 @@ export function MindMapCanvas({ readOnly = false }: { readOnly?: boolean }) {
     return { nodes: rfNodes, edges: rfEdges };
   }, [map, positions, collapsed, selectedId]);
 
+  // 每张图只在首次打开时适配一次。新增、删除、折叠节点只重排节点，绝不改用户当前视口。
+  const rootId = map?.nodes.find((node) => node.parentId === null)?.id ?? '';
+  const mapIdentity = map ? `${map.createdAt}:${rootId}` : '';
   useEffect(() => {
-    if (nodes.length) requestAnimationFrame(() => fitView({ padding: 0.15, duration: 200 }));
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [structureKey, positions.size]);
+    if (!nodes.length || !mapIdentity || fittedMapRef.current === mapIdentity) return;
+    fittedMapRef.current = mapIdentity;
+    const frame = requestAnimationFrame(() => fitView({ padding: 0.15, duration: 200 }));
+    return () => cancelAnimationFrame(frame);
+  }, [fitView, mapIdentity, nodes.length]);
 
   const onNodeClick: NodeMouseHandler = useCallback((_, node) => select(node.id), [select]);
 
@@ -155,7 +161,7 @@ export function MindMapCanvas({ readOnly = false }: { readOnly?: boolean }) {
   );
 
   return (
-    <div className="h-full w-full outline-none" tabIndex={0} onKeyDown={onKeyDown}>
+    <div className="surface-grid h-full w-full bg-bg-subtle/60 outline-none" tabIndex={0} onKeyDown={onKeyDown}>
       <ReactFlow
         nodes={nodes}
         edges={edges}
@@ -168,11 +174,16 @@ export function MindMapCanvas({ readOnly = false }: { readOnly?: boolean }) {
         nodesDraggable={false}
         nodesConnectable={false}
         elementsSelectable
+        // 触控板双指/鼠标滚轮直接平移；捏合仍然缩放。比“必须按住拖”更符合大画布习惯。
+        panOnScroll
+        panOnScrollSpeed={1}
+        zoomOnScroll={false}
+        zoomOnPinch
         minZoom={0.1}
         maxZoom={2.5}
         proOptions={{ hideAttribution: false }}
       >
-        <Background gap={22} size={1} color="var(--border)" />
+        <Background gap={24} size={1} color="var(--border-strong)" />
         <Controls showInteractive={false} />
         {nodes.length > 40 && (
           <MiniMap pannable zoomable nodeColor="var(--border-strong)" maskColor="rgb(0 0 0 / 0.06)" />

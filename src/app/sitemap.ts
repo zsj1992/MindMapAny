@@ -10,6 +10,7 @@ export const revalidate = 3600;
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base: MetadataRoute.Sitemap = [
     { url: siteUrl, changeFrequency: 'weekly', priority: 1 },
+    { url: `${siteUrl}/pricing`, changeFrequency: 'monthly', priority: 0.7 },
     // 四个来源落地页各自承接一组关键词
     ...SOURCE_SLUGS.map((slug) => ({
       url: `${siteUrl}/app/${slug}`,

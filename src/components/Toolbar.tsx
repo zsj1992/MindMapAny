@@ -47,23 +47,26 @@ export function Toolbar({
 
   return (
     <div
-      className="flex flex-wrap items-center gap-2 border-b bg-surface px-4 py-2.5"
+      className="flex flex-wrap items-center gap-2 border-b bg-surface px-4 py-3 sm:px-5"
       style={{ borderColor: 'var(--border)' }}
     >
-      <h1 className="mr-1 max-w-[26ch] truncate text-sm font-medium" title={map.title}>
+      <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-lg bg-brand-50 text-brand-600 dark:bg-brand-900/30 dark:text-brand-300">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4"><path d="M5 7h5v4H5zM14 13h5v4h-5zM10 9h2a2 2 0 012 2v4" /></svg>
+      </span>
+      <h1 className="mr-1 max-w-[26ch] truncate text-sm font-semibold" title={map.title}>
         {map.title}
       </h1>
       <span className="hidden rounded-md bg-bg-muted px-1.5 py-0.5 text-[11px] tabular-nums text-text-subtle sm:inline">
         {map.nodes.length} 节点
       </span>
 
-      <div className="ml-1 flex items-center gap-0.5 rounded-lg bg-bg-muted p-0.5">
+      <div className="ml-1 hidden items-center gap-0.5 rounded-lg border bg-bg-subtle p-0.5 md:flex">
         {LEVELS.map((l) => (
           <button
             key={l.level}
             type="button"
             onClick={() => collapseToLevel(l.level)}
-            className="rounded-md px-2 py-1 text-xs text-text-muted transition-colors hover:bg-surface hover:text-text"
+            className="rounded-md px-2 py-1 text-[11px] font-medium text-text-muted transition-colors hover:bg-surface hover:text-text hover:shadow-sm"
             title={l.level === 99 ? '全部展开' : `只展开到第 ${l.level} 层`}
           >
             {l.label}
@@ -94,20 +97,20 @@ export function Toolbar({
                 onShare();
               }
             }}
-            className="btn btn-secondary h-8 px-3 text-xs"
+            className="btn btn-secondary h-9 px-3 text-xs"
           >
             {copied ? '已复制' : shareUrl ? '复制链接' : '分享'}
           </button>
         )}
 
         {!readOnly && onSave && (
-          <button type="button" onClick={onSave} disabled={saving} className="btn btn-primary h-8 px-3.5 text-xs">
+          <button type="button" onClick={onSave} disabled={saving} className="btn btn-primary h-9 px-4 text-xs">
             {saving ? '保存中…' : dirty ? '保存 ·' : '保存'}
           </button>
         )}
 
         {onReset && (
-          <button type="button" onClick={onReset} className="btn btn-ghost h-8 px-2 text-xs">
+          <button type="button" onClick={onReset} className="btn btn-ghost h-9 px-2 text-xs">
             新建
           </button>
         )}
@@ -118,7 +121,7 @@ export function Toolbar({
 
 function ExportButton({ children, onClick, busy }: { children: ReactNode; onClick: () => void; busy: boolean }) {
   return (
-    <button type="button" onClick={onClick} disabled={busy} className="btn btn-secondary h-8 px-2.5 text-xs">
+    <button type="button" onClick={onClick} disabled={busy} className="btn btn-secondary hidden h-9 px-2.5 text-xs sm:inline-flex">
       {busy ? '导出中' : children}
     </button>
   );

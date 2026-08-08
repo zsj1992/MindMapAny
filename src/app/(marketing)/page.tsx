@@ -23,50 +23,82 @@ export default function HomePage() {
     <>
       <main>
         <section className="hero-glow relative overflow-hidden">
-          <div className="grid-lines pointer-events-none absolute inset-0 opacity-[0.55]" aria-hidden="true" />
+          <div className="grid-lines pointer-events-none absolute inset-0 opacity-40" aria-hidden="true" />
 
-          <div className="relative mx-auto max-w-6xl px-4 pb-4 pt-16 sm:pt-24">
-            <div className="mx-auto max-w-3xl text-center">
-              <span className="inline-flex items-center gap-2 rounded-full border bg-surface/70 px-3 py-1 text-xs text-text-muted backdrop-blur">
-                <span className="h-1.5 w-1.5 rounded-full bg-accent-500" />
-                每个节点都带原文页码与时间戳
+          <div className="relative mx-auto grid max-w-7xl items-center gap-12 px-5 pb-20 pt-16 lg:grid-cols-[0.9fr_1.1fr] lg:px-8 lg:pb-28 lg:pt-24">
+            <div className="max-w-2xl">
+              <span className="eyebrow">
+                <span className="h-2 w-2 rounded-full bg-accent-500 shadow-[0_0_0_4px_rgb(15_159_143/0.12)]" />
+                AI 思维导图工作台
               </span>
 
-              <h1 className="mt-6 text-4xl font-semibold leading-[1.15] tracking-tight sm:text-5xl">
-                把任何内容
-                <br className="sm:hidden" />
-                变成<span className="text-gradient">一张脑图</span>
+              <h1 className="mt-6 text-[2.75rem] font-bold leading-[1.08] tracking-[-0.045em] sm:text-6xl lg:text-[4.15rem]">
+                读完一份长内容，
+                <br />
+                只需要<span className="text-gradient">一张图</span>
               </h1>
 
-              <p className="mx-auto mt-5 max-w-xl text-base leading-relaxed text-text-muted">
-                文本、PDF、网页、YouTube —— 几秒生成层级清晰的思维导图，
-                看得懂，改得动，还能一路查回原文。
+              <p className="mt-6 max-w-xl text-base leading-8 text-text-muted sm:text-lg">
+                把 PDF、网页、YouTube 或长文本变成层级清晰的思维导图。
+                每条结论都保留页码与时间戳，随时回到原文核验。
               </p>
 
-              <div className="mt-8 flex flex-col items-center gap-3">
-                <Link href="/app/new" className="btn btn-primary h-12 px-8 text-base">
-                  免费开始
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+                <Link href="/app/new" className="btn btn-primary h-12 px-6 text-[15px]">
+                  免费生成第一张图
+                  <span aria-hidden="true">→</span>
                 </Link>
-                <p className="text-xs text-text-subtle">无需注册即可试用，登录后可保存与分享</p>
+                <Link href="#how-it-works" className="btn btn-secondary h-12 px-5 text-[15px]">
+                  看看如何工作
+                </Link>
               </div>
 
-              <div className="mt-8 flex flex-wrap items-center justify-center gap-2">
-                {INPUTS.map((i) => (
-                  <Link
-                    key={i.label}
-                    href={i.href}
-                    className="rounded-lg border bg-surface px-3 py-1.5 text-xs text-text-muted transition-colors hover:border-brand-300 hover:text-text"
-                    style={{ borderColor: 'var(--border)' }}
-                  >
-                    {i.label}
-                  </Link>
-                ))}
+              <div className="mt-7 flex flex-wrap items-center gap-x-5 gap-y-2 text-xs font-medium text-text-muted">
+                <span className="flex items-center gap-1.5"><span className="text-accent-500">✓</span> 无需注册</span>
+                <span className="flex items-center gap-1.5"><span className="text-accent-500">✓</span> 来源可追溯</span>
+                <span className="flex items-center gap-1.5"><span className="text-accent-500">✓</span> 可编辑导出</span>
               </div>
             </div>
 
-            <div className="animate-in-up mx-auto mt-12 max-w-3xl">
-              <HeroMap className="w-full" />
+            <div className="animate-in-up relative">
+              <div className="absolute -inset-6 rounded-[2.5rem] bg-gradient-to-br from-brand-200/35 via-transparent to-accent-400/25 blur-2xl" />
+              <div className="app-panel relative overflow-hidden rounded-[1.4rem] border" style={{ borderColor: 'var(--border-strong)' }}>
+                <div className="flex h-12 items-center gap-2 border-b bg-surface px-4" style={{ borderColor: 'var(--border)' }}>
+                  <span className="h-2.5 w-2.5 rounded-full bg-red-400" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-amber-400" />
+                  <span className="h-2.5 w-2.5 rounded-full bg-emerald-400" />
+                  <span className="ml-3 text-xs font-medium text-text-muted">AI 研究报告 · 42 个节点</span>
+                  <span className="ml-auto rounded-md bg-emerald-50 px-2 py-1 text-[10px] font-semibold text-emerald-700 dark:bg-emerald-950/40 dark:text-emerald-300">已保存</span>
+                </div>
+                <div className="surface-grid bg-bg-subtle p-5 sm:p-7">
+                  <HeroMap className="w-full" />
+                </div>
+                <div className="flex flex-wrap items-center gap-2 border-t bg-surface px-4 py-3" style={{ borderColor: 'var(--border)' }}>
+                  <span className="text-[11px] font-medium text-text-subtle">支持</span>
+                  {INPUTS.map((i) => (
+                    <Link key={i.label} href={i.href} className="rounded-md bg-bg-subtle px-2.5 py-1 text-[11px] font-semibold text-text-muted transition-colors hover:text-brand-600">
+                      {i.label}
+                    </Link>
+                  ))}
+                </div>
+              </div>
             </div>
+          </div>
+        </section>
+
+        <section className="border-y bg-surface" style={{ borderColor: 'var(--border)' }}>
+          <div className="mx-auto grid max-w-7xl grid-cols-2 gap-px px-5 sm:grid-cols-4 lg:px-8">
+            {[
+              ['4 种', '内容输入方式'],
+              ['30+', '输出语言'],
+              ['110', '单图最大节点'],
+              ['100%', '来源定位可核验'],
+            ].map(([value, label]) => (
+              <div key={label} className="px-4 py-6 text-center sm:py-7">
+                <div className="text-xl font-bold tracking-tight text-text">{value}</div>
+                <div className="mt-1 text-xs text-text-muted">{label}</div>
+              </div>
+            ))}
           </div>
         </section>
 
@@ -74,14 +106,15 @@ export default function HomePage() {
         <HowItWorks />
         <Faq />
 
-        <section className="border-t px-4 py-20 text-center" style={{ borderColor: 'var(--border)' }}>
-          <h2 className="text-2xl font-semibold tracking-tight">现在就试一张</h2>
-          <p className="mx-auto mt-3 max-w-md text-sm text-text-muted">
-            不用注册，粘一段文字进去看看效果。
-          </p>
-          <Link href="/app/new" className="btn btn-primary mt-7 h-12 px-8 text-base">
-            免费开始
-          </Link>
+        <section className="px-5 py-20 sm:py-28">
+          <div className="mx-auto max-w-6xl overflow-hidden rounded-[2rem] bg-[#102f53] px-6 py-12 text-center text-white shadow-2xl shadow-blue-950/15 sm:px-12 sm:py-16">
+            <p className="text-xs font-semibold uppercase tracking-[0.18em] text-cyan-300">从内容到结构，只差一次点击</p>
+            <h2 className="mt-4 text-3xl font-bold tracking-[-0.03em] sm:text-4xl">让复杂内容变得一目了然</h2>
+            <p className="mx-auto mt-4 max-w-lg text-sm leading-7 text-blue-100/80">无需注册，粘贴一段文字即可体验完整生成流程。</p>
+            <Link href="/app/new" className="btn mt-8 h-12 bg-white px-7 text-[15px] text-[#102f53] shadow-lg hover:bg-blue-50">
+              免费开始 <span aria-hidden="true">→</span>
+            </Link>
+          </div>
         </section>
       </main>
       <Footer />

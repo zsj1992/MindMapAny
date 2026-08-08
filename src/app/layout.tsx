@@ -15,7 +15,16 @@ export const metadata: Metadata = {
   },
   description: '文本、PDF、网页、YouTube 一键生成可编辑、可溯源的思维导图。每个节点都能回到原文页码或视频时间戳。',
   keywords: ['思维导图', '脑图生成', 'PDF 转脑图', 'AI 思维导图', 'YouTube 总结'],
-  openGraph: { type: 'website', siteName: 'MindMapAny', locale: 'zh_CN' },
+  openGraph: {
+    type: 'website',
+    siteName: 'MindMapAny',
+    locale: 'zh_CN',
+    images: [{ url: '/og.png', width: 1731, height: 909, alt: 'MindMapAny — 把复杂内容变成清晰脑图' }],
+  },
+  twitter: {
+    card: 'summary_large_image',
+    images: ['/og.png'],
+  },
 };
 
 /**
@@ -25,7 +34,7 @@ export const metadata: Metadata = {
  */
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
-    <html lang="zh-CN" className={`${geistSans.variable} h-full`} suppressHydrationWarning>
+    <html lang="zh-CN" className={`${geistSans.variable} h-full`} data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
         {/* 必须在样式和首屏之前执行，否则深色模式会白闪一帧 */}
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />

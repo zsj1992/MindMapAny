@@ -102,8 +102,8 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
     [load],
   );
 
-  const save = useCallback(async () => {
-    if (!map) return;
+  const save = useCallback(async (): Promise<string | null> => {
+    if (!map) return null;
     setSaving(true);
     try {
       const res = savedId
@@ -120,38 +120,46 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
       const body = (await res.json()) as { id?: string; error?: { code?: string } };
       if (!res.ok) {
         setError(body?.error?.code === 'login_required' ? '请先登录再保存' : '保存失败');
-        return;
+        return null;
       }
       if (body.id) setSavedId(body.id);
       markSaved();
+      return body.id ?? savedId;
+    } catch {
+      setError('保存失败，请检查网络后重试');
+      return null;
     } finally {
       setSaving(false);
     }
   }, [map, savedId, sourceKind, markSaved]);
 
   const share = useCallback(async () => {
-    let id = savedId;
-    if (!id) {
-      await save();
-      id = useEditor.getState().dirty ? null : savedId;
-    }
+    const id = savedId ?? (await save());
     if (!id) return;
-    const res = await fetch(`/api/maps/${id}`, {
-      method: 'PUT',
-      headers: { 'content-type': 'application/json' },
-      body: JSON.stringify({ isPublic: true }),
-    });
-    const body = (await res.json()) as { shareSlug?: string };
-    if (res.ok && body.shareSlug) setShareUrl(`${location.origin}/m/${body.shareSlug}`);
+    try {
+      const res = await fetch(`/api/maps/${id}`, {
+        method: 'PUT',
+        headers: { 'content-type': 'application/json' },
+        body: JSON.stringify({ isPublic: true }),
+      });
+      const body = (await res.json()) as { shareSlug?: string };
+      if (res.ok && body.shareSlug) setShareUrl(`${location.origin}/m/${body.shareSlug}`);
+      else setError('分享链接生成失败');
+    } catch {
+      setError('分享失败，请检查网络后重试');
+    }
   }, [savedId, save]);
 
   if (!map) {
     return (
-      <div className="mx-auto w-full max-w-2xl px-4 py-10 sm:py-14">
+      <div className="mx-auto w-full max-w-3xl px-5 py-12 sm:py-16">
         {title && (
-          <div className="mb-8 text-center">
-            <h1 className="text-2xl font-semibold tracking-tight sm:text-3xl">{title}</h1>
-            {subtitle && <p className="mt-2.5 text-sm text-text-muted">{subtitle}</p>}
+          <div className="mb-9 text-center">
+            <span className="mb-4 inline-flex items-center gap-2 rounded-full border bg-surface px-3 py-1 text-[11px] font-semibold text-text-muted shadow-sm">
+              <span className="h-1.5 w-1.5 rounded-full bg-accent-500" /> AI 内容理解工作台
+            </span>
+            <h1 className="text-3xl font-bold tracking-[-0.035em] sm:text-4xl">{title}</h1>
+            {subtitle && <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-text-muted">{subtitle}</p>}
           </div>
         )}
         {busy ? (
@@ -165,7 +173,7 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
 
   return (
     <ReactFlowProvider>
-      <div ref={shellRef} className="flex h-full min-h-[calc(100vh-3.5rem)] scroll-mt-14 flex-col bg-bg">
+      <div ref={shellRef} className="flex h-full min-h-[calc(100vh-4rem)] scroll-mt-16 flex-col bg-bg">
         <Toolbar
           onSave={save}
           onShare={share}
@@ -188,7 +196,7 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
           className="border-t px-4 py-2 text-[11px] text-text-subtle"
           style={{ borderColor: 'var(--border)' }}
         >
-          <kbd className="font-sans">双击</kbd> 编辑 · <kbd className="font-sans">Tab</kbd> 子节点 ·{' '}
+          <kbd className="font-sans">双指 / 滚轮</kbd> 平移 · <kbd className="font-sans">双击</kbd> 编辑 · <kbd className="font-sans">Tab</kbd> 子节点 ·{' '}
           <kbd className="font-sans">Enter</kbd> 同级 · <kbd className="font-sans">空格</kbd> 折叠 ·{' '}
           <kbd className="font-sans">Delete</kbd> 删除
         </p>

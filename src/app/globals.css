@@ -7,53 +7,53 @@
 @theme {
   --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
 
-  /* 品牌色：靛紫，脑图/AI 语境下比蓝色更有辨识度 */
-  --color-brand-50: #f2f1fe;
-  --color-brand-100: #e6e4fd;
-  --color-brand-200: #cfcbfb;
-  --color-brand-300: #aca3f7;
-  --color-brand-400: #8b7bf1;
-  --color-brand-500: #6d5ae6;
-  --color-brand-600: #5b45d6;
-  --color-brand-700: #4c37b8;
-  --color-brand-800: #402f96;
-  --color-brand-900: #362a78;
+  /* 品牌色：可信赖的深海蓝，青绿色只负责高价值动作与溯源信号 */
+  --color-brand-50: #eff6ff;
+  --color-brand-100: #dbeafe;
+  --color-brand-200: #bfdbfe;
+  --color-brand-300: #93c5fd;
+  --color-brand-400: #60a5fa;
+  --color-brand-500: #2563eb;
+  --color-brand-600: #1d4ed8;
+  --color-brand-700: #1e40af;
+  --color-brand-800: #1e3a8a;
+  --color-brand-900: #172554;
 
   /* 强调色：青绿，用于溯源/成功等正向信号，与品牌色形成冷暖对照 */
   --color-accent-400: #2dd4bf;
-  --color-accent-500: #14b8a6;
-  --color-accent-600: #0d9488;
+  --color-accent-500: #0f9f8f;
+  --color-accent-600: #0f766e;
 }
 
 :root {
-  --bg: #ffffff;
-  --bg-subtle: #fafafa;
-  --bg-muted: #f4f4f5;
+  --bg: #f8fafc;
+  --bg-subtle: #f1f5f9;
+  --bg-muted: #e9eef5;
   --surface: #ffffff;
   --surface-raised: #ffffff;
-  --border: #e6e6ea;
-  --border-strong: #d4d4d8;
-  --text: #18181b;
-  --text-muted: #71717a;
-  --text-subtle: #a1a1aa;
-  --shadow-color: 240 5% 12%;
-  --node-root-bg: #4c37b8;
+  --border: #dfe7f1;
+  --border-strong: #cbd7e6;
+  --text: #0b172a;
+  --text-muted: #526174;
+  --text-subtle: #8491a3;
+  --shadow-color: 215 35% 18%;
+  --node-root-bg: #163b67;
   --node-root-text: #ffffff;
 }
 
 .dark {
-  --bg: #0c0c0f;
-  --bg-subtle: #121216;
-  --bg-muted: #1a1a20;
-  --surface: #141419;
-  --surface-raised: #1a1a21;
-  --border: #26262e;
-  --border-strong: #35353f;
-  --text: #f4f4f5;
-  --text-muted: #a1a1aa;
-  --text-subtle: #71717a;
+  --bg: #07111f;
+  --bg-subtle: #0b1727;
+  --bg-muted: #132236;
+  --surface: #0d1b2d;
+  --surface-raised: #12233a;
+  --border: #20334a;
+  --border-strong: #304760;
+  --text: #eef5fc;
+  --text-muted: #9bacc0;
+  --text-subtle: #6f8299;
   --shadow-color: 0 0% 0%;
-  --node-root-bg: #6d5ae6;
+  --node-root-bg: #2563eb;
   --node-root-text: #ffffff;
 }
 
@@ -81,6 +81,7 @@
     background: var(--bg);
     color: var(--text);
     -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
   }
   /* 中文正文行高比英文需要更松一点才不挤 */
   :lang(zh) {
@@ -100,10 +101,11 @@
   /* Tailwind v4 的 @apply 只认真正的 utility，不能 @apply 自定义类，
      所以基础样式写在 .btn 上，变体各自只加差异部分，HTML 里两个类一起用。 */
   .btn {
-    @apply inline-flex items-center justify-center gap-2 rounded-xl text-sm font-medium transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-45;
+    @apply inline-flex items-center justify-center gap-2 rounded-lg text-sm font-semibold transition-all duration-150 disabled:cursor-not-allowed disabled:opacity-45;
   }
   .btn-primary {
-    @apply bg-brand-600 text-white shadow-sm hover:bg-brand-700 hover:shadow-md active:scale-[0.99];
+    @apply bg-brand-600 text-white hover:bg-brand-700 active:translate-y-px;
+    box-shadow: 0 1px 2px rgb(15 23 42 / 0.12), 0 8px 18px rgb(29 78 216 / 0.16);
   }
   /* 禁用态不能只降透明度：品牌色底即使半透明也像可点，改成中性灰才读得出来 */
   .btn-primary:disabled,
@@ -114,7 +116,7 @@
     opacity: 1;
   }
   .btn-secondary {
-    @apply border bg-surface text-text hover:bg-bg-muted;
+    @apply border bg-surface text-text shadow-sm hover:bg-bg-subtle;
     border-color: var(--border);
   }
   .btn-ghost {
@@ -123,6 +125,7 @@
   .card {
     @apply rounded-2xl border bg-surface;
     border-color: var(--border);
+    box-shadow: 0 1px 2px rgb(15 23 42 / 0.03), 0 12px 34px rgb(15 23 42 / 0.04);
   }
   .field {
     @apply w-full rounded-xl border bg-surface px-3.5 py-2.5 text-sm text-text transition-colors placeholder:text-text-subtle;
@@ -131,10 +134,10 @@
   .field:focus {
     outline: none;
     border-color: var(--color-brand-400);
-    box-shadow: 0 0 0 3px var(--color-brand-100);
+    box-shadow: 0 0 0 3px rgb(37 99 235 / 0.12);
   }
   .dark .field:focus {
-    box-shadow: 0 0 0 3px rgb(109 90 230 / 0.25);
+    box-shadow: 0 0 0 3px rgb(37 99 235 / 0.24);
   }
 }
 
@@ -142,16 +145,18 @@
   /* Hero 背景：两团柔光，比纯色平面有层次又不喧宾夺主 */
   .hero-glow {
     background:
-      radial-gradient(60ch 40ch at 15% -10%, rgb(109 90 230 / 0.13), transparent 65%),
-      radial-gradient(50ch 34ch at 88% 4%, rgb(20 184 166 / 0.1), transparent 62%);
+      radial-gradient(70ch 46ch at 10% 0%, rgb(37 99 235 / 0.12), transparent 68%),
+      radial-gradient(55ch 40ch at 90% 4%, rgb(15 159 143 / 0.11), transparent 65%),
+      linear-gradient(180deg, #fff 0%, var(--bg) 100%);
   }
   .dark .hero-glow {
     background:
-      radial-gradient(60ch 40ch at 15% -10%, rgb(109 90 230 / 0.22), transparent 65%),
-      radial-gradient(50ch 34ch at 88% 4%, rgb(20 184 166 / 0.13), transparent 62%);
+      radial-gradient(70ch 46ch at 10% 0%, rgb(37 99 235 / 0.22), transparent 68%),
+      radial-gradient(55ch 40ch at 90% 4%, rgb(15 159 143 / 0.16), transparent 65%),
+      linear-gradient(180deg, #081422 0%, var(--bg) 100%);
   }
   .text-gradient {
-    background: linear-gradient(100deg, var(--color-brand-600), var(--color-brand-400) 55%, var(--color-accent-500));
+    background: linear-gradient(105deg, #1d4ed8, #2563eb 52%, #0f9f8f);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -160,8 +165,19 @@
     background-image:
       linear-gradient(var(--border) 1px, transparent 1px),
       linear-gradient(90deg, var(--border) 1px, transparent 1px);
-    background-size: 28px 28px;
+    background-size: 32px 32px;
     mask-image: radial-gradient(70% 60% at 50% 40%, #000 30%, transparent 100%);
+  }
+  .eyebrow {
+    @apply inline-flex items-center gap-2 text-xs font-semibold uppercase tracking-[0.16em] text-brand-600 dark:text-brand-300;
+  }
+  .surface-grid {
+    background-image: radial-gradient(circle at 1px 1px, var(--border) 1px, transparent 0);
+    background-size: 24px 24px;
+  }
+  .app-panel {
+    background: color-mix(in srgb, var(--surface) 92%, transparent);
+    box-shadow: 0 1px 2px rgb(15 23 42 / 0.04), 0 18px 48px rgb(15 23 42 / 0.06);
   }
   .animate-in-up {
     animation: in-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
@@ -187,6 +203,12 @@
   background: var(--surface) !important;
   border-bottom-color: var(--border) !important;
   fill: var(--text-muted) !important;
+}
+.react-flow__controls {
+  overflow: hidden;
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  box-shadow: 0 8px 24px rgb(15 23 42 / 0.08) !important;
 }
 .react-flow__controls-button:hover {
   background: var(--bg-muted) !important;

@@ -37,6 +37,22 @@ export interface ParseResult {
   warnings: string[];
 }
 
+export interface HierarchyQuality {
+  /** 0-100；只衡量信息架构，不衡量事实正确性。 */
+  score: number;
+  needsRepair: boolean;
+  rootChildren: number;
+  maxDepth: number;
+  directLeafRatio: number;
+  reasons: string[];
+}
+
+export interface HierarchyPlanResult {
+  map: MindMap;
+  groups: number;
+  coverage: number;
+}
+
 const BULLET = /^([-*+]|\d+[.)])\s+/;
 const FENCE = /^\s*(```|~~~)/;
 const HEADING = /^\s*#{1,6}\s+(.*\S)\s*$/;
@@ -234,6 +250,146 @@ export function buildMindMap(
     },
     warnings,
   };
+}
+
+/**
+ * 识别“星爆型”脑图：大量具体事实直接挂在根节点下。
+ * 这里只做质量判断，不在代码中猜测语义分类；分类交给模型修复阶段完成。
+ */
+export function inspectHierarchy(map: MindMap): HierarchyQuality {
+  const root = map.nodes.find((node) => node.parentId === null);
+  if (!root) {
+    return { score: 0, needsRepair: true, rootChildren: 0, maxDepth: 0, directLeafRatio: 1, reasons: ['missing root'] };
+  }
+
+  const childrenByParent = new Map<string, MindMapNode[]>();
+  for (const node of map.nodes) {
+    if (!node.parentId) continue;
+    const siblings = childrenByParent.get(node.parentId) ?? [];
+    siblings.push(node);
+    childrenByParent.set(node.parentId, siblings);
+  }
+
+  const rootNodes = childrenByParent.get(root.id) ?? [];
+  const directLeaves = rootNodes.filter((node) => !(childrenByParent.get(node.id)?.length));
+  const directLeafRatio = rootNodes.length ? directLeaves.length / rootNodes.length : 1;
+  let maxDepth = 0;
+  const walk = (nodeId: string, depth: number) => {
+    maxDepth = Math.max(maxDepth, depth);
+    for (const child of childrenByParent.get(nodeId) ?? []) walk(child.id, depth + 1);
+  };
+  walk(root.id, 0);
+
+  const nonRootCount = Math.max(0, map.nodes.length - 1);
+  const reasons: string[] = [];
+  if (rootNodes.length > 8) reasons.push(`too many root branches (${rootNodes.length})`);
+  if (rootNodes.length >= 6 && directLeafRatio > 0.6) reasons.push(`too many facts attached to root (${Math.round(directLeafRatio * 100)}%)`);
+  if (nonRootCount >= 9 && maxDepth < 2) reasons.push('insufficient hierarchy depth');
+
+  let score = 100;
+  score -= Math.min(32, Math.max(0, rootNodes.length - 8) * 4);
+  score -= Math.round(directLeafRatio * 35);
+  if (maxDepth < 2 && nonRootCount >= 9) score -= 25;
+  if (rootNodes.length > 0 && rootNodes.length < 3 && nonRootCount >= 9) score -= 10;
+
+  return {
+    score: Math.max(0, score),
+    needsRepair: nonRootCount >= 9 && reasons.length > 0,
+    rootChildren: rootNodes.length,
+    maxDepth,
+    directLeafRatio,
+    reasons,
+  };
+}
+
+/**
+ * 把模型给出的 JSON 分类计划应用到现有一级节点。
+ * 原节点仅改变 parentId/order，标题、子树和 source 全部原样保留。
+ */
+export function applyHierarchyPlan(map: MindMap, rawPlan: string): HierarchyPlanResult | null {
+  const root = map.nodes.find((node) => node.parentId === null);
+  if (!root) return null;
+  const rootChildren = map.nodes.filter((node) => node.parentId === root.id).sort((a, b) => a.order - b.order);
+  if (rootChildren.length < 6) return null;
+
+  const start = rawPlan.indexOf('{');
+  const end = rawPlan.lastIndexOf('}');
+  if (start < 0 || end <= start) return null;
+
+  let parsed: unknown;
+  try {
+    parsed = JSON.parse(rawPlan.slice(start, end + 1));
+  } catch {
+    return null;
+  }
+  if (!parsed || typeof parsed !== 'object' || !('groups' in parsed) || !Array.isArray(parsed.groups)) return null;
+
+  const validIds = new Set(rootChildren.map((node) => node.id));
+  const assigned = new Set<string>();
+  const titles = new Set<string>();
+  const groups: { title: string; parentNodeId: string | null; nodeIds: string[] }[] = [];
+  for (const candidate of parsed.groups) {
+    if (!candidate || typeof candidate !== 'object') continue;
+    const value = candidate as { title?: unknown; parentNodeId?: unknown; nodeIds?: unknown };
+    if (typeof value.title !== 'string' || !Array.isArray(value.nodeIds)) continue;
+    const title = clean(value.title, 10);
+    const titleKey = title.toLowerCase();
+    if (title.length < 2 || titles.has(titleKey)) continue;
+    const parentNodeId =
+      typeof value.parentNodeId === 'string' && validIds.has(value.parentNodeId) && !assigned.has(value.parentNodeId)
+        ? value.parentNodeId
+        : null;
+    if (parentNodeId) assigned.add(parentNodeId);
+    const nodeIds = value.nodeIds.filter(
+      (id): id is string => typeof id === 'string' && validIds.has(id) && !assigned.has(id),
+    );
+    if (nodeIds.length < (parentNodeId ? 1 : 2)) {
+      if (parentNodeId) assigned.delete(parentNodeId);
+      continue;
+    }
+    nodeIds.forEach((id) => assigned.add(id));
+    titles.add(titleKey);
+    groups.push({ title, parentNodeId, nodeIds });
+  }
+  if (groups.length < 3 || groups.length > 8) return null;
+
+  const unassigned = rootChildren.filter((node) => !assigned.has(node.id)).map((node) => node.id);
+  const coverage = assigned.size / rootChildren.length;
+  if (coverage < 0.7) return null;
+  if (unassigned.length) {
+    if (groups.length < 8) groups.push({ title: '其他要点', parentNodeId: null, nodeIds: unassigned });
+    else groups[groups.length - 1].nodeIds.push(...unassigned);
+  }
+
+  const existingIds = new Set(map.nodes.map((node) => node.id));
+  const nextGroupId = (index: number) => {
+    let id = `hg${index + 1}`;
+    while (existingIds.has(id)) id = `h${id}`;
+    existingIds.add(id);
+    return id;
+  };
+  const byId = new Map(map.nodes.map((node) => [node.id, node]));
+  const groupNodes: MindMapNode[] = groups.map((group, index) => {
+    const existing = group.parentNodeId ? byId.get(group.parentNodeId) : null;
+    return existing
+      ? { ...existing, parentId: root.id, order: index }
+      : { id: nextGroupId(index), parentId: root.id, title: group.title, order: index };
+  });
+  const placement = new Map<string, { parentId: string; order: number }>();
+  groups.forEach((group, groupIndex) => {
+    group.nodeIds.forEach((nodeId, order) => placement.set(nodeId, { parentId: groupNodes[groupIndex].id, order }));
+  });
+
+  const reusedGroupIds = new Set(groups.map((group) => group.parentNodeId).filter((id): id is string => Boolean(id)));
+  const nodes = map.nodes.map((node) => {
+    if (reusedGroupIds.has(node.id)) return groupNodes.find((group) => group.id === node.id)!;
+    const target = placement.get(node.id);
+    return target ? { ...node, ...target } : node;
+  });
+  const rootIndex = nodes.findIndex((node) => node.id === root.id);
+  const newGroupNodes = groupNodes.filter((node) => !reusedGroupIds.has(node.id));
+  nodes.splice(rootIndex + 1, 0, ...newGroupNodes);
+  return { map: { ...map, nodes }, groups: groups.length, coverage };
 }
 
 /** 反向：脑图导出成 Markdown（导出功能 + prompt few-shot 复用同一份格式） */

@@ -132,7 +132,7 @@ export function InputPanel({
 
   return (
     <div
-      className="card mx-auto w-full max-w-2xl p-2 shadow-xl shadow-brand-900/[0.06] dark:shadow-black/30"
+      className="app-panel mx-auto w-full max-w-3xl rounded-[1.4rem] border bg-surface p-2"
       onDragOver={(e) => {
         e.preventDefault();
         setDragging(true);
@@ -141,16 +141,16 @@ export function InputPanel({
       onDrop={onDrop}
     >
       {mode === 'all' && (
-      <div className="rounded-xl bg-bg-muted p-1">
+      <div className="rounded-xl bg-bg-subtle p-1.5">
         <div className="flex gap-1">
           {TABS.map((t) => (
             <button
               key={t.id}
               type="button"
               onClick={() => setTab(t.id)}
-              className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-sm transition-all ${
+              className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2.5 text-[13px] font-medium transition-all ${
                 tab === t.id
-                  ? 'bg-surface font-medium text-text shadow-sm'
+                  ? 'bg-surface font-semibold text-text shadow-sm ring-1 ring-black/[0.04]'
                   : 'text-text-muted hover:text-text'
               }`}
             >
@@ -162,15 +162,15 @@ export function InputPanel({
       </div>
       )}
 
-      <div className="p-3 sm:p-4">
+      <div className="p-3 sm:p-5">
         {tab === 'text' && (
           <div className="relative">
             <textarea
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder="粘贴文章、笔记或任意长文本…"
-              rows={8}
-              className="field resize-none leading-relaxed"
+              rows={9}
+              className="field resize-none border-0 bg-bg-subtle p-4 text-[15px] leading-7 shadow-inner"
             />
             <span className="pointer-events-none absolute bottom-3 right-3 text-xs tabular-nums text-text-subtle">
               {text.length > 0 && `${text.length} 字`}
@@ -191,7 +191,7 @@ export function InputPanel({
                     ? '粘贴网页文章链接…'
                     : 'https://example.com/article 或 YouTube 链接'
               }
-              className="field"
+              className="field h-13 bg-bg-subtle px-4 text-[15px]"
             />
             <p className="mt-2 text-xs text-text-subtle">
               {copy?.hint ?? '暂不支持需要登录的页面、纯 JS 渲染的页面，以及没有字幕的视频'}
@@ -203,7 +203,7 @@ export function InputPanel({
           <button
             type="button"
             onClick={() => fileRef.current?.click()}
-            className={`flex h-40 w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed text-sm transition-colors ${
+            className={`flex h-48 w-full flex-col items-center justify-center gap-2 rounded-xl border-2 border-dashed bg-bg-subtle text-sm transition-colors ${
               dragging ? 'border-brand-400 bg-brand-50 dark:bg-brand-900/20' : 'text-text-muted'
             }`}
             style={dragging ? undefined : { borderColor: 'var(--border-strong)' }}
@@ -235,7 +235,7 @@ export function InputPanel({
           </button>
         )}
 
-        <div className="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-3">
+        <div className="mt-5 grid grid-cols-1 gap-3 rounded-xl border bg-bg-subtle p-3 sm:grid-cols-3">
           <Select label="输出语言" value={language} onChange={setLanguage} options={LANGUAGES} />
           <Select
             label="深度"
@@ -261,7 +261,7 @@ export function InputPanel({
           </p>
         )}
 
-        <button type="button" onClick={submit} disabled={!ready || busy} className="btn btn-primary mt-4 h-12 w-full text-[15px]">
+        <button type="button" onClick={submit} disabled={!ready || busy} className="btn btn-primary mt-5 h-12 w-full text-[15px]">
           {busy ? (
             <>
               <Spinner />
