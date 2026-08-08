@@ -36,6 +36,7 @@ function d1(sql) {
 const bind = (sql, ...args) =>
   sql.replace(/\?(\d+)/g, (_, i) => {
     const v = args[Number(i) - 1];
+    if (v === null || v === undefined) return 'NULL'; // 匿名身份就是 null，不是空串
     return typeof v === 'number' ? String(v) : `'${String(v).replace(/'/g, "''")}'`;
   });
 
@@ -77,10 +78,10 @@ check('B 列不到 A 的任何图', d1(bind(listOwned, B, 100)).length === 0);
 
 check('★ A 能读自己的私有图', d1(bind(getOwnedOrPublic, PRIVATE_ID, A)).length === 1);
 check('★ B 读不到 A 的私有图', d1(bind(getOwnedOrPublic, PRIVATE_ID, B)).length === 0);
-check('★ 匿名读不到 A 的私有图', d1(bind(getOwnedOrPublic, PRIVATE_ID, ' ')).length === 0);
+check('★ 匿名读不到 A 的私有图', d1(bind(getOwnedOrPublic, PRIVATE_ID, null)).length === 0);
 
 check('★ B 能读 A 的公开图', d1(bind(getOwnedOrPublic, PUBLIC_ID, B)).length === 1);
-check('★ 匿名能读公开图（分享页依赖）', d1(bind(getOwnedOrPublic, PUBLIC_ID, ' ')).length === 1);
+check('★ 匿名能读公开图（分享页依赖）', d1(bind(getOwnedOrPublic, PUBLIC_ID, null)).length === 1);
 
 check('★ 分享链接能打开公开图', d1(bind(getPublicBySlug, SLUG)).length === 1);
 check('私有图没有分享链接可用', d1(bind(getPublicBySlug, 'nonexistent-slug')).length === 0);
