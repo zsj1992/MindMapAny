@@ -17,9 +17,17 @@ export const PLAN_CREDITS = {
 } as const;
 export type Plan = keyof typeof PLAN_CREDITS;
 
-/** 各档位允许的输入类型与模型 */
+/**
+ * 验证阶段的取舍：免费档放开全部四种输入。
+ *
+ * 原先照抄竞品按输入类型分层（PDF/YouTube 要付费），但那是给已经有支付系统的产品用的。
+ * 我们还没有支付通道，这道墙挡住的不是收入，是反馈 —— 而"节点带原文页码"这个
+ * 最强的差异点恰恰只在 PDF 上体现，用户碰不到它就永远不知道我们和别家的区别。
+ *
+ * 真正防成本的两道闸门保留：单次内容长度、积分总量。等有了付费数据再决定卡哪里。
+ */
 export const PLAN_LIMITS: Record<Plan, { kinds: InputKind[]; tiers: ModelTier[]; maxChars: number; maxPdfPages: number }> = {
-  free: { kinds: ['text', 'web'], tiers: ['fast'], maxChars: 20_000, maxPdfPages: 10 },
+  free: { kinds: ['text', 'web', 'pdf', 'youtube'], tiers: ['fast'], maxChars: 60_000, maxPdfPages: 30 },
   basic: { kinds: ['text', 'web', 'pdf', 'youtube'], tiers: ['fast'], maxChars: 150_000, maxPdfPages: 60 },
   pro: { kinds: ['text', 'web', 'pdf', 'youtube'], tiers: ['fast', 'quality'], maxChars: 800_000, maxPdfPages: 200 },
   unlimited: { kinds: ['text', 'web', 'pdf', 'youtube'], tiers: ['fast', 'quality'], maxChars: 2_000_000, maxPdfPages: 200 },

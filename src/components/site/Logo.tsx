@@ -12,7 +12,7 @@ export function Logo({ className = '' }: { className?: string }) {
         <circle cx="17.5" cy="18" r="1.6" fill="white" fillOpacity="0.85" />
         <circle cx="17.5" cy="14" r="1.6" fill="white" fillOpacity="0.85" />
       </svg>
-      <span className="text-[15px] font-semibold tracking-tight">MapAny</span>
+      <span className="text-[15px] font-semibold tracking-tight">MindMapAny</span>
     </span>
   );
 }

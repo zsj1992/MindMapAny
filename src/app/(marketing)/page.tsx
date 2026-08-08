@@ -5,7 +5,7 @@ import { Footer } from '@/components/site/Footer';
 import { HeroMap } from '@/components/site/HeroMap';
 
 export const metadata: Metadata = {
-  title: 'MapAny — 把任何内容变成结构清晰、可溯源的脑图',
+  title: 'MindMapAny — 把任何内容变成结构清晰、可溯源的脑图',
   description:
     '粘贴文本、上传 PDF、输入网页或 YouTube 链接，几秒生成可编辑的思维导图。每个节点都能回到原文页码或视频时间戳。',
   alternates: { canonical: '/' },

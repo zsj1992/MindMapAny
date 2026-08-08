@@ -36,7 +36,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const description = `${shared.map.title}的思维导图：${topics}`.slice(0, 155);
 
   return {
-    title: `${shared.map.title} — 思维导图 | MapAny`,
+    title: `${shared.map.title} — 思维导图 | MindMapAny`,
     description,
     openGraph: {
       title: shared.map.title,

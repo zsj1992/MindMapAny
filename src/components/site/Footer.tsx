@@ -52,7 +52,7 @@ export function Footer() {
         className="border-t px-4 py-5 text-center text-xs text-text-subtle"
         style={{ borderColor: 'var(--border)' }}
       >
-        © {new Date().getFullYear()} MapAny
+        © {new Date().getFullYear()} MindMapAny
       </div>
     </footer>
   );
