@@ -1,6 +1,8 @@
 'use client';
 
 import { useRef, useState, type DragEvent, type ReactNode } from 'react';
+import { estimateCredits, type Plan } from '@/lib/credits';
+import type { InputKind } from '@/lib/extract/types';
 import { DEPTHS, PURPOSES, type Depth, type Purpose } from '@/lib/mindmap/schema';
 
 export interface GenerateParams {
@@ -87,12 +89,14 @@ export function InputPanel({
   error,
   mode = 'all',
   copy,
+  plan = null,
 }: {
   onGenerate: (params: GenerateParams) => void;
   busy: boolean;
   error?: string | null;
   mode?: InputMode;
   copy?: InputPanelCopy;
+  plan?: Plan | null;
 }) {
   const [tab, setTab] = useState<Tab>(mode === 'all' ? 'text' : MODE_TAB[mode]);
   const [text, setText] = useState('');
@@ -117,6 +121,24 @@ export function InputPanel({
           : '.pdf,.docx,.epub,.pptx,.txt,.md,.markdown,application/pdf,text/plain,text/markdown';
 
   const ready = tab === 'text' ? text.trim().length > 20 : tab === 'url' ? /^https?:\/\//.test(url.trim()) : !!file;
+
+  /**
+   * 生成前的费用预估。文本能精确算；链接和文件在提取完成前拿不到字数，
+   * 只能按最小体量给下限，所以文案必须写成「起」而不是精确值。
+   */
+  const kind: InputKind = tab === 'text' ? 'text' : tab === 'url' ? 'web' : isPdfUpload(file, mode) ? 'pdf' : 'text';
+  const knownChars = tab === 'text'
+    ? text.split(/\n{2,}/).reduce((n, block) => n + block.trim().length, 0)
+    : null;
+  const freeRun = plan === null || plan === 'unlimited';
+  const cost = freeRun ? 0 : estimateCredits({ kind, tier: 'fast', depth, chars: knownChars ?? 0 });
+  const costLabel = freeRun
+    ? plan === 'unlimited'
+      ? 'Unlimited plan — no credits are used'
+      : 'Free trial run — no credits are used'
+    : knownChars !== null
+      ? `Estimated cost: ${cost} ${cost === 1 ? 'credit' : 'credits'}`
+      : `From ${cost} ${cost === 1 ? 'credit' : 'credits'}, depending on length`;
 
   const submit = () => {
     if (!ready || busy) return;
@@ -290,22 +312,34 @@ export function InputPanel({
           onChange={(v) => setPurpose(v as Purpose)}
           options={PURPOSES.map((p) => ({ value: p, label: PURPOSE_LABEL[p] }))}
         />
-        <button type="button" onClick={submit} disabled={!ready || busy} className="btn btn-primary h-11 w-full px-6 text-sm sm:w-auto">
-          {busy ? (
-            <>
-              <Spinner />
-              Generating…
-            </>
-          ) : (
-            <>
-              Generate mind map
-              <span aria-hidden="true">→</span>
-            </>
-          )}
-        </button>
+        <div className="sm:text-right">
+          <button type="button" onClick={submit} disabled={!ready || busy} className="btn btn-primary h-11 w-full px-6 text-sm sm:w-auto">
+            {busy ? (
+              <>
+                <Spinner />
+                Generating…
+              </>
+            ) : (
+              <>
+                Generate mind map
+                <span aria-hidden="true">→</span>
+              </>
+            )}
+          </button>
+          <p className="mt-1.5 text-[11px] leading-4 text-text-subtle sm:whitespace-nowrap">
+            {costLabel}
+            {!freeRun && <span className="hidden sm:inline"> · charged only if it succeeds</span>}
+          </p>
+        </div>
       </footer>
     </section>
   );
+}
+
+function isPdfUpload(file: File | null, mode: InputMode): boolean {
+  if (mode === 'pdf') return true;
+  if (!file) return false;
+  return file.name.toLowerCase().endsWith('.pdf') || file.type === 'application/pdf';
 }
 
 function isAcceptedFile(file: File, mode: InputMode): boolean {

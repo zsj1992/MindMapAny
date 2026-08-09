@@ -4,6 +4,7 @@ import { ReactFlowProvider } from '@xyflow/react';
 import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { MindMapCanvas } from '@/components/canvas/MindMapCanvas';
+import type { Plan } from '@/lib/credits';
 import { InputPanel, type GenerateParams, type InputMode, type InputPanelCopy } from '@/components/InputPanel';
 import { GeneratingState } from '@/components/GeneratingState';
 import { FormatPanel } from '@/components/FormatPanel';
@@ -27,9 +28,11 @@ export interface WorkspaceProps {
   title?: string;
   subtitle?: string;
   copy?: InputPanelCopy;
+  /** 未登录传 null；用于在生成前显示本次预估积分 */
+  plan?: Plan | null;
 }
 
-export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, copy }: WorkspaceProps) {
+export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, copy, plan = null }: WorkspaceProps) {
   const router = useRouter();
   const map = useEditor((s) => s.map);
   const dirty = useEditor((s) => s.dirty);
@@ -213,7 +216,7 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
             {busy ? (
               <GeneratingState />
             ) : (
-              <InputPanel onGenerate={generate} busy={busy} error={error} mode={mode} copy={copy} />
+              <InputPanel onGenerate={generate} busy={busy} error={error} mode={mode} copy={copy} plan={plan} />
             )}
           </div>
         </div>

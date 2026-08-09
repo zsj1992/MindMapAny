@@ -55,7 +55,7 @@ export default function HomePage() {
       <main>
         <section className="home-hero relative overflow-hidden border-b" style={{ borderColor: 'var(--border)' }}>
           <div className="home-grain pointer-events-none absolute inset-0" aria-hidden="true" />
-          <div className="relative mx-auto grid max-w-[86rem] items-center gap-14 px-5 pb-14 pt-14 lg:grid-cols-[0.86fr_1.14fr] lg:px-10 lg:pb-20 lg:pt-20 xl:gap-20">
+          <div className="relative mx-auto grid max-w-[86rem] items-center gap-14 px-5 pb-10 pt-14 lg:grid-cols-[0.86fr_1.14fr] lg:px-10 lg:pb-12 lg:pt-20 xl:gap-20">
             <div className="max-w-[39rem]">
               <p className="flex items-center gap-3 text-[11px] font-semibold tracking-[0.14em] text-brand-600 dark:text-brand-300">
                 <span className="h-px w-9 bg-brand-500" />
@@ -121,16 +121,20 @@ export default function HomePage() {
           </div>
 
           <div className="relative mx-auto max-w-[86rem] px-5 lg:px-10">
-            <div className="grid grid-cols-2 border-t sm:grid-cols-4" style={{ borderColor: 'var(--border)' }}>
+            <div className="grid grid-cols-2 gap-y-4 border-t py-5 sm:grid-cols-4 sm:gap-y-0" style={{ borderColor: 'var(--border)' }}>
             {[
               ['7', 'input formats'],
               ['30+', 'output languages'],
               ['110', 'max nodes per map'],
               ['Traceable', 'page & section anchors'],
-            ].map(([value, label]) => (
-              <div key={label} className="border-r px-1 py-6 last:border-r-0 sm:py-7" style={{ borderColor: 'var(--border)' }}>
-                <div className="font-mono text-lg font-semibold tracking-[-0.03em] text-text sm:text-xl">{value}</div>
-                <div className="mt-1 text-[11px] text-text-subtle sm:text-xs">{label}</div>
+            ].map(([value, label], index) => (
+              <div
+                key={label}
+                className={`flex items-baseline gap-2.5 px-1 sm:px-0 ${index < 3 ? 'sm:border-r' : ''}`}
+                style={{ borderColor: 'var(--border)' }}
+              >
+                <span className="font-mono text-base font-semibold tracking-[-0.03em] text-text sm:text-lg">{value}</span>
+                <span className="text-[11px] leading-4 text-text-subtle">{label}</span>
               </div>
             ))}
             </div>

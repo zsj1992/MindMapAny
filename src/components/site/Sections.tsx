@@ -101,6 +101,9 @@ const FEATURES = [
   },
 ];
 
+const SOURCE_CHIPS = ['PDF', 'DOCX', 'EPUB', 'PPTX', 'TXT', 'Markdown', 'Web link'];
+const PIPELINE_STAGES = ['Extract', 'Chunk & anchor', 'Build hierarchy', 'Edit'];
+
 export function Features() {
   const layout = [
     'md:col-span-7 md:row-span-2 bg-[#102f53] text-white',
@@ -135,6 +138,33 @@ export function Features() {
             </div>
             <h3 className={`relative mt-5 text-base font-semibold ${index === 0 ? 'text-white' : 'text-text'}`}>{f.title}</h3>
             <p className={`relative mt-2 max-w-xl pr-6 text-sm leading-7 ${index === 0 ? 'text-blue-100/70' : 'text-text-muted'}`}>{f.body}</p>
+            {index === 0 && (
+              <>
+                <ul className="relative mt-6 flex flex-wrap gap-2">
+                  {SOURCE_CHIPS.map((chip) => (
+                    <li key={chip} className="rounded-lg border border-white/15 bg-white/[0.06] px-2.5 py-1.5 text-[11px] font-medium text-blue-50/80">
+                      {chip}
+                    </li>
+                  ))}
+                </ul>
+                <div className="relative mt-7 border-t border-white/10 pt-5">
+                  <p className="text-[10px] font-semibold tracking-[0.14em] text-cyan-300/80">ONE PIPELINE</p>
+                  <ol className="mt-3 flex flex-wrap items-center gap-x-2.5 gap-y-2">
+                    {PIPELINE_STAGES.map((stage, stageIndex) => (
+                      <li key={stage} className="flex items-center gap-2.5">
+                        <span className="text-[12px] font-medium text-blue-100/75">{stage}</span>
+                        {stageIndex < PIPELINE_STAGES.length - 1 && (
+                          <span className="text-white/25" aria-hidden="true">→</span>
+                        )}
+                      </li>
+                    ))}
+                  </ol>
+                  <p className="mt-3 max-w-md text-[12px] leading-6 text-blue-100/55">
+                    Only the first step differs per format. Everything after it is shared, which is why a slide deck and a research paper come out equally structured.
+                  </p>
+                </div>
+              </>
+            )}
             <p className={`relative mt-auto pt-5 text-right font-mono text-[10px] font-semibold ${index === 0 ? 'text-cyan-300' : 'text-brand-600 dark:text-brand-300'}`}>{f.detail}</p>
             {index === 0 && <div className="absolute -bottom-20 -right-16 h-56 w-56 rounded-full border border-white/10" aria-hidden="true" />}
           </article>
