@@ -1,5 +1,5 @@
 import Hierarchy from '@antv/hierarchy';
-import type { MindMap, MindMapNode } from '@/lib/mindmap/schema';
+import { formatOf, type MindMap, type MindMapFormat, type MindMapNode } from '@/lib/mindmap/schema';
 
 /**
  * 经典双侧脑图布局：根节点居中，子树自动往左右两侧分流。
@@ -31,13 +31,14 @@ export interface PositionedNode {
 }
 
 /** 节点高度按内容估算。布局前必须给准，否则会算出重叠。 */
-export function estimateNodeSize(node: MindMapNode): { width: number; height: number } {
-  const titleLines = Math.max(1, Math.ceil(node.title.length / CHAR_PER_LINE));
+export function estimateNodeSize(node: MindMapNode, format?: MindMapFormat): { width: number; height: number } {
+  const scale = (format?.fontSize ?? 14) / 14;
+  const titleLines = Math.max(1, Math.ceil(node.title.length / Math.max(10, Math.floor(CHAR_PER_LINE / scale))));
   const summaryLines = node.summary ? Math.ceil(node.summary.length / (CHAR_PER_LINE + 3)) : 0;
   const badge = node.source ? 22 : 0;
   return {
     width: NODE_WIDTH,
-    height: Math.max(NODE_MIN_HEIGHT, titleLines * LINE_HEIGHT + summaryLines * 18 + badge + 20),
+    height: Math.max(NODE_MIN_HEIGHT, titleLines * LINE_HEIGHT * scale + summaryLines * 18 + badge + 20),
   };
 }
 
@@ -94,7 +95,8 @@ export function layoutMindMap(map: MindMap, collapsed: ReadonlySet<string>): Map
   const nodes = visibleNodes(map, collapsed);
   if (!nodes.length) return new Map();
 
-  const sizes = new Map(nodes.map((n) => [n.id, estimateNodeSize(n)]));
+  const format = formatOf(map);
+  const sizes = new Map(nodes.map((n) => [n.id, estimateNodeSize(n, format)]));
   const byParent = new Map<string, MindMapNode[]>();
   for (const n of nodes) {
     if (!n.parentId) continue;
@@ -132,8 +134,10 @@ export function layoutMindMap(map: MindMap, collapsed: ReadonlySet<string>): Map
     sideOf.set(branch.id, side);
   }
 
+  const layout = format.layout;
+  const direction = layout === 'balanced' ? 'H' : layout === 'left' ? 'RL' : 'LR';
   const laid = Hierarchy.mindmap(build(root), {
-    direction: 'H',
+    direction,
     getSide: (d: { id: string }) => sideOf.get(d.id) ?? 'right',
     getWidth: (d: HierarchyInput) => sizes.get(d.id)?.width ?? NODE_WIDTH,
     getHeight: (d: HierarchyInput) => sizes.get(d.id)?.height ?? NODE_MIN_HEIGHT,
@@ -150,7 +154,7 @@ export function layoutMindMap(map: MindMap, collapsed: ReadonlySet<string>): Map
       y: n.y,
       width: size.width,
       height: size.height,
-      ...(n.side ? { side: n.side } : {}),
+      ...(n.id === root.id ? {} : { side: n.side ?? (layout === 'left' ? 'left' : 'right') }),
     });
     n.children?.forEach(walk);
   };

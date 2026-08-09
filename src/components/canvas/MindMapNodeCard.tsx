@@ -4,7 +4,7 @@ import { Handle, Position, type NodeProps } from '@xyflow/react';
 import { useEffect, useRef } from 'react';
 import { formatTimestamp } from '@/lib/chunk';
 import type { NodeSide } from '@/lib/layout';
-import type { SourceRef } from '@/lib/mindmap/schema';
+import type { MindMapFormat, SourceRef } from '@/lib/mindmap/schema';
 import { useEditor } from '@/store/editor';
 
 export interface MindMapNodeData extends Record<string, unknown> {
@@ -16,6 +16,8 @@ export interface MindMapNodeData extends Record<string, unknown> {
   collapsed: boolean;
   side: NodeSide;
   color: string;
+  format: MindMapFormat;
+  numberPrefix?: string;
 }
 
 function sourceLabel(source: SourceRef): string {
@@ -82,6 +84,17 @@ export function MindMapNodeCard({ id, data, selected }: NodeProps & { data: Mind
 
   const style: React.CSSProperties = {
     width: 240,
+    fontFamily:
+      data.format.font === 'serif'
+        ? 'ui-serif, Georgia, Cambria, "Times New Roman", serif'
+        : data.format.font === 'mono'
+          ? 'ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace'
+          : 'var(--font-sans)',
+    fontSize: data.format.fontSize,
+    fontWeight: data.format.fontWeight,
+    fontStyle: data.format.italic ? 'italic' : 'normal',
+    textDecoration: [data.format.underline ? 'underline' : '', data.format.strikethrough ? 'line-through' : ''].filter(Boolean).join(' ') || 'none',
+    textAlign: data.format.alignTopics && data.side === 'left' && !isRoot ? 'right' : 'left',
     ...(isRoot ? { background: data.color } : {}),
     ...(isBranch ? { borderColor: data.color } : {}),
     ...(!isRoot && !isBranch
@@ -125,7 +138,10 @@ export function MindMapNodeCard({ id, data, selected }: NodeProps & { data: Mind
           className="w-full resize-none bg-transparent leading-snug outline-none"
         />
       ) : (
-        <div className="whitespace-pre-wrap break-words leading-snug">{data.title}</div>
+        <div className="whitespace-pre-wrap break-words leading-snug">
+          {data.numberPrefix && <span className="mr-1.5 opacity-55">{data.numberPrefix}</span>}
+          {data.title}
+        </div>
       )}
 
       {data.summary && !isEditing && (

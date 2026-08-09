@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { MindMapCanvas } from '@/components/canvas/MindMapCanvas';
 import { InputPanel, type GenerateParams, type InputMode, type InputPanelCopy } from '@/components/InputPanel';
 import { GeneratingState } from '@/components/GeneratingState';
+import { FormatPanel } from '@/components/FormatPanel';
 import { Toolbar } from '@/components/Toolbar';
 import { trackEvent } from '@/lib/analytics';
 import type { MindMap } from '@/lib/mindmap/schema';
@@ -41,6 +42,7 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
   const [notes, setNotes] = useState<string[]>([]);
   const [savedId, setSavedId] = useState<string | null>(mapId ?? null);
   const [shareUrl, setShareUrl] = useState<string | null>(null);
+  const [formatOpen, setFormatOpen] = useState(false);
   const [sourceKind, setSourceKind] = useState<'text' | 'pdf' | 'web' | 'youtube'>('text');
   const shellRef = useRef<HTMLDivElement>(null);
 
@@ -110,6 +112,7 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
           node_count: data.map.nodes.length,
         });
         load(data.map);
+        setFormatOpen(false);
         router.refresh();
         setNotes([...data.notes, ...data.warnings.slice(0, 2)]);
         setSourceKind(inputType === 'document' ? 'text' : inputType);
@@ -226,18 +229,22 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
           onShare={share}
           onReset={() => {
             if (dirty && !confirm('当前脑图尚未保存，确定要新建吗？')) return;
+            setFormatOpen(false);
             useEditor.setState({ map: null, dirty: false, selectedId: null, editingId: null });
           }}
           saving={saving}
           shareUrl={shareUrl}
+          formatOpen={formatOpen}
+          onToggleFormat={() => setFormatOpen((open) => !open)}
         />
         {(notes.length > 0 || error) && (
           <div className="border-b border-amber-200/60 bg-amber-50 px-4 py-2 text-xs text-amber-800 dark:border-amber-900/40 dark:bg-amber-950/30 dark:text-amber-200">
             {error ?? notes.join(' · ')}
           </div>
         )}
-        <div className="min-h-0 flex-1">
+        <div className="relative min-h-0 flex-1">
           <MindMapCanvas />
+          {formatOpen && <FormatPanel onClose={() => setFormatOpen(false)} />}
         </div>
         <p
           className="border-t px-4 py-2 text-[11px] text-text-subtle"

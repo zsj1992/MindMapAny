@@ -2,7 +2,7 @@
 
 import { nanoid } from 'nanoid';
 import { create } from 'zustand';
-import type { MindMap, MindMapNode } from '@/lib/mindmap/schema';
+import type { MindMap, MindMapFormat, MindMapNode } from '@/lib/mindmap/schema';
 
 /**
  * 编辑器状态。脑图本体保持扁平数组不变形，
@@ -30,6 +30,7 @@ interface EditorState {
   addChild: (id: string) => string;
   deleteNode: (id: string) => void;
   reparent: (id: string, newParentId: string) => void;
+  updateFormat: (patch: Partial<MindMapFormat>) => void;
   markSaved: () => void;
 }
 
@@ -200,6 +201,16 @@ export const useEditor = create<EditorState>((set, get) => ({
         dirty: true,
       };
     }),
+
+  updateFormat: (patch) =>
+    set((s) =>
+      s.map
+        ? {
+            map: { ...s.map, format: { ...s.map.format, ...patch } as MindMapFormat },
+            dirty: true,
+          }
+        : {},
+    ),
 
   markSaved: () => set({ dirty: false }),
 }));

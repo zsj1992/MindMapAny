@@ -23,6 +23,42 @@ export const DEPTH_BUDGET: Record<Depth, { maxLevel: number; minNodes: number; m
 export const MAX_TITLE_LEN = 160;
 export const MAX_SUMMARY_LEN = 400;
 
+export const MAP_LAYOUTS = ['balanced', 'right', 'left'] as const;
+export type MapLayout = (typeof MAP_LAYOUTS)[number];
+
+export const MAP_THEMES = ['indigo', 'ocean', 'coral', 'forest', 'violet', 'mono'] as const;
+export type MapTheme = (typeof MAP_THEMES)[number];
+
+export const MAP_FONTS = ['sans', 'serif', 'mono'] as const;
+export type MapFont = (typeof MAP_FONTS)[number];
+
+export const mindMapFormatSchema = z.object({
+  layout: z.enum(MAP_LAYOUTS).default('balanced'),
+  theme: z.enum(MAP_THEMES).default('indigo'),
+  font: z.enum(MAP_FONTS).default('sans'),
+  fontSize: z.union([z.literal(12), z.literal(14), z.literal(16)]).default(14),
+  fontWeight: z.union([z.literal(400), z.literal(500), z.literal(600)]).default(500),
+  italic: z.boolean().default(false),
+  underline: z.boolean().default(false),
+  strikethrough: z.boolean().default(false),
+  numbering: z.boolean().default(false),
+  alignTopics: z.boolean().default(true),
+});
+export type MindMapFormat = z.infer<typeof mindMapFormatSchema>;
+
+export const DEFAULT_MIND_MAP_FORMAT: MindMapFormat = {
+  layout: 'balanced',
+  theme: 'indigo',
+  font: 'sans',
+  fontSize: 14,
+  fontWeight: 500,
+  italic: false,
+  underline: false,
+  strikethrough: false,
+  numbering: false,
+  alignTopics: true,
+};
+
 /**
  * 溯源引用。切块阶段就把 chunkId -> 位置 锚定好，
  * 模型只负责回引 chunkId，页码/时间戳一律查表还原，绝不让模型自己写。
@@ -58,9 +94,15 @@ export const mindMapSchema = z.object({
   purpose: z.enum(PURPOSES),
   /** 扁平存储：编辑、局部更新、DB 查询都比嵌套树方便 */
   nodes: z.array(mindMapNodeSchema),
+  /** 可视化偏好跟随脑图保存；optional 保证旧数据无迁移即可继续读取。 */
+  format: mindMapFormatSchema.optional(),
   createdAt: z.string().datetime(),
 });
 export type MindMap = z.infer<typeof mindMapSchema>;
+
+export function formatOf(map: Pick<MindMap, 'format'>): MindMapFormat {
+  return { ...DEFAULT_MIND_MAP_FORMAT, ...map.format };
+}
 
 /** 渲染层用的嵌套形态，由 toTree() 从扁平数组临时构建，不落库 */
 export type MindMapTreeNode = MindMapNode & { children: MindMapTreeNode[] };

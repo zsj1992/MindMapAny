@@ -13,8 +13,8 @@ import {
 import '@xyflow/react/dist/style.css';
 import { useCallback, useEffect, useMemo, useRef } from 'react';
 import { layoutMindMap, visibleNodes } from '@/lib/layout';
-import { BRANCH_COLORS, branchColorMap } from '@/lib/branchColors';
-import type { MindMap } from '@/lib/mindmap/schema';
+import { branchColorMap } from '@/lib/branchColors';
+import { formatOf, type MindMap } from '@/lib/mindmap/schema';
 import { useEditor } from '@/store/editor';
 import { MindMapNodeCard, type MindMapNodeData } from './MindMapNodeCard';
 
@@ -35,6 +35,28 @@ function levelMap(map: MindMap): Map<string, number> {
   return levels;
 }
 
+function numberMap(map: MindMap): Map<string, string> {
+  const children = new Map<string, typeof map.nodes>();
+  const root = map.nodes.find((node) => node.parentId === null);
+  if (!root) return new Map();
+  for (const node of map.nodes) {
+    if (!node.parentId) continue;
+    const list = children.get(node.parentId) ?? [];
+    list.push(node);
+    children.set(node.parentId, list);
+  }
+  const out = new Map<string, string>();
+  const walk = (parentId: string, prefix: number[]) => {
+    (children.get(parentId) ?? []).sort((a, b) => a.order - b.order).forEach((node, index) => {
+      const path = [...prefix, index + 1];
+      out.set(node.id, path.join('.'));
+      walk(node.id, path);
+    });
+  };
+  walk(root.id, []);
+  return out;
+}
+
 /** 注意：调用方需要自己包 <ReactFlowProvider>，因为 Toolbar 也要用同一个实例的 useReactFlow */
 export function MindMapCanvas({ readOnly = false }: { readOnly?: boolean }) {
   const map = useEditor((s) => s.map);
@@ -53,7 +75,7 @@ export function MindMapCanvas({ readOnly = false }: { readOnly?: boolean }) {
   // 结构变化才重排；只改标题不动布局，避免打字时画布乱跳
   const structureKey = useMemo(() => {
     if (!map) return '';
-    return `${map.nodes.map((n) => `${n.id}:${n.parentId}:${n.order}:${n.title.length}`).join('|')}#${[...collapsed].sort().join(',')}`;
+    return `${map.nodes.map((n) => `${n.id}:${n.parentId}:${n.order}:${n.title.length}`).join('|')}#${[...collapsed].sort().join(',')}#${map.format?.layout ?? 'balanced'}:${map.format?.fontSize ?? 14}`;
   }, [map, collapsed]);
 
   // 布局是纯同步函数，随 structureKey 记忆化即可，不再有「先空白再跳一下」的闪烁
@@ -74,6 +96,8 @@ export function MindMapCanvas({ readOnly = false }: { readOnly?: boolean }) {
     }
 
     const colors = branchColorMap(map);
+    const format = formatOf(map);
+    const numbers = format.numbering ? numberMap(map) : new Map<string, string>();
 
     const rfNodes: Node[] = shown.flatMap((n) => {
       const pos = positions.get(n.id);
@@ -84,7 +108,9 @@ export function MindMapCanvas({ readOnly = false }: { readOnly?: boolean }) {
         childCount: childCount.get(n.id) ?? 0,
         collapsed: collapsed.has(n.id),
         side: pos.side ?? 'right',
-        color: colors.get(n.id) ?? BRANCH_COLORS[0],
+        color: colors.get(n.id) ?? '#5b45d6',
+        format,
+        ...(numbers.has(n.id) ? { numberPrefix: numbers.get(n.id) } : {}),
         ...(n.summary ? { summary: n.summary } : {}),
         ...(n.source ? { source: n.source } : {}),
       };

@@ -18,6 +18,8 @@ export function Toolbar({
   onReset,
   saving,
   shareUrl,
+  formatOpen = false,
+  onToggleFormat,
   readOnly = false,
 }: {
   onSave?: () => void;
@@ -25,6 +27,8 @@ export function Toolbar({
   onReset?: () => void;
   saving?: boolean;
   shareUrl?: string | null;
+  formatOpen?: boolean;
+  onToggleFormat?: () => void;
   readOnly?: boolean;
 }) {
   const map = useEditor((s) => s.map);
@@ -81,6 +85,17 @@ export function Toolbar({
       </div>
 
       <div className="ml-auto flex items-center gap-1.5">
+        {!readOnly && onToggleFormat && (
+          <button
+            type="button"
+            onClick={onToggleFormat}
+            aria-pressed={formatOpen}
+            className={`btn h-9 gap-1.5 px-3 text-xs ${formatOpen ? 'btn-primary' : 'btn-secondary'}`}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4"><path d="M4 7h10M18 7h2M4 17h2M10 17h10M14 4v6M7 14v6" /></svg>
+            格式
+          </button>
+        )}
         <ExportButton busy={exporting === 'png'} onClick={() => run('png', () => exportPng(getNodes(), safeName(map.title)))}>
           PNG
         </ExportButton>

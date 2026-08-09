@@ -1,4 +1,4 @@
-import type { MindMap } from '@/lib/mindmap/schema';
+import { formatOf, type MapTheme, type MindMap } from '@/lib/mindmap/schema';
 
 /**
  * 一级分支各占一个颜色，整条子树继承。
@@ -19,6 +19,15 @@ export const BRANCH_COLORS = [
   '#b45309', // 琥珀
 ] as const;
 
+export const THEME_COLORS: Record<MapTheme, readonly string[]> = {
+  indigo: BRANCH_COLORS,
+  ocean: ['#0f766e', '#0891b2', '#2563eb', '#0d9488', '#0284c7', '#4f46e5'],
+  coral: ['#ea580c', '#e11d48', '#f59e0b', '#c2410c', '#db2777', '#d97706'],
+  forest: ['#047857', '#4d7c0f', '#0f766e', '#15803d', '#65a30d', '#0369a1'],
+  violet: ['#7c3aed', '#c026d3', '#4f46e5', '#9333ea', '#db2777', '#6d28d9'],
+  mono: ['#1f2937', '#475569', '#64748b', '#334155', '#6b7280', '#0f172a'],
+};
+
 /** nodeId → 颜色。根节点用品牌色，其余继承所属一级分支。 */
 export function branchColorMap(map: MindMap): Map<string, string> {
   const colors = new Map<string, string>();
@@ -33,11 +42,12 @@ export function branchColorMap(map: MindMap): Map<string, string> {
     childrenOf.set(n.parentId, list);
   }
 
-  colors.set(root.id, BRANCH_COLORS[0]);
+  const palette = THEME_COLORS[formatOf(map).theme];
+  colors.set(root.id, palette[0]);
 
   const topLevel = (map.nodes.filter((n) => n.parentId === root.id) ?? []).sort((a, b) => a.order - b.order);
   topLevel.forEach((branch, i) => {
-    const color = BRANCH_COLORS[i % BRANCH_COLORS.length];
+    const color = palette[i % palette.length];
     // 迭代而非递归：脑图深度有限，但防一手异常数据造成的深链
     const stack = [branch.id];
     while (stack.length) {

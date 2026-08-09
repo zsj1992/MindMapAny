@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { useEditor } from './editor';
-import type { MindMap } from '@/lib/mindmap/schema';
+import { layoutMindMap } from '@/lib/layout';
+import { formatOf, mindMapSchema, type MindMap } from '@/lib/mindmap/schema';
 
 const map: MindMap = {
   version: 1,
@@ -34,4 +35,17 @@ useEditor.getState().collapseToLevel(99);
 assert.deepEqual([...useEditor.getState().collapsed], []);
 assert.equal(useEditor.getState().levelLimit, 99);
 
-console.log('✓ editor level controls: all cases passed');
+useEditor.getState().updateFormat({ layout: 'right', theme: 'ocean', numbering: true });
+assert.deepEqual(useEditor.getState().map?.format, { layout: 'right', theme: 'ocean', numbering: true });
+assert.equal(useEditor.getState().dirty, true);
+
+const persisted = mindMapSchema.parse(JSON.parse(JSON.stringify(useEditor.getState().map)));
+assert.equal(formatOf(persisted).theme, 'ocean');
+assert.equal(formatOf(mindMapSchema.parse(map)).layout, 'balanced');
+
+const right = layoutMindMap({ ...map, format: { ...formatOf(map), layout: 'right' } }, new Set());
+const left = layoutMindMap({ ...map, format: { ...formatOf(map), layout: 'left' } }, new Set());
+assert.ok(right.get('topic')!.x > right.get('root')!.x);
+assert.ok(left.get('topic')!.x < left.get('root')!.x);
+
+console.log('✓ editor level and format controls: all cases passed');
