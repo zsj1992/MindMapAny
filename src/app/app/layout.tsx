@@ -3,7 +3,7 @@ import type { Metadata } from 'next';
 import { AppSidebar, SidebarTrigger } from '@/components/app/AppSidebar';
 import { Logo } from '@/components/site/Logo';
 import { ThemeToggle } from '@/components/site/ThemeToggle';
-import { SignOutButton } from '@/components/auth/SignOutButton';
+import { UserMenu } from '@/components/auth/UserMenu';
 import { getCurrentProfile } from '@/lib/auth/session';
 import type { Plan } from '@/lib/credits';
 
@@ -50,21 +50,12 @@ export default async function AppLayout({ children }: LayoutProps<'/app'>) {
           <ThemeToggle />
 
           {user ? (
-            <>
-              <Link href="/billing" className="btn btn-ghost hidden h-9 px-2 text-xs sm:inline-flex">
-                订阅管理
-              </Link>
-              <Link href="/pricing" className="btn btn-secondary h-9 px-3.5 text-xs">
-                升级
-              </Link>
-              <span
-                className="flex h-9 w-9 items-center justify-center rounded-full bg-[#102f53] text-xs font-bold text-white"
-                title={user.email ?? ''}
-              >
-                {(user.name ?? user.email ?? '?').slice(0, 1).toUpperCase()}
-              </span>
-              <SignOutButton className="btn btn-ghost h-9 px-2 text-xs" />
-            </>
+            <UserMenu
+              name={user.name ?? null}
+              email={user.email ?? null}
+              plan={profile?.plan ?? 'free'}
+              credits={profile?.credits ?? 0}
+            />
           ) : (
             <>
               <Link href="/support" className="btn btn-ghost hidden h-9 px-2 text-xs sm:inline-flex">支持</Link>
