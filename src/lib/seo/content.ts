@@ -104,6 +104,132 @@ export const TOOL_PAGES: ToolPage[] = [
       { question: 'Do news sites and blogs work?', answer: 'Yes — news, blogs, encyclopedias and public documentation are all good input types.' },
     ],
   },
+  {
+    slug: 'docx-to-mind-map',
+    appPath: '/app/docx',
+    eyebrow: 'AI document structuring tool',
+    title: 'Word document to mind map',
+    description:
+      'Upload a DOCX and we read the body text paragraph by paragraph — including text inside tables — and organise it into an editable hierarchy.',
+    seoTitle: 'Word to Mind Map — turn a DOCX into an editable hierarchy',
+    seoDescription:
+      'Upload a Word DOCX file and get a clearly structured, editable mind map. Body paragraphs and table text are extracted, with export to PNG, SVG and Markdown.',
+    primaryKeyword: 'word to mind map',
+    relatedKeywords: ['docx to mind map', 'word document summary', 'convert word to mind map', 'doc to mind map'],
+    benefits: [
+      { title: 'Reads the document, not the layout', description: 'Paragraphs are taken from the document body in order, including text inside tables, so a report keeps its argument rather than its page furniture.' },
+      { title: 'Long documents stay coherent', description: 'Long files are summarised section by section and then merged, so a 60-page specification does not collapse into one flat list.' },
+      { title: 'Structure you can keep working in', description: 'Rename nodes, add branches, collapse levels, and export to PNG, SVG or Markdown for your next draft.' },
+    ],
+    steps: [
+      { title: 'Upload your DOCX', description: 'Files up to 20MB. Legacy .doc and password-protected files are not supported.' },
+      { title: 'Pick depth and purpose', description: 'Choose how many levels you want and whether you are studying, analysing structure or skimming.' },
+      { title: 'Edit and export', description: 'Adjust the hierarchy on the canvas, then save, share or export it.' },
+    ],
+    useCases: ['Turn a specification into a reviewable structure', 'Break a long report into topics', 'Organise a thesis draft before revising', 'Summarise policy and process documents'],
+    faq: [
+      {
+        question: 'Do Word nodes carry page numbers like PDF nodes do?',
+        answer: 'No. A DOCX stores a flow of paragraphs, not fixed pages — page breaks only exist once Word renders the file. We anchor to the document order instead. If you need page-level citations, export to PDF first and use the PDF tool.',
+      },
+      {
+        question: 'Is text inside tables included?',
+        answer: 'Yes. Table cell text is read along with normal paragraphs. Very wide tables can read oddly once flattened into a hierarchy, so check those branches.',
+      },
+      {
+        question: 'What about headers, footers, footnotes and comments?',
+        answer: 'They are not read. We extract the main document body only, which keeps recurring page furniture out of the map. Anything you need in the map should be in the body text.',
+      },
+      {
+        question: 'Can I upload an old .doc file?',
+        answer: 'No. Only the modern DOCX format is supported. Open the file in Word or a compatible editor and save it as .docx first.',
+      },
+    ],
+  },
+  {
+    slug: 'epub-to-mind-map',
+    appPath: '/app/epub',
+    eyebrow: 'AI ebook structuring tool',
+    title: 'EPUB ebook to mind map',
+    description:
+      'Upload an EPUB and we follow the book’s own reading order, labelling nodes with the chapter they came from, so a whole book becomes one navigable structure.',
+    seoTitle: 'EPUB to Mind Map — map a whole book by chapter',
+    seoDescription:
+      'Upload an EPUB ebook and get an editable mind map that follows the book’s reading order, with nodes labelled by chapter and export to PNG, SVG and Markdown.',
+    primaryKeyword: 'epub to mind map',
+    relatedKeywords: ['book to mind map', 'ebook summary', 'convert epub to mind map', 'book chapter mind map'],
+    benefits: [
+      { title: 'Follows the book’s reading order', description: 'We read the EPUB spine — the order the publisher defined — rather than guessing from filenames, so chapters appear in the order you would actually read them.' },
+      { title: 'Nodes tell you which chapter', description: 'Each block keeps its chapter title, so a claim in the map can be traced back to the chapter it came from.' },
+      { title: 'One book, one structure', description: 'Instead of chapter-by-chapter summaries that never connect, you get a single hierarchy where recurring themes sit together.' },
+    ],
+    steps: [
+      { title: 'Upload your EPUB', description: 'Files up to 20MB. DRM-protected ebooks cannot be opened.' },
+      { title: 'Choose depth', description: 'Concise for an overview of the argument, detailed to keep more of the supporting material.' },
+      { title: 'Review by chapter and export', description: 'Check the chapter labels on key branches, edit, then export or share.' },
+    ],
+    useCases: ['Build a revision structure from a textbook', 'Map the argument of a non-fiction book', 'Compare how chapters develop one theme', 'Prepare notes before a book club or seminar'],
+    faq: [
+      {
+        question: 'Can you open ebooks bought from a store?',
+        answer: 'Only if the file is DRM-free. DRM-protected purchases from most major stores are encrypted and cannot be read by any third-party tool, including this one.',
+      },
+      {
+        question: 'How are nodes linked back to the book?',
+        answer: 'Each extracted block keeps the chapter title from that section of the EPUB, so nodes are labelled by chapter. EPUB has no fixed page numbers — page numbers depend on the reader and font size — so chapter is the reliable anchor.',
+      },
+      {
+        question: 'Is there a limit on book length?',
+        answer: 'The file must be under 20MB, and we read up to the first 500 documents in the spine, which covers essentially any normal book. Very long books may also hit your plan’s character limit, shown on the pricing page.',
+      },
+      {
+        question: 'Does it work for fiction?',
+        answer: 'It works, but it suits non-fiction far better. Mind maps expose hierarchy and classification; narrative fiction is chronological, and a map of it tends to be less useful than the book itself.',
+      },
+    ],
+  },
+  {
+    slug: 'pptx-to-mind-map',
+    appPath: '/app/pptx',
+    eyebrow: 'AI presentation structuring tool',
+    title: 'PowerPoint deck to mind map',
+    description:
+      'Upload a PPTX and we pull the text from every slide in order, labelling each node with its slide number so you can jump straight back to the original.',
+    seoTitle: 'PowerPoint to Mind Map — slide-by-slide, with slide numbers',
+    seoDescription:
+      'Upload a PPTX deck and get an editable mind map. Text is extracted slide by slide and every node keeps its slide number, with export to PNG, SVG and Markdown.',
+    primaryKeyword: 'powerpoint to mind map',
+    relatedKeywords: ['pptx to mind map', 'presentation summary', 'slides to mind map', 'convert powerpoint to mind map'],
+    benefits: [
+      { title: 'Every node keeps its slide number', description: 'Nodes are labelled Slide 1, Slide 2 and so on, so verifying a point means opening one slide rather than clicking through the deck.' },
+      { title: 'Recovers the argument from the slides', description: 'Decks are built for presenting, not reading. Grouping the text into a hierarchy shows what the deck actually argues, including where it repeats itself.' },
+      { title: 'Compare decks quickly', description: 'Map two decks on the same topic and the differences in coverage become obvious in a way that skimming slides does not deliver.' },
+    ],
+    steps: [
+      { title: 'Upload your PPTX', description: 'Files up to 20MB. Slides are read in their deck order.' },
+      { title: 'Choose depth and purpose', description: 'Concise for the headline argument, detailed to keep supporting bullets.' },
+      { title: 'Check slide numbers and export', description: 'Verify the key branches against their slides, edit, then export or share.' },
+    ],
+    useCases: ['Digest a conference deck fast', 'Turn a training deck into a study structure', 'Audit what a pitch deck actually claims', 'Compare competing proposals side by side'],
+    faq: [
+      {
+        question: 'Are speaker notes included?',
+        answer: 'No. Only the text on the slides themselves is read. If the substance of your deck lives in the notes, the map will be thinner than you expect — move that text onto the slides, or paste the notes in as text instead.',
+      },
+      {
+        question: 'What about images, charts, audio and animations?',
+        answer: 'They are not read. Any figure that exists only as an image will not appear in the map. Chart titles and labels are only picked up when they are real text boxes on the slide.',
+      },
+      {
+        question: 'How accurate are the slide numbers?',
+        answer: 'They come from the deck’s own slide order, recorded during extraction rather than generated by the model, so they point at the right slide. Hidden slides are included if they contain text.',
+      },
+      {
+        question: 'Can I upload an old .ppt file?',
+        answer: 'No. Only the modern PPTX format is supported. Open the deck in PowerPoint or a compatible editor and save it as .pptx first.',
+      },
+    ],
+  },
 ];
 
 export interface BlogSection {

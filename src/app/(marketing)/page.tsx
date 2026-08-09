@@ -16,9 +16,9 @@ export const metadata: Metadata = {
 const INPUTS = [
   { label: 'Long text', href: '/tools/text-to-mind-map' },
   { label: 'PDF', href: '/tools/pdf-to-mind-map' },
-  { label: 'Word', href: '/app/docx' },
-  { label: 'EPUB', href: '/app/epub' },
-  { label: 'PPTX', href: '/app/pptx' },
+  { label: 'Word', href: '/tools/docx-to-mind-map' },
+  { label: 'EPUB', href: '/tools/epub-to-mind-map' },
+  { label: 'PPTX', href: '/tools/pptx-to-mind-map' },
   { label: 'Web articles', href: '/tools/webpage-to-mind-map' },
 ];
 

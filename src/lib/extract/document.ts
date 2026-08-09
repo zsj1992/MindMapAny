@@ -102,16 +102,16 @@ function extractPptx(files: Unzipped, filename?: string): ExtractedDoc {
     kind: 'document',
     title: cleanFilename(filename) || blocks[0].text.slice(0, 60),
     blocks,
-    notes: ['仅提取幻灯片中的文字，不读取图片、音视频与动画'],
+    notes: ['Only slide text was extracted; images, audio, video, animations and speaker notes are not read'],
   };
 }
 
 function extractEpub(files: Unzipped, filename?: string): ExtractedDoc {
   const container = readZipText(files, 'META-INF/container.xml');
   const opfPath = container?.match(/<rootfile[^>]+full-path=["']([^"']+)["']/i)?.[1];
-  if (!opfPath) throw new ExtractError('unsupported', 'EPUB 缺少内容清单，文件可能已损坏');
+  if (!opfPath) throw new ExtractError('unsupported', 'The EPUB has no content manifest — the file may be corrupt');
   const opf = readZipText(files, opfPath);
-  if (!opf) throw new ExtractError('unsupported', 'EPUB 内容清单无法读取');
+  if (!opf) throw new ExtractError('unsupported', 'The EPUB content manifest could not be read');
 
   const manifest = new Map<string, string>();
   for (const item of opf.matchAll(/<item\b[^>]*>/gi)) {
@@ -139,7 +139,7 @@ function extractEpub(files: Unzipped, filename?: string): ExtractedDoc {
     const text = htmlToText(body);
     if (text) blocks.push({ text, ...(chapterTitle ? { location: chapterTitle.slice(0, 80) } : {}) });
   }
-  if (!blocks.length) throw new ExtractError('empty', 'EPUB 中没有可提取的正文');
+  if (!blocks.length) throw new ExtractError('empty', 'The EPUB contains no extractable body text');
 
   const metaTitle = opf.match(/<dc:title[^>]*>([\s\S]*?)<\/dc:title>/i)?.[1];
   return {
@@ -236,19 +236,19 @@ function assertSafeZip(bytes: Uint8Array): void {
   for (let i = Math.max(0, bytes.length - 65_557); i <= bytes.length - 22; i++) {
     if (view.getUint32(i, true) === 0x06054b50) eocd = i;
   }
-  if (eocd < 0) throw new ExtractError('unsupported', '文件不是有效的 ZIP 文档');
+  if (eocd < 0) throw new ExtractError('unsupported', 'The file is not a valid ZIP-based document');
   const entries = view.getUint16(eocd + 10, true);
   let offset = view.getUint32(eocd + 16, true);
   if (!entries || entries > ZIP_MAX_ENTRIES || offset >= bytes.length) {
-    throw new ExtractError('too_large', '文件内部条目过多或格式不受支持');
+    throw new ExtractError('too_large', 'The file has too many internal entries, or its format is unsupported');
   }
   let total = 0;
   for (let i = 0; i < entries; i++) {
     if (offset + 46 > bytes.length || view.getUint32(offset, true) !== 0x02014b50) {
-      throw new ExtractError('unsupported', '文件中央目录已损坏');
+      throw new ExtractError('unsupported', 'The file\'s central directory is corrupt');
     }
     total += view.getUint32(offset + 24, true);
-    if (total > ZIP_MAX_UNCOMPRESSED_BYTES) throw new ExtractError('too_large', '文件解压后超过 48MB 安全限制');
+    if (total > ZIP_MAX_UNCOMPRESSED_BYTES) throw new ExtractError('too_large', 'The file exceeds the 48MB uncompressed safety limit');
     offset += 46 + view.getUint16(offset + 28, true) + view.getUint16(offset + 30, true) + view.getUint16(offset + 32, true);
   }
 }

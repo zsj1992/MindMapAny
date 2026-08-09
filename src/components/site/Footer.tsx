@@ -15,6 +15,9 @@ const COLUMNS = [
     title: 'Tools & resources',
     links: [
       { label: 'PDF to mind map', href: '/tools/pdf-to-mind-map' },
+      { label: 'Word to mind map', href: '/tools/docx-to-mind-map' },
+      { label: 'EPUB to mind map', href: '/tools/epub-to-mind-map' },
+      { label: 'PowerPoint to mind map', href: '/tools/pptx-to-mind-map' },
       { label: 'Text to mind map', href: '/tools/text-to-mind-map' },
       { label: 'Web page to mind map', href: '/tools/webpage-to-mind-map' },
       { label: 'Blog', href: '/blog' },
