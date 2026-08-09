@@ -54,6 +54,55 @@ const ICONS = {
     </>,
     'text-brand-500',
   ),
+  document: icon(
+    <>
+      <path strokeLinejoin="round" d="M14 3v5h5" />
+      <path strokeLinejoin="round" d="M19 8v11a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5z" />
+      <path strokeLinecap="round" d="M8 13h8M8 16h6" />
+    </>,
+    'text-orange-500',
+  ),
+  ebook: icon(
+    <>
+      <path strokeLinejoin="round" d="M4 5.5A2.5 2.5 0 016.5 3H11v16H6.5A2.5 2.5 0 004 21V5.5zM20 5.5A2.5 2.5 0 0017.5 3H13v16h4.5A2.5 2.5 0 0120 21V5.5z" />
+    </>,
+    'text-orange-500',
+  ),
+  slides: icon(
+    <>
+      <rect x="4" y="3" width="16" height="13" rx="2" />
+      <path strokeLinecap="round" d="M8 20l4-4 4 4M8 8h8M8 11h5" />
+    </>,
+    'text-orange-500',
+  ),
+  video: icon(
+    <>
+      <rect x="3" y="5" width="14" height="14" rx="2" />
+      <path strokeLinejoin="round" d="M17 10l4-2v8l-4-2v-4z" />
+    </>,
+    'text-rose-500',
+  ),
+  email: icon(
+    <>
+      <rect x="3" y="5" width="18" height="14" rx="2" />
+      <path strokeLinejoin="round" d="M4 7l8 6 8-6" />
+    </>,
+    'text-emerald-500',
+  ),
+  social: icon(
+    <>
+      <circle cx="6" cy="12" r="2" /><circle cx="18" cy="6" r="2" /><circle cx="18" cy="18" r="2" />
+      <path d="M8 11l8-4M8 13l8 4" />
+    </>,
+    'text-violet-500',
+  ),
+  audio: icon(
+    <>
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9 18V6l10-2v12" />
+      <ellipse cx="6.5" cy="18" rx="2.5" ry="2" /><ellipse cx="16.5" cy="16" rx="2.5" ry="2" />
+    </>,
+    'text-cyan-500',
+  ),
   maps: icon(
     <>
       <rect x="3" y="4" width="7" height="6" rx="1.5" />
@@ -75,15 +124,48 @@ const PRIMARY = [
   { href: '/app/maps', label: '我的脑图', icon: ICONS.maps },
 ];
 
-const SOURCES = [
-  { href: '/app/pdf', label: 'PDF', icon: ICONS.pdf },
-  { href: '/app/youtube', label: 'YouTube', icon: ICONS.youtube },
-  { href: '/app/text', label: '长文本', icon: ICONS.text },
-  { href: '/app/web', label: '网页文章', icon: ICONS.web },
-];
-
-/** 明确标出未支持的输入，比让用户点进去撞墙好，也顺便传达了路线图 */
-const PLANNED = ['音频 / 播客', '会议录音', '扫描件 OCR', 'Word / PPT / Excel'];
+const GROUPS = [
+  {
+    label: '总结 PDF / 文档',
+    items: [
+      { label: 'PDF', icon: ICONS.pdf, href: '/app/pdf' },
+      { label: 'Word 文档', icon: ICONS.document },
+      { label: '电子书', icon: ICONS.ebook },
+      { label: '研究论文', icon: ICONS.research },
+      { label: 'PPT / 表格', icon: ICONS.slides },
+    ],
+  },
+  {
+    label: '总结视频',
+    items: [
+      { label: 'YouTube', icon: ICONS.youtube, href: '/app/youtube' },
+      { label: '视频文件', icon: ICONS.video },
+    ],
+  },
+  {
+    label: '总结文本',
+    items: [
+      { label: '长文本', icon: ICONS.text, href: '/app/text' },
+      { label: '邮件', icon: ICONS.email },
+    ],
+  },
+  {
+    label: '总结网页',
+    items: [
+      { label: '网页文章', icon: ICONS.web, href: '/app/web' },
+      { label: '博客文章', icon: ICONS.document },
+      { label: '社交媒体', icon: ICONS.social },
+    ],
+  },
+  {
+    label: '总结音频',
+    items: [
+      { label: '音频文件', icon: ICONS.audio },
+      { label: '播客', icon: ICONS.audio },
+      { label: '会议录音', icon: ICONS.audio },
+    ],
+  },
+] satisfies Array<{ label: string; items: Array<{ label: string; icon: ReactNode; href?: string }> }>;
 
 export function SidebarTrigger() {
   const setOpen = useDrawer((s) => s.setOpen);
@@ -102,36 +184,38 @@ export function AppSidebar() {
   const setOpen = useDrawer((s) => s.setOpen);
 
   const nav = (
-    <nav className="flex h-full flex-col gap-7 overflow-y-auto px-3 py-5">
+    <nav className="flex h-full flex-col overflow-y-auto px-3 py-4">
       <div className="space-y-0.5">
         {PRIMARY.map((item) => (
           <NavLink key={item.href} {...item} active={pathname === item.href} onNavigate={() => setOpen(false)} />
         ))}
       </div>
 
-      <div>
-        <p className="px-3 pb-2 text-[10px] font-bold uppercase tracking-[0.14em] text-text-subtle">内容来源</p>
-        <div className="space-y-0.5">
-          {SOURCES.map((item) => (
-            <NavLink key={item.href} {...item} active={pathname === item.href} onNavigate={() => setOpen(false)} />
-          ))}
-        </div>
-      </div>
+      <div className="my-3 border-t" />
 
-      <div>
-        <p className="px-3 pb-2 text-[10px] font-bold uppercase tracking-[0.14em] text-text-subtle">即将支持</p>
-        <div className="space-y-0.5">
-          {PLANNED.map((label) => (
-            <span
-              key={label}
-              className="flex cursor-not-allowed items-center gap-2.5 rounded-lg px-3 py-2 text-[13px] text-text-subtle"
-              title="当前版本尚未支持"
-            >
-              <span className="opacity-50">{ICONS.lock}</span>
-              {label}
-            </span>
-          ))}
-        </div>
+      <div className="space-y-4 pb-4">
+        {GROUPS.map((group) => (
+          <section key={group.label}>
+            <p className="px-3 pb-1.5 text-[10px] font-bold tracking-[0.04em] text-text-subtle">{group.label}</p>
+            <div className="space-y-0.5">
+              {group.items.map((item) =>
+                item.href ? (
+                  <NavLink
+                    key={item.label}
+                    href={item.href}
+                    label={item.label}
+                    icon={item.icon}
+                    active={pathname === item.href}
+                    onNavigate={() => setOpen(false)}
+                    compact
+                  />
+                ) : (
+                  <PlannedItem key={item.label} label={item.label} icon={item.icon} />
+                ),
+              )}
+            </div>
+          </section>
+        ))}
       </div>
     </nav>
   );
@@ -151,7 +235,7 @@ export function AppSidebar() {
       )}
 
       <aside
-        className="hidden w-64 shrink-0 border-r bg-surface lg:block"
+        className="hidden w-[272px] shrink-0 border-r bg-surface lg:block"
         style={{ borderColor: 'var(--border)' }}
       >
         {nav}
@@ -167,6 +251,7 @@ function NavLink({
   active,
   onNavigate,
   badge,
+  compact = false,
 }: {
   href: string;
   label: string;
@@ -174,12 +259,13 @@ function NavLink({
   active: boolean;
   onNavigate: () => void;
   badge?: string;
+  compact?: boolean;
 }) {
   return (
     <Link
       href={href}
       onClick={onNavigate}
-      className={`relative flex items-center gap-3 rounded-xl px-3 py-2.5 text-[13px] font-medium transition-all ${
+      className={`relative flex items-center gap-3 rounded-xl px-3 ${compact ? 'py-2 text-[12px]' : 'py-2.5 text-[13px]'} font-medium transition-all ${
         active ? 'bg-brand-50 text-brand-700 shadow-sm dark:bg-brand-900/30 dark:text-brand-200' : 'text-text-muted hover:bg-bg-subtle hover:text-text'
       }`}
     >
@@ -188,5 +274,15 @@ function NavLink({
       {label}
       {badge && <span className="ml-auto rounded-md bg-brand-100 px-1.5 py-0.5 text-[9px] font-bold text-brand-700 dark:bg-brand-900/50 dark:text-brand-200">{badge}</span>}
     </Link>
+  );
+}
+
+function PlannedItem({ label, icon }: { label: string; icon: ReactNode }) {
+  return (
+    <span className="flex cursor-not-allowed items-center gap-3 rounded-xl px-3 py-2 text-[12px] text-text-subtle" title="即将支持">
+      <span className="opacity-55">{icon}</span>
+      <span>{label}</span>
+      <span className="ml-auto opacity-35">{ICONS.lock}</span>
+    </span>
   );
 }
