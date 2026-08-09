@@ -18,6 +18,23 @@ export async function extractWeb(rawUrl: string): Promise<ExtractedDoc> {
   // Readability 会就地改 DOM，先把标题存下来
   const rawTitle = document.querySelector('title')?.textContent?.trim() ?? '';
 
+  if (isWechatArticleUrl(rawUrl) || isWechatArticleUrl(url)) {
+    const wechat = extractWechatArticle(document as unknown as Document);
+    if (!wechat) {
+      throw new ExtractError(
+        'fetch_failed',
+        '微信公众号拒绝了本次服务器访问，请稍后重试；仍失败时可复制文章正文后使用长文本生成',
+      );
+    }
+    return {
+      kind: 'web',
+      title: (wechat.title || rawTitle || url).slice(0, 120),
+      blocks: wechat.blocks,
+      url,
+      notes,
+    };
+  }
+
   const article = new Readability(document as unknown as Document, { charThreshold: 100 }).parse();
   if (!article?.content) {
     throw new ExtractError('empty', '未能提取正文，该页面可能需要登录、有反爬保护或依赖 JS 渲染');
@@ -37,6 +54,27 @@ export async function extractWeb(rawUrl: string): Promise<ExtractedDoc> {
     url,
     notes,
   };
+}
+
+function isWechatArticleUrl(rawUrl: string): boolean {
+  try {
+    return new URL(rawUrl).hostname.toLowerCase() === 'mp.weixin.qq.com';
+  } catch {
+    return false;
+  }
+}
+
+/** 微信公众号正文不用 Readability：它会误选作者栏，而正文固定在 #js_content。 */
+export function extractWechatArticle(document: Document): { title: string; blocks: Block[] } | null {
+  const content = document.querySelector('#js_content');
+  if (!content) return null;
+
+  const blocks = htmlToBlocks(content.innerHTML);
+  const chars = blocks.reduce((total, block) => total + block.text.length, 0);
+  if (chars < MIN_ARTICLE_CHARS) return null;
+
+  const title = normalizeText(document.querySelector('#activity-name')?.textContent ?? '');
+  return { title, blocks };
 }
 
 /**

@@ -19,6 +19,31 @@ export const FETCH_TIMEOUT_MS = 15_000;
 export const MAX_HTML_BYTES = 5 * 1024 * 1024;
 export const MAX_REDIRECTS = 3;
 
+const DEFAULT_USER_AGENT = 'Mozilla/5.0 (compatible; MapAnyBot/0.1; +https://mindmapany.com/bot)';
+const WECHAT_USER_AGENT =
+  'Mozilla/5.0 (iPhone; CPU iPhone OS 18_5 like Mac OS X) AppleWebKit/605.1.15 (KHTML, like Gecko) Mobile/15E148 MicroMessenger/8.0.59 NetType/WIFI Language/zh_CN';
+
+/**
+ * 公众号会把明显的服务端爬虫标识跳转到验证码页，但同一篇公开文章会向
+ * 微信移动端浏览器返回服务端渲染的正文。只对微信官方域名使用该标识，
+ * 避免影响普通网站，也不携带用户 Cookie 或任何登录凭据。
+ */
+export function requestHeaders(url: URL): Record<string, string> {
+  if (url.hostname.toLowerCase() === 'mp.weixin.qq.com') {
+    return {
+      'user-agent': WECHAT_USER_AGENT,
+      accept: 'text/html,application/xhtml+xml',
+      'accept-language': 'zh-CN,zh;q=0.9,en;q=0.6',
+      referer: 'https://mp.weixin.qq.com/',
+    };
+  }
+
+  return {
+    'user-agent': DEFAULT_USER_AGENT,
+    accept: 'text/html,application/xhtml+xml',
+  };
+}
+
 function ipv4IsPrivate(ip: string): boolean {
   const p = ip.split('.').map(Number);
   if (p.length !== 4 || p.some((n) => Number.isNaN(n))) return true;
@@ -148,10 +173,7 @@ export async function safeFetchHtml(raw: string): Promise<{ url: string; html: s
       res = await fetch(url, {
         redirect: 'manual',
         signal: controller.signal,
-        headers: {
-          'user-agent': 'Mozilla/5.0 (compatible; MapAnyBot/0.1; +https://mindmapany.com/bot)',
-          accept: 'text/html,application/xhtml+xml',
-        },
+        headers: requestHeaders(url),
       });
     } catch {
       throw new ExtractError('fetch_failed', '页面抓取失败或超时');
