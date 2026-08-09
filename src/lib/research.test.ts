@@ -1,35 +1,24 @@
 import assert from 'node:assert/strict';
-import { searchResearchSources } from './research';
+import { parseResearchOutput } from './research';
 
-async function main() {
-  const originalFetch = globalThis.fetch;
-  const originalKey = process.env.JINA_API_KEY;
+const parsed = parseResearchOutput(`# 研究报告
 
-  try {
-    process.env.JINA_API_KEY = 'jina_test';
-    globalThis.fetch = (async () =>
-      new Response(JSON.stringify({
-        data: [
-          { title: '来源 A', url: 'https://example.com/a', description: 'A', content: 'A'.repeat(160) },
-          { title: '重复来源', url: 'https://example.com/a', description: '重复', content: 'B'.repeat(160) },
-          { title: '危险地址', url: 'javascript:alert(1)', description: '危险', content: 'C'.repeat(160) },
-          { title: '来源 B', url: 'https://example.org/b', description: 'B', content: 'D'.repeat(180) },
-        ],
-      }), { status: 200, headers: { 'content-type': 'application/json' } })) as typeof fetch;
+执行摘要引用来源 [1]，并由第二个来源补充 [2]。
 
-    const sources = await searchResearchSources('测试研究问题');
-    assert.equal(sources.length, 2);
-    assert.deepEqual(sources.map((source) => source.id), [1, 2]);
-    assert.deepEqual(sources.map((source) => source.url), ['https://example.com/a', 'https://example.org/b']);
-    console.log('✓ research search: validation and deduplication passed');
-  } finally {
-    globalThis.fetch = originalFetch;
-    if (originalKey === undefined) delete process.env.JINA_API_KEY;
-    else process.env.JINA_API_KEY = originalKey;
-  }
-}
+## 核心发现
 
-main().catch((error) => {
-  console.error(error);
-  process.exitCode = 1;
-});
+这是研究结论。[1]
+
+## 网页来源
+[1] 官方来源 A — https://example.com/report
+[2] [来源 B] - https://example.org/data
+[3] 重复地址 — https://example.com/report
+[4] 危险地址 — javascript:alert(1)
+`);
+
+assert.match(parsed.report, /研究报告/);
+assert.doesNotMatch(parsed.report, /网页来源/);
+assert.equal(parsed.sources.length, 2);
+assert.deepEqual(parsed.sources.map((source) => source.id), [1, 2]);
+assert.deepEqual(parsed.sources.map((source) => source.url), ['https://example.com/report', 'https://example.org/data']);
+console.log('✓ research output: source parsing and deduplication passed');

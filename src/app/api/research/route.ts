@@ -33,12 +33,12 @@ export async function POST(req: Request) {
       status: 'succeeded',
       sourceKind: 'web',
       sourceChars: params.query.length,
-      modelTier: 'quality:research',
+      modelTier: 'fast:research-web',
       inputTokens: result.usage.inputTokens,
       outputTokens: result.usage.outputTokens,
       creditsCharged: cost,
       durationMs: Date.now() - started,
-      warnings: [`${result.sources.length} research sources`],
+      warnings: [`${result.sources.length} research sources`, `${result.usage.webSearchRequests} web search requests`],
     });
     return NextResponse.json({ ...result, creditsCharged: cost });
   } catch (error) {
@@ -47,7 +47,7 @@ export async function POST(req: Request) {
       userId: session.user.id,
       status: 'failed',
       sourceKind: 'web',
-      modelTier: 'quality:research',
+      modelTier: 'fast:research-web',
       durationMs: Date.now() - started,
       errorCode: described.code,
       errorMessage: described.message,
@@ -72,4 +72,3 @@ function describe(error: unknown) {
 function fail(status: number, code: string, message: string) {
   return NextResponse.json({ error: { code, message } }, { status });
 }
-
