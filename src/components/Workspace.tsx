@@ -168,21 +168,45 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
 
   if (!map) {
     return (
-      <div className="mx-auto flex h-full min-h-0 w-full max-w-4xl flex-col justify-center overflow-y-auto px-4 py-4 sm:px-6 lg:overflow-hidden lg:py-5">
-        {title && (
-          <div className="mb-5 shrink-0 text-center">
-            <span className="mb-2 inline-flex items-center gap-2 rounded-full border bg-surface px-2.5 py-0.5 text-[10px] font-semibold text-text-muted shadow-sm">
-              <span className="h-1.5 w-1.5 rounded-full bg-accent-500" /> AI 内容理解工作台
-            </span>
-            <h1 className="text-2xl font-bold tracking-[-0.035em] sm:text-3xl">{title}</h1>
-            {subtitle && <p className="mx-auto mt-1.5 max-w-xl text-xs leading-5 text-text-muted sm:text-[13px]">{subtitle}</p>}
+      <div className="workspace-stage h-full min-h-0 overflow-y-auto px-4 py-8 sm:px-7 lg:overflow-hidden lg:px-10 lg:py-6">
+        <div className="mx-auto grid min-h-full w-full max-w-6xl items-center gap-9 lg:grid-cols-[minmax(15rem,0.72fr)_minmax(32rem,1.45fr)] lg:gap-12 xl:gap-16">
+          {title && (
+            <section className="max-w-xl lg:max-w-sm">
+              <p className="flex items-center gap-3 text-[11px] font-semibold tracking-[0.14em] text-brand-600 dark:text-brand-300">
+                <span className="h-px w-8 bg-brand-500" />
+                MINDMAPANY / CREATE
+              </p>
+              <h1 className="mt-5 text-balance text-[2.35rem] font-semibold leading-[1.04] tracking-[-0.055em] sm:text-5xl lg:text-[3.35rem]">
+                {title}
+              </h1>
+              {subtitle && <p className="mt-5 max-w-md text-pretty text-sm leading-7 text-text-muted sm:text-[15px]">{subtitle}</p>}
+
+              <div className="mt-8 hidden space-y-4 lg:block" aria-label="生成流程">
+                {[
+                  ['01', '输入内容', '文本、文件或链接'],
+                  ['02', '理解结构', '提炼主题与层级'],
+                  ['03', '编辑带走', '保留来源，可导出'],
+                ].map(([step, label, detail], index) => (
+                  <div key={step} className="group relative flex items-center gap-3.5">
+                    {index < 2 && <span className="absolute left-[0.45rem] top-5 h-5 w-px bg-border-base" aria-hidden="true" />}
+                    <span className="relative z-10 h-2.5 w-2.5 rounded-sm border-2 border-brand-500 bg-bg transition-transform duration-200 group-hover:scale-125" />
+                    <span className="w-5 font-mono text-[10px] text-text-subtle">{step}</span>
+                    <span className="text-xs font-semibold text-text">{label}</span>
+                    <span className="text-xs text-text-subtle">{detail}</span>
+                  </div>
+                ))}
+              </div>
+            </section>
+          )}
+
+          <div className="min-w-0">
+            {busy ? (
+              <GeneratingState />
+            ) : (
+              <InputPanel onGenerate={generate} busy={busy} error={error} mode={mode} copy={copy} />
+            )}
           </div>
-        )}
-        {busy ? (
-          <GeneratingState />
-        ) : (
-          <InputPanel onGenerate={generate} busy={busy} error={error} mode={mode} copy={copy} />
-        )}
+        </div>
       </div>
     );
   }

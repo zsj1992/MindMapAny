@@ -23,36 +23,31 @@ const icon = (path: ReactNode, className = '') => (
 const ICONS = {
   spark: icon(
     <path strokeLinecap="round" strokeLinejoin="round" d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z" />,
-    'text-brand-500',
   ),
   research: icon(
     <>
       <circle cx="10" cy="10" r="6" />
       <path strokeLinecap="round" d="M14.5 14.5L20 20M10 7v6M7 10h6" />
     </>,
-    'text-brand-500',
   ),
   pdf: icon(
     <>
       <path strokeLinejoin="round" d="M14 3v5h5" />
       <path strokeLinejoin="round" d="M19 8v11a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5z" />
     </>,
-    'text-red-500',
   ),
   youtube: icon(
     <>
       <rect x="3" y="6" width="18" height="12" rx="3" />
       <path d="M11 10l4 2-4 2v-4z" fill="currentColor" stroke="none" />
     </>,
-    'text-red-500',
   ),
-  text: icon(<path strokeLinecap="round" d="M5 7h14M5 12h14M5 17h8" />, 'text-emerald-500'),
+  text: icon(<path strokeLinecap="round" d="M5 7h14M5 12h14M5 17h8" />),
   web: icon(
     <>
       <circle cx="12" cy="12" r="9" />
       <path d="M3 12h18M12 3a15 15 0 010 18a15 15 0 010-18z" />
     </>,
-    'text-brand-500',
   ),
   document: icon(
     <>
@@ -60,48 +55,41 @@ const ICONS = {
       <path strokeLinejoin="round" d="M19 8v11a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5z" />
       <path strokeLinecap="round" d="M8 13h8M8 16h6" />
     </>,
-    'text-orange-500',
   ),
   ebook: icon(
     <>
       <path strokeLinejoin="round" d="M4 5.5A2.5 2.5 0 016.5 3H11v16H6.5A2.5 2.5 0 004 21V5.5zM20 5.5A2.5 2.5 0 0017.5 3H13v16h4.5A2.5 2.5 0 0120 21V5.5z" />
     </>,
-    'text-orange-500',
   ),
   slides: icon(
     <>
       <rect x="4" y="3" width="16" height="13" rx="2" />
       <path strokeLinecap="round" d="M8 20l4-4 4 4M8 8h8M8 11h5" />
     </>,
-    'text-orange-500',
   ),
   video: icon(
     <>
       <rect x="3" y="5" width="14" height="14" rx="2" />
       <path strokeLinejoin="round" d="M17 10l4-2v8l-4-2v-4z" />
     </>,
-    'text-rose-500',
   ),
   email: icon(
     <>
       <rect x="3" y="5" width="18" height="14" rx="2" />
       <path strokeLinejoin="round" d="M4 7l8 6 8-6" />
     </>,
-    'text-emerald-500',
   ),
   social: icon(
     <>
       <circle cx="6" cy="12" r="2" /><circle cx="18" cy="6" r="2" /><circle cx="18" cy="18" r="2" />
       <path d="M8 11l8-4M8 13l8 4" />
     </>,
-    'text-violet-500',
   ),
   audio: icon(
     <>
       <path strokeLinecap="round" strokeLinejoin="round" d="M9 18V6l10-2v12" />
       <ellipse cx="6.5" cy="18" rx="2.5" ry="2" /><ellipse cx="16.5" cy="16" rx="2.5" ry="2" />
     </>,
-    'text-cyan-500',
   ),
   maps: icon(
     <>
@@ -120,7 +108,7 @@ const ICONS = {
 
 const PRIMARY = [
   { href: '/app/new', label: '快速开始', icon: ICONS.spark },
-  { href: '/app/research', label: '深度研究', icon: ICONS.research, badge: 'NEW' },
+  { href: '/app/research', label: '深度研究', icon: ICONS.research, badge: '新' },
   { href: '/app/maps', label: '我的脑图', icon: ICONS.maps },
 ];
 
@@ -235,7 +223,7 @@ export function AppSidebar() {
       )}
 
       <aside
-        className="hidden w-[272px] shrink-0 border-r bg-surface lg:block"
+        className="hidden w-[248px] shrink-0 border-r bg-surface lg:block"
         style={{ borderColor: 'var(--border)' }}
       >
         {nav}
@@ -265,14 +253,14 @@ function NavLink({
     <Link
       href={href}
       onClick={onNavigate}
-      className={`relative flex items-center gap-3 rounded-xl px-3 ${compact ? 'py-2 text-[12px]' : 'py-2.5 text-[13px]'} font-medium transition-all ${
-        active ? 'bg-brand-50 text-brand-700 shadow-sm dark:bg-brand-900/30 dark:text-brand-200' : 'text-text-muted hover:bg-bg-subtle hover:text-text'
+      className={`relative flex items-center gap-3 rounded-lg px-3 ${compact ? 'py-2 text-[12px]' : 'py-2.5 text-[13px]'} font-medium transition-all duration-200 active:scale-[0.99] ${
+        active ? 'bg-bg-muted font-semibold text-text' : 'text-text-muted hover:bg-bg-subtle hover:text-text'
       }`}
     >
       {active && <span className="absolute left-0 h-5 w-0.5 rounded-full bg-brand-600" />}
       {icon}
       {label}
-      {badge && <span className="ml-auto rounded-md bg-brand-100 px-1.5 py-0.5 text-[9px] font-bold text-brand-700 dark:bg-brand-900/50 dark:text-brand-200">{badge}</span>}
+      {badge && <span className="ml-auto text-[9px] font-bold text-brand-600 dark:text-brand-300">{badge}</span>}
     </Link>
   );
 }

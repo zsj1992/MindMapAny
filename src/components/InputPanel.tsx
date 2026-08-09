@@ -131,8 +131,8 @@ export function InputPanel({
   };
 
   return (
-    <div
-      className="app-panel mx-auto w-full max-w-4xl shrink-0 rounded-2xl border bg-surface p-2"
+    <section
+      className="input-composer mx-auto w-full max-w-4xl shrink-0 overflow-hidden rounded-[1.6rem] border bg-surface"
       onDragOver={(e) => {
         e.preventDefault();
         setDragging(true);
@@ -141,35 +141,35 @@ export function InputPanel({
       onDrop={onDrop}
     >
       {mode === 'all' && (
-      <div className="rounded-xl bg-bg-subtle p-1">
-        <div className="flex gap-1">
+      <div className="border-b px-3" style={{ borderColor: 'var(--border)' }}>
+        <div className="flex gap-4 sm:gap-8">
           {TABS.map((t) => (
             <button
               key={t.id}
               type="button"
               onClick={() => setTab(t.id)}
-              className={`flex flex-1 items-center justify-center gap-2 rounded-lg px-3 py-2 text-[13px] font-medium transition-all ${
+              className={`relative flex h-12 items-center justify-center gap-2 px-1 text-[13px] font-medium transition-colors after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:origin-left after:transition-transform ${
                 tab === t.id
-                  ? 'bg-surface font-semibold text-text shadow-sm ring-1 ring-black/[0.04]'
-                  : 'text-text-muted hover:text-text'
+                  ? 'font-semibold text-text after:scale-x-100 after:bg-brand-600'
+                  : 'text-text-muted after:scale-x-0 hover:text-text'
               }`}
             >
               {t.icon}
-              <span className="hidden sm:inline">{t.label}</span>
+              <span>{t.label}</span>
             </button>
           ))}
         </div>
       </div>
       )}
 
-      <div className="p-2.5 sm:p-3">
+      <div className="p-4 sm:p-5">
         {tab === 'text' && (
           <div className="relative">
             <textarea
               value={text}
               onChange={(e) => setText(e.target.value)}
               placeholder="粘贴文章、笔记或任意长文本…"
-              className="field h-36 resize-none border-0 bg-bg-subtle p-3 text-sm leading-6 shadow-inner sm:h-40"
+              className="field h-40 resize-none border-0 bg-bg-subtle p-4 text-sm leading-7 shadow-none sm:h-44"
             />
             <span className="pointer-events-none absolute bottom-3 right-3 text-xs tabular-nums text-text-subtle">
               {text.length > 0 && `${text.length} 字`}
@@ -190,9 +190,9 @@ export function InputPanel({
                     ? '粘贴网页文章链接…'
                     : 'https://example.com/article 或 YouTube 链接'
               }
-              className="field h-11 bg-bg-subtle px-3.5 text-sm"
+              className="field h-14 border-0 bg-bg-subtle px-4 text-sm shadow-none"
             />
-            <p className="mt-1.5 truncate text-[11px] text-text-subtle">
+            <p className="mt-2 truncate px-1 text-[11px] text-text-subtle">
               {copy?.hint ?? '暂不支持需要登录的页面、纯 JS 渲染的页面，以及没有字幕的视频'}
             </p>
           </div>
@@ -202,7 +202,7 @@ export function InputPanel({
           <button
             type="button"
             onClick={() => fileRef.current?.click()}
-            className={`flex h-28 w-full flex-col items-center justify-center gap-1.5 rounded-xl border-2 border-dashed bg-bg-subtle text-[13px] transition-colors sm:h-32 ${
+            className={`flex h-36 w-full flex-col items-center justify-center gap-2 rounded-[1rem] border border-dashed bg-bg-subtle text-[13px] transition-all duration-200 active:scale-[0.995] sm:h-40 ${
               dragging ? 'border-brand-400 bg-brand-50 dark:bg-brand-900/20' : 'text-text-muted'
             }`}
             style={dragging ? undefined : { borderColor: 'var(--border-strong)' }}
@@ -234,22 +234,6 @@ export function InputPanel({
           </button>
         )}
 
-        <div className="mt-3 grid grid-cols-1 gap-2 rounded-xl border bg-bg-subtle p-2.5 sm:grid-cols-3">
-          <Select label="输出语言" value={language} onChange={setLanguage} options={LANGUAGES} />
-          <Select
-            label="深度"
-            value={depth}
-            onChange={(v) => setDepth(v as Depth)}
-            options={DEPTHS.map((d) => ({ value: d, label: DEPTH_LABEL[d] }))}
-          />
-          <Select
-            label="用途"
-            value={purpose}
-            onChange={(v) => setPurpose(v as Purpose)}
-            options={PURPOSES.map((p) => ({ value: p, label: PURPOSE_LABEL[p] }))}
-          />
-        </div>
-
         {error && (
           <p className="mt-3 flex items-start gap-2 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700 dark:bg-red-950/40 dark:text-red-300">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="mt-0.5 h-4 w-4 shrink-0">
@@ -259,17 +243,6 @@ export function InputPanel({
             {error}
           </p>
         )}
-
-        <button type="button" onClick={submit} disabled={!ready || busy} className="btn btn-primary mt-3 h-10 w-full text-sm">
-          {busy ? (
-            <>
-              <Spinner />
-              生成中…
-            </>
-          ) : (
-            '生成脑图'
-          )}
-        </button>
 
         {!busy && !text && !url && !file && examples.length > 0 && (
           <div className="mt-3">
@@ -288,8 +261,7 @@ export function InputPanel({
                       if (mode === 'all') setTab('text');
                     }
                   }}
-                  className="flex items-center gap-2 rounded-lg border bg-bg-subtle px-3 py-2 text-left text-xs text-text-muted transition-colors hover:border-brand-300 hover:text-text"
-                  style={{ borderColor: 'var(--border)' }}
+                  className="flex items-center gap-2 rounded-lg bg-bg-subtle px-3 py-2 text-left text-xs text-text-muted transition-colors hover:bg-bg-muted hover:text-text"
                 >
                   <span className="truncate">{ex.label}</span>
                 </button>
@@ -298,7 +270,36 @@ export function InputPanel({
           </div>
         )}
       </div>
-    </div>
+
+      <footer className="grid gap-3 border-t bg-bg-subtle/70 px-4 py-3.5 sm:grid-cols-[repeat(3,minmax(0,1fr))_auto] sm:items-end sm:px-5" style={{ borderColor: 'var(--border)' }}>
+        <Select label="输出语言" value={language} onChange={setLanguage} options={LANGUAGES} />
+        <Select
+          label="内容深度"
+          value={depth}
+          onChange={(v) => setDepth(v as Depth)}
+          options={DEPTHS.map((d) => ({ value: d, label: DEPTH_LABEL[d] }))}
+        />
+        <Select
+          label="整理方式"
+          value={purpose}
+          onChange={(v) => setPurpose(v as Purpose)}
+          options={PURPOSES.map((p) => ({ value: p, label: PURPOSE_LABEL[p] }))}
+        />
+        <button type="button" onClick={submit} disabled={!ready || busy} className="btn btn-primary h-11 w-full px-6 text-sm sm:w-auto">
+          {busy ? (
+            <>
+              <Spinner />
+              生成中…
+            </>
+          ) : (
+            <>
+              生成脑图
+              <span aria-hidden="true">→</span>
+            </>
+          )}
+        </button>
+      </footer>
+    </section>
   );
 }
 
@@ -323,9 +324,9 @@ function Select({
   options: { value: string; label: string }[];
 }) {
   return (
-    <label className="block">
-      <span className="mb-1 block text-[11px] text-text-muted">{label}</span>
-      <select value={value} onChange={(e) => onChange(e.target.value)} className="field h-9 cursor-pointer py-0 text-[13px]">
+    <label className="block min-w-0">
+      <span className="mb-0.5 block text-[10px] font-medium text-text-subtle">{label}</span>
+      <select value={value} onChange={(e) => onChange(e.target.value)} className="h-7 w-full cursor-pointer bg-transparent pr-2 text-[13px] font-semibold text-text outline-none">
         {options.map((o) => (
           <option key={o.value} value={o.value}>
             {o.label}

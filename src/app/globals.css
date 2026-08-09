@@ -179,6 +179,22 @@
     background: color-mix(in srgb, var(--surface) 92%, transparent);
     box-shadow: 0 1px 2px rgb(15 23 42 / 0.04), 0 18px 48px rgb(15 23 42 / 0.06);
   }
+  .workspace-stage {
+    background:
+      radial-gradient(44rem 30rem at 78% 46%, rgb(37 99 235 / 0.075), transparent 72%),
+      radial-gradient(circle at 1px 1px, var(--border) 1px, transparent 0);
+    background-size: auto, 24px 24px;
+  }
+  .input-composer {
+    box-shadow:
+      0 1px 2px rgb(15 23 42 / 0.04),
+      0 24px 70px rgb(19 46 78 / 0.1);
+  }
+  .dark .input-composer {
+    box-shadow:
+      0 1px 2px rgb(0 0 0 / 0.24),
+      0 24px 70px rgb(0 0 0 / 0.24);
+  }
   .policy-content h2 {
     @apply mt-9 text-xl font-bold tracking-tight first:mt-0;
   }
