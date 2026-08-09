@@ -100,7 +100,7 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
         const body = (await res.json()) as Partial<GenerateResponse> & { error?: { message?: string; code?: string } };
         if (!res.ok) {
           trackEvent('mindmap_generation_failed', { input_type: inputType, error_code: body?.error?.code ?? 'request_failed' });
-          setError(body?.error?.message ?? '生成失败，请重试');
+          setError(body?.error?.message ?? 'Generation failed. Please try again.');
           return;
         }
         const data = body as GenerateResponse;
@@ -120,7 +120,7 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
         setShareUrl(null);
       } catch {
         trackEvent('mindmap_generation_failed', { input_type: inputType, error_code: 'network_error' });
-        setError('网络异常，请重试');
+        setError('Network error. Please try again.');
       } finally {
         setBusy(false);
       }
@@ -145,14 +145,14 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
           });
       const body = (await res.json()) as { id?: string; error?: { code?: string } };
       if (!res.ok) {
-        setError(body?.error?.code === 'login_required' ? '请先登录再保存' : '保存失败');
+        setError(body?.error?.code === 'login_required' ? 'Please sign in before saving' : 'Could not save');
         return null;
       }
       if (body.id) setSavedId(body.id);
       markSaved();
       return body.id ?? savedId;
     } catch {
-      setError('保存失败，请检查网络后重试');
+      setError('Could not save. Check your connection and try again.');
       return null;
     } finally {
       setSaving(false);
@@ -170,9 +170,9 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
       });
       const body = (await res.json()) as { shareSlug?: string };
       if (res.ok && body.shareSlug) setShareUrl(`${location.origin}/m/${body.shareSlug}`);
-      else setError('分享链接生成失败');
+      else setError('Could not create a share link');
     } catch {
-      setError('分享失败，请检查网络后重试');
+      setError('Sharing failed. Check your connection and try again.');
     }
   }, [savedId, save]);
 
@@ -191,11 +191,11 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
               </h1>
               {subtitle && <p className="mt-5 max-w-md text-pretty text-sm leading-7 text-text-muted sm:text-[15px]">{subtitle}</p>}
 
-              <div className="mt-8 hidden space-y-4 lg:block" aria-label="生成流程">
+              <div className="mt-8 hidden space-y-4 lg:block" aria-label="How generation works">
                 {[
-                  ['01', '输入内容', '文本、文件或链接'],
-                  ['02', '理解结构', '提炼主题与层级'],
-                  ['03', '编辑带走', '保留来源，可导出'],
+                  ['01', 'Add content', 'Text, a file or a link'],
+                  ['02', 'Find the structure', 'Topics and hierarchy extracted'],
+                  ['03', 'Edit and export', 'Sources kept, ready to export'],
                 ].map(([step, label, detail], index) => (
                   <div key={step} className="group relative flex items-center gap-3.5">
                     {index < 2 && <span className="absolute left-[0.45rem] top-5 h-5 w-px bg-border-base" aria-hidden="true" />}
@@ -228,7 +228,7 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
           onSave={save}
           onShare={share}
           onReset={() => {
-            if (dirty && !confirm('当前脑图尚未保存，确定要新建吗？')) return;
+            if (dirty && !confirm('This map has not been saved. Start a new one anyway?')) return;
             setFormatOpen(false);
             useEditor.setState({ map: null, dirty: false, selectedId: null, editingId: null });
           }}
@@ -250,9 +250,9 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
           className="border-t px-4 py-2 text-[11px] text-text-subtle"
           style={{ borderColor: 'var(--border)' }}
         >
-          <kbd className="font-sans">双指 / 滚轮</kbd> 平移 · <kbd className="font-sans">双击</kbd> 编辑 · <kbd className="font-sans">Tab</kbd> 子节点 ·{' '}
-          <kbd className="font-sans">Enter</kbd> 同级 · <kbd className="font-sans">空格</kbd> 折叠 ·{' '}
-          <kbd className="font-sans">Delete</kbd> 删除
+          <kbd className="font-sans">Two fingers / scroll</kbd> pan · <kbd className="font-sans">Double-click</kbd> edit · <kbd className="font-sans">Tab</kbd> child ·{' '}
+          <kbd className="font-sans">Enter</kbd> sibling · <kbd className="font-sans">Space</kbd> collapse ·{' '}
+          <kbd className="font-sans">Delete</kbd> remove
         </p>
       </div>
     </ReactFlowProvider>

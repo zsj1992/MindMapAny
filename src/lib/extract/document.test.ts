@@ -49,11 +49,11 @@ async function run() {
     }),
   });
   assert.deepEqual(pptx.blocks, [
-    { text: '产品定位', location: '第 1 页' },
-    { text: '市场规模 持续增长', location: '第 2 页' },
+    { text: '产品定位', location: 'Slide 1' },
+    { text: '市场规模 持续增长', location: 'Slide 2' },
   ]);
   const { chunks } = chunkDocument(pptx, 100);
-  assert.equal(chunks[0]?.hint, '第 1 页');
+  assert.equal(chunks[0]?.hint, 'Slide 1');
 
   const epub = await extractDocument({
     filename: 'guide.epub',

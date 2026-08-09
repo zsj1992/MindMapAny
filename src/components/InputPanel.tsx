@@ -22,12 +22,12 @@ const icon = (path: ReactNode) => (
 const TABS = [
   {
     id: 'text',
-    label: '粘贴文本',
+    label: 'Paste text',
     icon: icon(<path strokeLinecap="round" d="M5 6h14M5 11h14M5 16h9" />),
   },
   {
     id: 'url',
-    label: '网页链接',
+    label: 'Web link',
     icon: icon(
       <>
         <circle cx="12" cy="12" r="9" />
@@ -37,7 +37,7 @@ const TABS = [
   },
   {
     id: 'pdf',
-    label: '上传文件',
+    label: 'Upload file',
     icon: icon(
       <>
         <path strokeLinejoin="round" d="M14 3v5h5" />
@@ -48,12 +48,12 @@ const TABS = [
 ] as const;
 type Tab = (typeof TABS)[number]['id'];
 
-const DEPTH_LABEL: Record<Depth, string> = { concise: '简洁', standard: '标准', detailed: '详细' };
+const DEPTH_LABEL: Record<Depth, string> = { concise: 'Concise', standard: 'Standard', detailed: 'Detailed' };
 const PURPOSE_LABEL: Record<Purpose, string> = {
-  study: '学习总结',
-  structure: '文章结构',
-  meeting: '会议整理',
-  general: '通用',
+  study: 'Study notes',
+  structure: 'Article structure',
+  meeting: 'Meeting notes',
+  general: 'General',
 };
 const LANGUAGES = [
   { value: 'zh-CN', label: '简体中文' },
@@ -99,7 +99,7 @@ export function InputPanel({
   const [url, setUrl] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [dragging, setDragging] = useState(false);
-  const [language, setLanguage] = useState('zh-CN');
+  const [language, setLanguage] = useState('en');
   const [depth, setDepth] = useState<Depth>('standard');
   const [purpose, setPurpose] = useState<Purpose>('general');
   const fileRef = useRef<HTMLInputElement>(null);
@@ -179,11 +179,11 @@ export function InputPanel({
             <textarea
               value={text}
               onChange={(e) => setText(e.target.value)}
-              placeholder="粘贴文章、笔记或任意长文本…"
+              placeholder="Paste an article, your notes, or any long text…"
               className="field h-40 resize-none border-0 bg-bg-subtle p-4 text-sm leading-7 shadow-none sm:h-44"
             />
             <span className="pointer-events-none absolute bottom-3 right-3 text-xs tabular-nums text-text-subtle">
-              {text.length > 0 && `${text.length} 字`}
+              {text.length > 0 && `${text.length} characters`}
             </span>
           </div>
         )}
@@ -194,11 +194,11 @@ export function InputPanel({
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && submit()}
-              placeholder={mode === 'web' ? '粘贴网页文章链接…' : 'https://example.com/article'}
+              placeholder={mode === 'web' ? 'Paste a link to a web article…' : 'https://example.com/article'}
               className="field h-14 border-0 bg-bg-subtle px-4 text-sm shadow-none"
             />
             <p className="mt-2 truncate px-1 text-[11px] text-text-subtle">
-              {copy?.hint ?? '暂不支持需要登录、有反爬保护或纯 JS 渲染的页面'}
+              {copy?.hint ?? 'Pages requiring a login, behind anti-bot protection, or rendered purely in JavaScript are not supported yet'}
             </p>
           </div>
         )}
@@ -227,13 +227,13 @@ export function InputPanel({
               <>
                 <span className="font-medium text-text">{file.name}</span>
                 <span className="text-xs text-text-subtle">
-                  {(file.size / 1024 / 1024).toFixed(1)} MB · 点击更换
+                  {(file.size / 1024 / 1024).toFixed(1)} MB · click to replace
                 </span>
               </>
             ) : (
               <>
-                <span>拖入文件，或点击选择</span>
-                <span className="text-xs text-text-subtle">{copy?.hint ?? 'PDF、DOCX、EPUB、PPTX、TXT、Markdown · 最大 20MB'}</span>
+                <span>Drop a file here, or click to choose</span>
+                <span className="text-xs text-text-subtle">{copy?.hint ?? 'PDF, DOCX, EPUB, PPTX, TXT, Markdown · 20MB max'}</span>
               </>
             )}
           </button>
@@ -251,7 +251,7 @@ export function InputPanel({
 
         {!busy && !text && !url && !file && examples.length > 0 && (
           <div className="mt-3">
-            <p className="mb-1.5 text-[11px] text-text-subtle">试试这些示例</p>
+            <p className="mb-1.5 text-[11px] text-text-subtle">Try an example</p>
             <div className="grid gap-2 sm:grid-cols-2">
               {examples.map((ex) => (
                 <button
@@ -277,15 +277,15 @@ export function InputPanel({
       </div>
 
       <footer className="grid gap-3 border-t bg-bg-subtle/70 px-4 py-3.5 sm:grid-cols-[repeat(3,minmax(0,1fr))_auto] sm:items-end sm:px-5" style={{ borderColor: 'var(--border)' }}>
-        <Select label="输出语言" value={language} onChange={setLanguage} options={LANGUAGES} />
+        <Select label="Output language" value={language} onChange={setLanguage} options={LANGUAGES} />
         <Select
-          label="内容深度"
+          label="Detail level"
           value={depth}
           onChange={(v) => setDepth(v as Depth)}
           options={DEPTHS.map((d) => ({ value: d, label: DEPTH_LABEL[d] }))}
         />
         <Select
-          label="整理方式"
+          label="Organise for"
           value={purpose}
           onChange={(v) => setPurpose(v as Purpose)}
           options={PURPOSES.map((p) => ({ value: p, label: PURPOSE_LABEL[p] }))}
@@ -294,11 +294,11 @@ export function InputPanel({
           {busy ? (
             <>
               <Spinner />
-              生成中…
+              Generating…
             </>
           ) : (
             <>
-              生成脑图
+              Generate mind map
               <span aria-hidden="true">→</span>
             </>
           )}

@@ -5,8 +5,8 @@ import { JsonLd } from '@/components/seo/JsonLd';
 import { SITE_URL, TOOL_PAGES } from '@/lib/seo/content';
 
 export const metadata: Metadata = {
-  title: 'AI 思维导图工具中心',
-  description: '使用 AI 将 PDF、Word、电子书、网页文章和长文本转换为可编辑、可追溯的多层级思维导图。',
+  title: 'AI mind map tools',
+  description: 'Use AI to turn PDFs, Word files, ebooks, web articles and long text into editable, traceable multi-level mind maps.',
   alternates: { canonical: '/tools' },
 };
 
@@ -14,7 +14,7 @@ export default function ToolsPage() {
   const jsonLd = {
     '@context': 'https://schema.org',
     '@type': 'CollectionPage',
-    name: 'MindMapAny AI 思维导图工具中心',
+    name: 'MindMapAny AI mind map tools',
     url: `${SITE_URL}/tools`,
     mainEntity: {
       '@type': 'ItemList',
@@ -33,9 +33,9 @@ export default function ToolsPage() {
       <main>
         <section className="hero-glow border-b" style={{ borderColor: 'var(--border)' }}>
           <div className="mx-auto max-w-5xl px-5 py-16 text-center sm:py-20">
-            <span className="eyebrow">按内容来源选择工具</span>
-            <h1 className="mt-5 text-4xl font-bold tracking-[-0.04em] sm:text-5xl">AI 思维导图工具中心</h1>
-            <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-text-muted">每种内容使用独立的提取流程，最终得到同样可编辑、可折叠、可回到来源的知识结构。</p>
+            <span className="eyebrow">Pick a tool by content type</span>
+            <h1 className="mt-5 text-4xl font-bold tracking-[-0.04em] sm:text-5xl">AI mind map tools</h1>
+            <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-text-muted">Each content type gets its own extraction pipeline, and they all end in the same editable, collapsible, source-linked structure.</p>
           </div>
         </section>
 
@@ -46,7 +46,7 @@ export default function ToolsPage() {
               <h2 className="mt-3 text-2xl font-bold tracking-tight"><Link href={`/tools/${tool.slug}`} className="hover:text-brand-600">{tool.title}</Link></h2>
               <p className="mt-3 text-sm leading-7 text-text-muted">{tool.description}</p>
               <div className="mt-5 flex flex-wrap gap-2">{tool.relatedKeywords.slice(0, 3).map((keyword) => <span key={keyword} className="rounded-full bg-bg-subtle px-2.5 py-1 text-[11px] text-text-muted">{keyword}</span>)}</div>
-              <Link href={`/tools/${tool.slug}`} className="mt-6 inline-flex text-sm font-semibold text-brand-600">查看工具详情 →</Link>
+              <Link href={`/tools/${tool.slug}`} className="mt-6 inline-flex text-sm font-semibold text-brand-600">View tool details →</Link>
             </article>
           ))}
         </section>

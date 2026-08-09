@@ -32,8 +32,8 @@ const GitHubMark = () => (
 );
 
 const PROVIDERS = {
-  google: { label: '使用 Google 继续', Mark: GoogleMark },
-  github: { label: '使用 GitHub 继续', Mark: GitHubMark },
+  google: { label: 'Continue with Google', Mark: GoogleMark },
+  github: { label: 'Continue with GitHub', Mark: GitHubMark },
 } as const;
 
 export function OAuthButtons({ providers, next }: { providers: ('google' | 'github')[]; next: string }) {
@@ -62,7 +62,7 @@ export function OAuthButtons({ providers, next }: { providers: ('google' | 'gith
                   <circle cx="12" cy="12" r="9" stroke="currentColor" strokeOpacity="0.25" strokeWidth="3" />
                   <path d="M21 12a9 9 0 00-9-9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
                 </svg>
-                正在跳转…
+                Redirecting…
               </>
             ) : (
               <>

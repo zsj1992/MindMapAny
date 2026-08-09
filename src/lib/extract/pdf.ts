@@ -23,7 +23,7 @@ export interface PdfInput {
 
 export async function extractPdf(input: PdfInput): Promise<ExtractedDoc> {
   if (input.data.byteLength > PDF_MAX_BYTES) {
-    throw new ExtractError('too_large', `PDF 超过 ${PDF_MAX_BYTES / 1024 / 1024}MB 限制`);
+    throw new ExtractError('too_large', `The PDF exceeds the ${PDF_MAX_BYTES / 1024 / 1024}MB limit`);
   }
 
   const notes: string[] = [];
@@ -33,11 +33,11 @@ export async function extractPdf(input: PdfInput): Promise<ExtractedDoc> {
   try {
     pdf = await getDocumentProxy(bytes);
   } catch {
-    throw new ExtractError('unsupported', 'PDF 无法解析，可能已加密或文件损坏');
+    throw new ExtractError('unsupported', 'The PDF could not be parsed — it may be encrypted or corrupt');
   }
 
   if (pdf.numPages > PDF_MAX_PAGES) {
-    notes.push(`文档共 ${pdf.numPages} 页，仅处理前 ${PDF_MAX_PAGES} 页`);
+    notes.push(`The document has ${pdf.numPages} pages; only the first ${PDF_MAX_PAGES} were processed`);
   }
 
   // mergePages: false —— 拿到逐页文本，页码映射就是数组下标，不用再猜
@@ -60,10 +60,10 @@ export async function extractPdf(input: PdfInput): Promise<ExtractedDoc> {
   });
 
   if (!blocks.length) {
-    throw new ExtractError('empty', '未提取到文本。若为扫描版 PDF，当前版本暂不支持 OCR');
+    throw new ExtractError('empty', 'No text could be extracted. Scanned PDFs are not supported yet — OCR is not available in this version.');
   }
   if (scannedPages > limited.length * 0.5) {
-    notes.push('多数页面几乎没有文本层，可能是扫描件，结果可能不完整');
+    notes.push('Most pages have almost no text layer, so this may be a scan and the result may be incomplete');
   }
 
   return {

@@ -11,26 +11,26 @@ interface Item {
 
 const BRANCHES: { title: string; y: number; children: Item[] }[] = [
   {
-    title: '研究背景',
+    title: 'Background',
     y: 52,
     children: [
-      { label: '现有方法局限', badge: 'p.2', y: 24 },
-      { label: '核心问题定义', badge: 'p.3', y: 62 },
+      { label: 'Limits of prior work', badge: 'p.2', y: 24 },
+      { label: 'Problem definition', badge: 'p.3', y: 62 },
     ],
   },
   {
-    title: '方法设计',
+    title: 'Method',
     y: 132,
     children: [
-      { label: '模型结构', badge: 'p.5', y: 104 },
-      { label: '训练策略', badge: 'p.7', y: 142 },
-      { label: '消融实验', badge: 'p.9', y: 180 },
+      { label: 'Model architecture', badge: 'p.5', y: 104 },
+      { label: 'Training strategy', badge: 'p.7', y: 142 },
+      { label: 'Ablation study', badge: 'p.9', y: 180 },
     ],
   },
   {
-    title: '结论与展望',
+    title: 'Conclusions',
     y: 212,
-    children: [{ label: '主要贡献', badge: 'p.12', y: 222 }],
+    children: [{ label: 'Key contributions', badge: 'p.12', y: 222 }],
   },
 ];
 
@@ -40,7 +40,7 @@ export function HeroMap({ className = '' }: { className?: string }) {
       viewBox="0 0 640 264"
       className={className}
       role="img"
-      aria-label="示例：一篇论文被转换成三级思维导图，节点上标注了原文页码"
+      aria-label="Example: a paper converted into a three-level mind map with source page numbers on the nodes"
     >
       <defs>
         <linearGradient id="hm-root" x1="0" y1="0" x2="1" y2="1">
@@ -65,7 +65,7 @@ export function HeroMap({ className = '' }: { className?: string }) {
       <g>
         <rect x="16" y="110" width="120" height="44" rx="11" fill="url(#hm-root)" />
         <text x="76" y="137" textAnchor="middle" className="fill-white text-[13px] font-medium">
-          研究论文
+          Research paper
         </text>
       </g>
 

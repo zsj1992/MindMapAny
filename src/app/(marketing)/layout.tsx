@@ -7,7 +7,7 @@ import { HeaderAuth } from '@/components/auth/HeaderAuth';
 export default function MarketingLayout({ children }: LayoutProps<'/'>) {
   return (
     <>
-      <a href="#main-content" className="fixed left-3 top-3 z-50 -translate-y-20 rounded-md bg-[#102f53] px-4 py-2 text-sm font-semibold text-white transition-transform focus:translate-y-0">跳到主要内容</a>
+      <a href="#main-content" className="fixed left-3 top-3 z-50 -translate-y-20 rounded-md bg-[#102f53] px-4 py-2 text-sm font-semibold text-white transition-transform focus:translate-y-0">Skip to main content</a>
       <header
         className="sticky top-0 z-40 border-b bg-surface/85 backdrop-blur-xl"
         style={{ borderColor: 'var(--border)' }}
@@ -19,16 +19,16 @@ export default function MarketingLayout({ children }: LayoutProps<'/'>) {
 
           <nav className="hidden items-center gap-8 text-[13px] font-medium text-text-muted md:flex">
             <Link href="/tools" className="transition-colors hover:text-text">
-              工具
+              Tools
             </Link>
             <Link href="/blog" className="transition-colors hover:text-text">
-              博客
+              Blog
             </Link>
             <Link href="/pricing" className="transition-colors hover:text-text">
-              价格
+              Pricing
             </Link>
             <Link href="/#faq" className="transition-colors hover:text-text">
-              常见问题
+              FAQ
             </Link>
           </nav>
 

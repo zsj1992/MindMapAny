@@ -6,7 +6,7 @@ import { getPublicBySlug } from '@/lib/db/repositories/maps';
  * 信息量其实比缩小到看不清的截图更高。
  */
 
-export const alt = 'MindMapAny 思维导图';
+export const alt = 'MindMapAny mind map';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
 
@@ -67,7 +67,7 @@ export default async function OgImage({ params }: { params: Promise<{ slug: stri
             ))}
           </div>
         </div>
-        <div style={{ display: 'flex', fontSize: 24, color: '#94a3b8' }}>MindMapAny · 把任何内容变成脑图</div>
+        <div style={{ display: 'flex', fontSize: 24, color: '#94a3b8' }}>MindMapAny · turn any content into a mind map</div>
       </div>
     ),
     size,

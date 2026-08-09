@@ -1,54 +1,74 @@
 {
-  "generatedAt": "2026-08-08",
+  "generatedAt": "2026-08-10",
+  "supersedes": "2026-08-08 Chinese-keyword plan, void after the site switched to English",
+  "locale": "en",
   "method": "intent-first with sampled SERP validation",
   "volumeSource": null,
-  "volumeNote": "DataForSEO and GSC were unavailable; unknown volumes are deliberately null.",
+  "volumeNote": "DataForSEO and GSC were unavailable; unknown volumes are deliberately null. English volumes and difficulty differ substantially from the earlier Chinese plan and must be re-measured, not carried over.",
+  "headTermPolicy": "Head terms such as 'mind map' and 'mind map generator' are dominated by established tools and are not first-phase targets.",
   "pillar": {
-    "title": "AI 思维导图完整指南",
-    "keyword": "AI 思维导图",
+    "title": "The complete guide to AI mind maps",
+    "keyword": "ai mind map",
     "volume": null,
     "url": "/blog/ai-mind-map-guide",
     "status": "written"
   },
   "clusters": [
     {
-      "name": "内容输入工具",
+      "name": "Input-type tools",
       "intent": "transactional",
       "posts": [
-        { "keyword": "PDF 转思维导图", "url": "/tools/pdf-to-mind-map", "status": "written" },
-        { "keyword": "文本转思维导图", "url": "/tools/text-to-mind-map", "status": "written" },
-        { "keyword": "YouTube 转思维导图", "url": "/tools/youtube-to-mind-map", "status": "written" },
-        { "keyword": "网页转思维导图", "url": "/tools/webpage-to-mind-map", "status": "written" }
+        { "keyword": "pdf to mind map", "url": "/tools/pdf-to-mind-map", "status": "written" },
+        { "keyword": "text to mind map", "url": "/tools/text-to-mind-map", "status": "written" },
+        { "keyword": "web page to mind map", "url": "/tools/webpage-to-mind-map", "status": "written" },
+        { "keyword": "word to mind map", "url": "/tools/docx-to-mind-map", "status": "planned", "note": "Feature already live at /app/docx; landing page missing." },
+        { "keyword": "epub to mind map", "url": "/tools/epub-to-mind-map", "status": "planned", "note": "Feature already live at /app/epub; landing page missing." },
+        { "keyword": "powerpoint to mind map", "url": "/tools/pptx-to-mind-map", "status": "planned", "note": "Feature already live at /app/pptx; landing page missing." }
       ]
     },
     {
-      "name": "学习与研究",
+      "name": "Study and research",
       "intent": "informational",
       "posts": [
-        { "keyword": "AI 学习笔记", "url": "/blog/ai-study-notes-guide", "status": "planned" },
-        { "keyword": "论文阅读工作流", "url": "/blog/research-paper-reading-workflow", "status": "planned" },
-        { "keyword": "课程视频笔记", "url": "/blog/youtube-course-notes", "status": "planned" }
+        { "keyword": "ai study notes", "url": "/blog/ai-study-notes-guide", "status": "planned" },
+        { "keyword": "how to read research papers", "url": "/blog/research-paper-reading-workflow", "status": "planned" },
+        { "keyword": "revision mind map", "url": "/blog/textbook-chapter-revision-map", "status": "planned" }
       ]
     },
     {
-      "name": "方法与质量",
+      "name": "Method and quality",
       "intent": "informational",
       "posts": [
-        { "keyword": "PDF 转思维导图教程", "url": "/blog/how-to-convert-pdf-to-mind-map", "status": "written" },
-        { "keyword": "思维导图和摘要的区别", "url": "/blog/mind-map-vs-summary", "status": "written" },
-        { "keyword": "如何用 AI 生成思维导图", "url": "/blog/how-to-create-a-mind-map-with-ai", "status": "planned" },
-        { "keyword": "AI 思维导图质量", "url": "/blog/ai-mind-map-quality-checklist", "status": "planned" }
+        { "keyword": "how to convert pdf to mind map", "url": "/blog/how-to-convert-pdf-to-mind-map", "status": "written" },
+        { "keyword": "mind map vs summary", "url": "/blog/mind-map-vs-summary", "status": "written" },
+        { "keyword": "how to make a mind map with ai", "url": "/blog/how-to-create-a-mind-map-with-ai", "status": "planned" },
+        { "keyword": "ai mind map accuracy", "url": "/blog/ai-mind-map-quality-checklist", "status": "planned" }
       ]
     },
     {
-      "name": "选择与比较",
+      "name": "Choice and comparison",
       "intent": "commercial investigation",
       "posts": [
-        { "keyword": "AI 思维导图工具", "url": "/blog/best-ai-mind-map-tools", "status": "planned" },
-        { "keyword": "MindMapAny vs Mapify", "url": "/blog/mindmapany-vs-mapify", "status": "planned" },
-        { "keyword": "Mapify 替代品", "url": "/blog/mapify-alternatives", "status": "planned" },
-        { "keyword": "PDF 转思维导图工具", "url": "/blog/best-pdf-to-mind-map-tools", "status": "planned" }
+        { "keyword": "best ai mind map tools", "url": "/blog/best-ai-mind-map-tools", "status": "planned" },
+        { "keyword": "mindmapany vs mapify", "url": "/blog/mindmapany-vs-mapify", "status": "planned" },
+        { "keyword": "mapify alternatives", "url": "/blog/mapify-alternatives", "status": "planned" },
+        { "keyword": "best pdf to mind map tool", "url": "/blog/best-pdf-to-mind-map-tools", "status": "planned" }
       ]
+    },
+    {
+      "name": "Traceability differentiator",
+      "intent": "informational",
+      "note": "Competitors generally cannot trace output back to the source; these queries have no strong incumbent page.",
+      "posts": [
+        { "keyword": "mind map with page citations", "url": "/blog/mind-map-with-page-numbers", "status": "planned" },
+        { "keyword": "verify ai summary accuracy", "url": "/blog/verify-ai-summaries-against-source", "status": "planned" }
+      ]
+    }
+  ],
+  "removed": [
+    {
+      "url": "/tools/youtube-to-mind-map",
+      "reason": "Previously recorded as written, but the page returns 404 and YouTube input is not implemented (/api/generate rejects it). Do not build until the feature ships."
     }
   ]
 }

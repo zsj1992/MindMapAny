@@ -2,49 +2,49 @@ import type { Metadata } from 'next';
 import { PolicyPage } from '@/components/site/PolicyPage';
 
 export const metadata: Metadata = {
-  title: '隐私政策',
-  description: '了解 MindMapAny 如何收集、使用、保存和保护你的个人信息与内容。',
+  title: 'Privacy Policy',
+  description: 'How MindMapAny collects, uses, stores and protects your personal information and content.',
   alternates: { canonical: '/privacy' },
 };
 
 export default function PrivacyPage() {
   return (
     <PolicyPage
-      eyebrow="法律与隐私"
-      title="隐私政策"
-      description="我们只收集提供思维导图服务所必需的信息，并尽量让数据的用途保持清晰、有限和可控。"
+      eyebrow="Legal & privacy"
+      title="Privacy Policy"
+      description="We collect only what the mind mapping service needs, and we try to keep the purpose of that data clear, limited and under your control."
     >
-      <h2>1. 适用范围</h2>
-      <p>本政策适用于 MindMapAny 网站、工作台及相关服务。使用服务即表示你已阅读本政策；如你不同意，请停止使用服务。</p>
+      <h2>1. Scope</h2>
+      <p>This policy covers the MindMapAny website, workbench and related services. Using the service means you have read this policy; if you do not agree with it, please stop using the service.</p>
 
-      <h2>2. 我们收集的信息</h2>
+      <h2>2. Information we collect</h2>
       <ul>
-        <li><strong>账户信息：</strong>登录邮箱、昵称、头像及身份验证所需标识。</li>
-        <li><strong>你提交的内容：</strong>文本、文档或网页链接，以及由此生成、编辑和保存的思维导图。</li>
-        <li><strong>使用与设备信息：</strong>IP 地址、浏览器类型、访问时间、错误日志、功能使用情况和必要的安全记录。</li>
-        <li><strong>交易信息：</strong>套餐、订单和订阅状态。完整支付卡信息由 Creem 等支付服务商处理，我们不会保存完整卡号。</li>
+        <li><strong>Account information:</strong> login email, display name, avatar, and the identifiers needed for authentication.</li>
+        <li><strong>Content you submit:</strong> text, documents or web links, along with the mind maps generated, edited and saved from them.</li>
+        <li><strong>Usage and device information:</strong> IP address, browser type, access times, error logs, feature usage and necessary security records.</li>
+        <li><strong>Transaction information:</strong> plan, order and subscription status. Full payment card details are handled by payment providers such as Creem; we never store full card numbers.</li>
       </ul>
 
-      <h2>3. 信息的使用方式</h2>
-      <p>我们使用这些信息来提供和改进服务、生成及保存脑图、维护账户与额度、处理订阅、预防欺诈和滥用、回复支持请求，以及履行法律义务。未经你的明确同意，我们不会出售你的个人信息。</p>
+      <h2>3. How we use information</h2>
+      <p>We use this information to provide and improve the service, generate and store mind maps, maintain accounts and credit balances, process subscriptions, prevent fraud and abuse, respond to support requests, and meet our legal obligations. We do not sell your personal information without your explicit consent.</p>
 
-      <h2>4. AI 与第三方服务</h2>
-      <p>为完成内容提取、结构化和生成，我们可能把完成任务所需的内容片段发送给受托的 AI 模型、云基础设施、身份验证、分析和支付服务商。我们要求这些服务商仅按约定目的处理数据。请勿提交密码、支付卡号、医疗档案或其他不必要的高度敏感信息。</p>
+      <h2>4. AI and third-party services</h2>
+      <p>To extract, structure and generate content we may send the portions of your content required for the task to trusted AI model, cloud infrastructure, authentication, analytics and payment providers. We require those providers to process the data only for the agreed purpose. Please do not submit passwords, payment card numbers, medical records or other highly sensitive information that the service does not need.</p>
 
-      <h2>5. Cookies 与本地存储</h2>
-      <p>我们使用必要的 Cookie 或本地存储来维持登录状态、保存主题偏好、保障安全和防止滥用。若未来使用非必要的分析或广告 Cookie，我们会在适用法律要求的地区提供相应的告知与选择。</p>
+      <h2>5. Cookies and local storage</h2>
+      <p>We use essential cookies and local storage to keep you signed in, remember your theme preference, and maintain security and abuse prevention. If we ever use non-essential analytics or advertising cookies, we will provide the corresponding notice and choices in regions where applicable law requires them.</p>
 
-      <h2>6. 保存期限与安全</h2>
-      <p>我们仅在提供服务、解决争议及履行法律义务所需期间保存信息。你删除内容或账户后，相关数据会从在线系统中删除或匿名化；受限于备份轮换、安全调查及法定留存要求，残留副本可能在有限时间内保留。我们采用合理的访问控制、加密传输和监控措施，但任何网络服务都无法承诺绝对安全。</p>
+      <h2>6. Retention and security</h2>
+      <p>We keep information only as long as needed to provide the service, resolve disputes and meet legal obligations. When you delete content or your account, the related data is deleted or anonymised in our live systems; residual copies may persist for a limited time due to backup rotation, security investigations and statutory retention requirements. We apply reasonable access controls, encrypted transport and monitoring, but no online service can promise absolute security.</p>
 
-      <h2>7. 你的权利</h2>
-      <p>你可以请求访问、更正、导出或删除个人信息，也可以反对或限制特定处理。我们会根据你的所在地和适用法律处理请求。请使用账户邮箱发送请求，以便核验身份。</p>
+      <h2>7. Your rights</h2>
+      <p>You may request access to, correction of, export of or deletion of your personal information, and you may object to or restrict certain processing. We handle requests according to your location and applicable law. Please send requests from your account email so we can verify your identity.</p>
 
-      <h2>8. 儿童隐私</h2>
-      <p>服务不面向未满 13 周岁的儿童，也不以明知方式收集其个人信息。未成年人应在监护人同意和指导下使用服务。</p>
+      <h2>8. Children&apos;s privacy</h2>
+      <p>The service is not directed at children under 13 and we do not knowingly collect their personal information. Minors should use the service with the consent and guidance of a parent or guardian.</p>
 
-      <h2>9. 政策更新与联系</h2>
-      <p>重大变更会通过网站或账户通知说明。隐私问题或数据权利请求请联系 <a href="mailto:support@mindmapany.com">support@mindmapany.com</a>，我们通常会在 3 个工作日内回复。</p>
+      <h2>9. Policy updates and contact</h2>
+      <p>We will explain material changes through the website or an account notice. For privacy questions or data rights requests, contact <a href="mailto:support@mindmapany.com">support@mindmapany.com</a>. We usually reply within 3 business days.</p>
     </PolicyPage>
   );
 }

@@ -63,24 +63,24 @@ export function checkGate(opts: {
   const limits = PLAN_LIMITS[opts.plan];
 
   if (!limits.kinds.includes(opts.kind)) {
-    return { ok: false, code: 'plan_kind', reason: `当前套餐不支持${kindLabel(opts.kind)}输入，请升级` };
+    return { ok: false, code: 'plan_kind', reason: `Your current plan does not support ${kindLabel(opts.kind)} input — please upgrade` };
   }
   if (!limits.tiers.includes(opts.tier)) {
-    return { ok: false, code: 'plan_tier', reason: '高质量模型需要 Pro 套餐' };
+    return { ok: false, code: 'plan_tier', reason: 'The high-quality model requires the Pro plan' };
   }
   if (opts.chars > limits.maxChars) {
-    return { ok: false, code: 'too_large', reason: `内容长度超出当前套餐上限（${limits.maxChars.toLocaleString()} 字符）` };
+    return { ok: false, code: 'too_large', reason: `Content exceeds your plan limit of ${limits.maxChars.toLocaleString()} characters` };
   }
 
   const cost = estimateCredits(opts);
   if (opts.credits < cost) {
-    return { ok: false, code: 'insufficient_credits', reason: `积分不足，本次需要 ${cost} 积分` };
+    return { ok: false, code: 'insufficient_credits', reason: `Not enough credits — this run needs ${cost}` };
   }
   return { ok: true };
 }
 
 export function kindLabel(kind: InputKind): string {
-  return { text: '文本', pdf: 'PDF', web: '网页', youtube: 'YouTube' }[kind];
+  return { text: 'text', pdf: 'PDF', web: 'web page', youtube: 'YouTube' }[kind];
 }
 
 /**

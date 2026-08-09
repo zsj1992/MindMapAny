@@ -11,24 +11,24 @@ import {
 import { useEditor } from '@/store/editor';
 
 const LAYOUTS: { value: MapLayout; label: string }[] = [
-  { value: 'balanced', label: '双侧平衡' },
-  { value: 'right', label: '向右展开' },
-  { value: 'left', label: '向左展开' },
+  { value: 'balanced', label: 'Balanced' },
+  { value: 'right', label: 'Rightward' },
+  { value: 'left', label: 'Leftward' },
 ];
 
 const THEMES: { value: MapTheme; label: string }[] = [
-  { value: 'indigo', label: '品牌' },
-  { value: 'ocean', label: '海洋' },
-  { value: 'coral', label: '暖色' },
-  { value: 'forest', label: '森林' },
-  { value: 'violet', label: '紫罗兰' },
-  { value: 'mono', label: '中性' },
+  { value: 'indigo', label: 'Brand' },
+  { value: 'ocean', label: 'Ocean' },
+  { value: 'coral', label: 'Warm' },
+  { value: 'forest', label: 'Forest' },
+  { value: 'violet', label: 'Violet' },
+  { value: 'mono', label: 'Neutral' },
 ];
 
 const FONTS: { value: MapFont; label: string }[] = [
-  { value: 'sans', label: '现代无衬线' },
-  { value: 'serif', label: '阅读衬线体' },
-  { value: 'mono', label: '等宽字体' },
+  { value: 'sans', label: 'Modern sans' },
+  { value: 'serif', label: 'Reading serif' },
+  { value: 'mono', label: 'Monospace' },
 ];
 
 export function FormatPanel({ onClose }: { onClose: () => void }) {
@@ -39,21 +39,21 @@ export function FormatPanel({ onClose }: { onClose: () => void }) {
 
   return (
     <aside
-      aria-label="脑图格式"
+      aria-label="Mind map format"
       className="absolute inset-y-3 right-3 z-20 flex w-[min(22rem,calc(100%-1.5rem))] flex-col overflow-hidden rounded-2xl border border-border-base bg-surface/95 shadow-2xl backdrop-blur-xl"
     >
       <div className="flex items-center justify-between border-b border-border-base px-5 py-4">
         <div>
-          <h2 className="text-sm font-semibold tracking-tight text-text">脑图格式</h2>
-          <p className="mt-0.5 text-[11px] text-text-subtle">更改会随脑图一起保存</p>
+          <h2 className="text-sm font-semibold tracking-tight text-text">Map format</h2>
+          <p className="mt-0.5 text-[11px] text-text-subtle">Changes are saved with the map</p>
         </div>
-        <button type="button" onClick={onClose} className="btn btn-ghost h-8 w-8 p-0" aria-label="关闭格式面板">
+        <button type="button" onClick={onClose} className="btn btn-ghost h-8 w-8 p-0" aria-label="Close format panel">
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4"><path d="M6 6l12 12M18 6L6 18" /></svg>
         </button>
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5">
-        <Section title="布局骨架" subtitle="改变分支展开方向">
+        <Section title="Layout" subtitle="Change which way branches expand">
           <div className="grid grid-cols-3 gap-2">
             {LAYOUTS.map((item) => (
               <button
@@ -74,7 +74,7 @@ export function FormatPanel({ onClose }: { onClose: () => void }) {
           </div>
         </Section>
 
-        <Section title="配色" subtitle="一级分支自动继承主题色">
+        <Section title="Colour" subtitle="Top-level branches inherit the theme colour">
           <div className="grid grid-cols-3 gap-2">
             {THEMES.map((item) => {
               const palette = THEME_COLORS[item.value];
@@ -99,9 +99,9 @@ export function FormatPanel({ onClose }: { onClose: () => void }) {
           </div>
         </Section>
 
-        <Section title="全局文字" subtitle="应用到全部节点">
+        <Section title="Typography" subtitle="Applies to every node">
           <label className="block text-[11px] font-medium text-text-muted">
-            字体
+            Font
             <select
               value={format.font}
               onChange={(e) => updateFormat({ font: e.target.value as MapFont })}
@@ -111,20 +111,20 @@ export function FormatPanel({ onClose }: { onClose: () => void }) {
             </select>
           </label>
           <div className="mt-3 grid grid-cols-2 gap-3">
-            <SelectControl label="字号" value={format.fontSize} values={[12, 14, 16]} suffix=" px" onChange={(value) => updateFormat({ fontSize: value as 12 | 14 | 16 })} />
-            <SelectControl label="字重" value={format.fontWeight} values={[400, 500, 600]} onChange={(value) => updateFormat({ fontWeight: value as 400 | 500 | 600 })} />
+            <SelectControl label="Size" value={format.fontSize} values={[12, 14, 16]} suffix=" px" onChange={(value) => updateFormat({ fontSize: value as 12 | 14 | 16 })} />
+            <SelectControl label="Weight" value={format.fontWeight} values={[400, 500, 600]} onChange={(value) => updateFormat({ fontWeight: value as 400 | 500 | 600 })} />
           </div>
           <div className="mt-3 grid grid-cols-3 gap-2">
-            <StyleButton label="斜体" active={format.italic} onClick={() => updateFormat({ italic: !format.italic })}><em>I</em></StyleButton>
-            <StyleButton label="下划线" active={format.underline} onClick={() => updateFormat({ underline: !format.underline })}><span className="underline">U</span></StyleButton>
-            <StyleButton label="删除线" active={format.strikethrough} onClick={() => updateFormat({ strikethrough: !format.strikethrough })}><span className="line-through">S</span></StyleButton>
+            <StyleButton label="Italic" active={format.italic} onClick={() => updateFormat({ italic: !format.italic })}><em>I</em></StyleButton>
+            <StyleButton label="Underline" active={format.underline} onClick={() => updateFormat({ underline: !format.underline })}><span className="underline">U</span></StyleButton>
+            <StyleButton label="Strikethrough" active={format.strikethrough} onClick={() => updateFormat({ strikethrough: !format.strikethrough })}><span className="line-through">S</span></StyleButton>
           </div>
         </Section>
 
-        <Section title="内容呈现" subtitle="增强复杂脑图的可读性" last>
-          <Toggle label="分支自动编号" description="按层级显示 1、1.1、1.2" checked={format.numbering} onChange={(numbering) => updateFormat({ numbering })} />
+        <Section title="Presentation" subtitle="Improve readability on complex maps" last>
+          <Toggle label="Auto-number branches" description="Shows 1, 1.1, 1.2 by level" checked={format.numbering} onChange={(numbering) => updateFormat({ numbering })} />
           <div className="mt-3">
-            <Toggle label="主题朝向中心" description="左侧文字右对齐，阅读路径更清楚" checked={format.alignTopics} onChange={(alignTopics) => updateFormat({ alignTopics })} />
+            <Toggle label="Face topics inward" description="Right-aligns text on the left side for a clearer reading path" checked={format.alignTopics} onChange={(alignTopics) => updateFormat({ alignTopics })} />
           </div>
         </Section>
       </div>

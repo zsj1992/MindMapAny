@@ -3,37 +3,40 @@ import Link from 'next/link';
 import { PolicyPage } from '@/components/site/PolicyPage';
 
 export const metadata: Metadata = {
-  title: '退款与取消政策',
-  description: '了解 MindMapAny 订阅取消、退款资格、申请方式与处理时间。',
+  title: 'Refund & Cancellation Policy',
+  description: 'How to cancel a MindMapAny subscription, who qualifies for a refund, how to request one, and how long it takes.',
   alternates: { canonical: '/refund-policy' },
 };
 
 export default function RefundPolicyPage() {
   return (
-    <PolicyPage eyebrow="账单保障" title="退款与取消政策" description="我们希望账单清楚、取消简单，并在出现重复扣款或服务问题时及时解决。">
-      <h2>1. 随时取消订阅</h2>
-      <p>你可以随时进入<Link href="/billing">订阅管理页面</Link>，通过 Creem Customer Portal 取消订阅。除非门户中另有明确说明，取消在当前已付周期结束时生效；在此之前你仍可使用相应套餐，之后不会再次扣款。</p>
+    <PolicyPage
+      eyebrow="Billing protection"
+      title="Refund & Cancellation Policy"
+      description="We want billing to be clear, cancellation to be easy, and duplicate charges or service problems to be resolved quickly."
+    >
+      <h2>1. Cancel any time</h2>
+      <p>You can cancel your subscription at any time from the <Link href="/billing">subscription management page</Link> via the Creem Customer Portal. Unless the portal states otherwise, cancellation takes effect at the end of the billing period you have already paid for. You keep access to your plan until then, and you will not be charged again.</p>
 
-      <h2>2. 退款申请期限</h2>
+      <h2>2. Refund windows</h2>
       <ul>
-        <li><strong>首次购买：</strong>在首次付款后的 14 天内可以申请退款。</li>
-        <li><strong>自动续费：</strong>在续费扣款后的 7 天内可以申请退款。</li>
-        <li><strong>重复或错误扣款：</strong>经核实后将全额退还，不受上述期限限制。</li>
+        <li><strong>First purchase:</strong> you may request a refund within 14 days of your first payment.</li>
+        <li><strong>Renewals:</strong> you may request a refund within 7 days of a renewal charge.</li>
+        <li><strong>Duplicate or incorrect charges:</strong> refunded in full once verified, with no time limit.</li>
       </ul>
-      <p>在适用法律允许的范围内，若账户已大量使用服务、存在滥用行为，或请求涉及已消耗的大量计算资源，我们可能拒绝或按比例处理退款。消费者依法享有的强制性权利不受影响。</p>
+      <p>To the extent permitted by law, we may decline or pro-rate a refund where an account has consumed a large amount of service, shows signs of abuse, or where the request covers substantial compute already spent. Your mandatory statutory consumer rights are not affected.</p>
 
-      <h2>3. 如何申请</h2>
-      <p>请从购买时使用的邮箱发送邮件至 <a href="mailto:support@mindmapany.com?subject=MindMapAny%20退款申请">support@mindmapany.com</a>，附上订单号、购买邮箱、申请原因和希望退款的交易。你也可以在 Creem Customer Portal 中查看订单并请求支持。</p>
+      <h2>3. How to request a refund</h2>
+      <p>Email <a href="mailto:support@mindmapany.com?subject=MindMapAny%20refund%20request">support@mindmapany.com</a> from the address you used at purchase, including your order number, purchase email, the reason for the request, and which transaction you would like refunded. You can also view your orders and request support from the Creem Customer Portal.</p>
 
-      <h2>4. 处理时间</h2>
-      <p>我们通常会在 3 个工作日内回复。退款批准后由 Creem 按原支付方式处理，到账时间通常为 5–10 个工作日，具体取决于银行、地区和支付方式。</p>
+      <h2>4. Processing times</h2>
+      <p>We usually reply within 3 business days. Approved refunds are processed by Creem back to your original payment method and typically appear within 5–10 business days, depending on your bank, region and payment method.</p>
 
-      <h2>5. 套餐变更</h2>
-      <p>升级、降级或按比例计费的金额会在确认前显示。若门户暂不支持某项变更，请联系我们处理。</p>
+      <h2>5. Plan changes</h2>
+      <p>Upgrade, downgrade and pro-rated amounts are shown before you confirm. If the portal does not support a change you need, contact us and we will handle it.</p>
 
-      <h2>6. 支付处理方</h2>
-      <p>Creem 作为 Merchant of Record 负责付款处理、账单凭证和适用税费。MindMapAny 负责产品交付、账户支持及退款请求的初步处理。</p>
+      <h2>6. Payment processor</h2>
+      <p>Creem acts as Merchant of Record and is responsible for payment processing, billing records and applicable taxes. MindMapAny is responsible for delivering the product, account support, and the initial handling of refund requests.</p>
     </PolicyPage>
   );
 }
-

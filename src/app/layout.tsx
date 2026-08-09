@@ -15,16 +15,16 @@ const gaMeasurementId = process.env.NODE_ENV === 'production'
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
   title: {
-    default: 'MindMapAny — 把任何内容变成脑图',
+    default: 'MindMapAny — Turn any content into a mind map',
     template: '%s | MindMapAny',
   },
-  description: '文本、PDF、Word、EPUB、PPT 和网页一键生成可编辑、可溯源的思维导图。',
-  keywords: ['思维导图', '脑图生成', 'PDF 转脑图', 'Word 转脑图', 'AI 思维导图'],
+  description: 'Turn text, PDFs, Word, EPUB, PPTX and web pages into editable, source-traceable mind maps.',
+  keywords: ['mind map', 'mind map generator', 'PDF to mind map', 'Word to mind map', 'AI mind map'],
   openGraph: {
     type: 'website',
     siteName: 'MindMapAny',
-    locale: 'zh_CN',
-    images: [{ url: '/og.png', width: 1731, height: 909, alt: 'MindMapAny — 把复杂内容变成清晰脑图' }],
+    locale: 'en_US',
+    images: [{ url: '/og.png', width: 1731, height: 909, alt: 'MindMapAny — turn complex content into a clear mind map' }],
   },
   twitter: {
     card: 'summary_large_image',
@@ -39,7 +39,7 @@ export const metadata: Metadata = {
  */
 export default function RootLayout({ children }: LayoutProps<'/'>) {
   return (
-    <html lang="zh-CN" className={`${geistSans.variable} h-full`} data-scroll-behavior="smooth" suppressHydrationWarning>
+    <html lang="en" className={`${geistSans.variable} h-full`} data-scroll-behavior="smooth" suppressHydrationWarning>
       <head>
         {/* 必须在样式和首屏之前执行，否则深色模式会白闪一帧 */}
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />

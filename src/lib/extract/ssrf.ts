@@ -125,35 +125,35 @@ export async function assertPublicUrl(raw: string): Promise<URL> {
   try {
     url = new URL(raw);
   } catch {
-    throw new ExtractError('blocked_url', 'URL 格式无效');
+    throw new ExtractError('blocked_url', 'Invalid URL format');
   }
 
   if (!ALLOWED_PROTOCOLS.has(url.protocol)) {
-    throw new ExtractError('blocked_url', '仅支持 http / https 链接');
+    throw new ExtractError('blocked_url', 'Only http and https links are supported');
   }
   if (!ALLOWED_PORTS.has(url.port)) {
-    throw new ExtractError('blocked_url', '不允许访问该端口');
+    throw new ExtractError('blocked_url', 'That port is not allowed');
   }
   if (url.username || url.password) {
-    throw new ExtractError('blocked_url', 'URL 不允许携带凭据');
+    throw new ExtractError('blocked_url', 'URLs may not carry credentials');
   }
 
   const host = url.hostname.replace(/^\[|\]$/g, '');
   if (ipVersion(host) !== 0) {
-    if (ipIsPrivate(host)) throw new ExtractError('blocked_url', '不允许访问内网地址');
+    if (ipIsPrivate(host)) throw new ExtractError('blocked_url', 'Private network addresses are not allowed');
     return url;
   }
   if (/^(localhost|.*\.local|.*\.internal)$/i.test(host)) {
-    throw new ExtractError('blocked_url', '不允许访问内网地址');
+    throw new ExtractError('blocked_url', 'Private network addresses are not allowed');
   }
 
   const addresses = await resolveHost(host);
   if (!addresses.length) {
-    throw new ExtractError('fetch_failed', '域名解析失败');
+    throw new ExtractError('fetch_failed', 'Could not resolve the domain');
   }
   // 只要有任何一条记录指向内网就整体拒绝，不做部分放行
   if (addresses.some(ipIsPrivate)) {
-    throw new ExtractError('blocked_url', '该域名指向内网地址');
+    throw new ExtractError('blocked_url', 'That domain resolves to a private network address');
   }
   return url;
 }
@@ -176,33 +176,33 @@ export async function safeFetchHtml(raw: string): Promise<{ url: string; html: s
         headers: requestHeaders(url),
       });
     } catch {
-      throw new ExtractError('fetch_failed', '页面抓取失败或超时');
+      throw new ExtractError('fetch_failed', 'Fetching the page failed or timed out');
     } finally {
       clearTimeout(timer);
     }
 
     if (res.status >= 300 && res.status < 400) {
       const location = res.headers.get('location');
-      if (!location) throw new ExtractError('fetch_failed', '跳转地址缺失');
+      if (!location) throw new ExtractError('fetch_failed', 'The redirect had no target');
       current = new URL(location, url).toString();
       continue;
     }
     if (!res.ok) {
-      const hint = res.status === 403 || res.status === 401 ? '（页面可能需要登录或有反爬保护）' : '';
-      throw new ExtractError('fetch_failed', `页面返回 ${res.status}${hint}`);
+      const hint = res.status === 403 || res.status === 401 ? ' (the page may require a login or have anti-bot protection)' : '';
+      throw new ExtractError('fetch_failed', `The page returned ${res.status}${hint}`);
     }
 
     const ctype = res.headers.get('content-type') ?? '';
     if (!/text\/html|application\/xhtml/i.test(ctype)) {
-      throw new ExtractError('unsupported', '该链接不是网页内容');
+      throw new ExtractError('unsupported', 'That link is not a web page');
     }
     const len = Number(res.headers.get('content-length') ?? 0);
-    if (len > MAX_HTML_BYTES) throw new ExtractError('too_large', '页面体积过大');
+    if (len > MAX_HTML_BYTES) throw new ExtractError('too_large', 'The page is too large');
 
     const html = await readCapped(res);
     return { url: url.toString(), html };
   }
-  throw new ExtractError('fetch_failed', '跳转次数过多');
+  throw new ExtractError('fetch_failed', 'Too many redirects');
 }
 
 /** content-length 可能缺失，读流时再兜一次大小上限 */
@@ -218,7 +218,7 @@ async function readCapped(res: Response): Promise<string> {
     size += value.byteLength;
     if (size > MAX_HTML_BYTES) {
       await reader.cancel();
-      throw new ExtractError('too_large', '页面体积过大');
+      throw new ExtractError('too_large', 'The page is too large');
     }
     out += decoder.decode(value, { stream: true });
   }

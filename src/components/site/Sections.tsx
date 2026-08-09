@@ -12,9 +12,9 @@ function Icon({ path }: { path: ReactNode }) {
 
 const FEATURES = [
   {
-    title: '多种输入，一条管线',
-    body: '粘贴文本、上传 PDF / DOCX / EPUB / PPTX，或丢一个网页链接。提取方式不同，出来的结构一样干净。',
-    detail: '7 种来源',
+    title: 'Many inputs, one pipeline',
+    body: 'Paste text, upload a PDF / DOCX / EPUB / PPTX, or drop in a web link. Extraction differs per format; the structure that comes out is equally clean.',
+    detail: '7 sources',
     icon: (
       <Icon
         path={
@@ -27,9 +27,9 @@ const FEATURES = [
     ),
   },
   {
-    title: '每个节点都能回到原文',
-    body: 'PDF 节点标着页码，PPTX 节点标着幻灯片位置。位置在切块阶段就锚定好，不是让模型凭印象编出来的。',
-    detail: '确定性引用',
+    title: 'Every node traces back',
+    body: 'PDF nodes carry page numbers, PPTX nodes carry slide positions. Locations are anchored during chunking, not invented by the model after the fact.',
+    detail: 'Deterministic citations',
     icon: (
       <Icon
         path={
@@ -42,9 +42,9 @@ const FEATURES = [
     ),
   },
   {
-    title: '层级稳定，不是流水账',
-    body: '长文档走分段摘要再合并，重复主题会被合并，孤立节点会被剔除。三档深度对应不同的层数和节点预算。',
-    detail: '最多 5 层',
+    title: 'Stable hierarchy, not a flat list',
+    body: 'Long documents are summarised section by section and then merged; duplicate topics collapse and orphan nodes are dropped. Three depth settings map to different level and node budgets.',
+    detail: 'Up to 5 levels',
     icon: (
       <Icon
         path={
@@ -59,9 +59,9 @@ const FEATURES = [
     ),
   },
   {
-    title: '生成完还能改',
-    body: '双击改字，Tab 加子节点，Enter 加同级，空格折叠。不是一张只能看的静态图。',
-    detail: '快捷编辑',
+    title: 'Editable after generation',
+    body: 'Double-click to rename, Tab for a child node, Enter for a sibling, Space to collapse. Not a static image you can only look at.',
+    detail: 'Keyboard editing',
     icon: (
       <Icon
         path={<path strokeLinecap="round" strokeLinejoin="round" d="M4 20h4L18.5 9.5a2.1 2.1 0 00-3-3L5 17v3z" />}
@@ -69,9 +69,9 @@ const FEATURES = [
     ),
   },
   {
-    title: '导出与分享',
-    body: 'PNG、SVG、Markdown 一键导出。生成公开链接后，别人不用注册也能看。',
-    detail: '3 种导出',
+    title: 'Export and share',
+    body: 'One-click export to PNG, SVG or Markdown. Turn on a public link and others can view it without signing up.',
+    detail: '3 export formats',
     icon: (
       <Icon
         path={
@@ -84,9 +84,9 @@ const FEATURES = [
     ),
   },
   {
-    title: '30+ 语言输出',
-    body: '英文论文可以直接产出中文脑图，原文语言和输出语言互不影响。',
-    detail: '跨语言整理',
+    title: '30+ output languages',
+    body: 'Read a paper in one language and get the map in another. Source language and output language are independent.',
+    detail: 'Cross-language',
     icon: (
       <Icon
         path={
@@ -113,11 +113,11 @@ export function Features() {
     <section id="features" className="mx-auto max-w-7xl px-5 py-24 sm:py-32 lg:px-8">
       <div className="grid gap-6 md:grid-cols-[0.55fr_1fr] md:items-end">
         <div>
-          <p className="flex items-center gap-3 text-[10px] font-semibold tracking-[0.15em] text-brand-600 dark:text-brand-300"><span className="font-mono text-text-subtle">01</span> 产品能力</p>
-          <p className="mt-3 max-w-xs text-sm leading-7 text-text-muted">为需要认真阅读、核验和整理长内容的人设计。</p>
+          <p className="flex items-center gap-3 text-[10px] font-semibold tracking-[0.15em] text-brand-600 dark:text-brand-300"><span className="font-mono text-text-subtle">01</span> CAPABILITIES</p>
+          <p className="mt-3 max-w-xs text-sm leading-7 text-text-muted">Built for people who need to read, verify and organise long content carefully.</p>
         </div>
         <div>
-          <h2 className="text-balance text-3xl font-semibold leading-tight tracking-[-0.045em] sm:text-5xl">摘要告诉你“说了什么”，<br className="hidden sm:block" />结构告诉你“为什么”。</h2>
+          <h2 className="text-balance text-3xl font-semibold leading-tight tracking-[-0.045em] sm:text-5xl">A summary tells you what was said.<br className="hidden sm:block" />Structure tells you why.</h2>
         </div>
       </div>
 
@@ -144,9 +144,9 @@ export function Features() {
 }
 
 const STEPS = [
-  { n: '01', title: '丢进内容', body: '文本、文档、电子书或网页链接，选好输出语言、深度和用途。' },
-  { n: '02', title: '等几秒', body: '系统提取正文、切块并锚定位置，再让模型输出层级结构。' },
-  { n: '03', title: '改完带走', body: '直接在画布上编辑，导出 PNG / SVG / Markdown，或生成公开链接。' },
+  { n: '01', title: 'Drop in your content', body: 'Text, a document, an ebook or a web link. Pick the output language, depth and purpose.' },
+  { n: '02', title: 'Wait a few seconds', body: 'We extract the body text, chunk it and anchor each chunk to its location, then have the model produce the hierarchy.' },
+  { n: '03', title: 'Edit and take it with you', body: 'Edit directly on the canvas, export to PNG / SVG / Markdown, or generate a public link.' },
 ];
 
 export function HowItWorks() {
@@ -154,8 +154,8 @@ export function HowItWorks() {
     <section id="how-it-works" className="border-y bg-bg-subtle" style={{ borderColor: 'var(--border)' }}>
       <div className="mx-auto max-w-7xl px-5 py-24 sm:py-28 lg:px-8">
         <div className="grid gap-6 md:grid-cols-[0.55fr_1fr] md:items-end">
-          <div><p className="flex items-center gap-3 text-[10px] font-semibold tracking-[0.15em] text-brand-600 dark:text-brand-300"><span className="font-mono text-text-subtle">02</span> 工作流程</p></div>
-          <h2 className="text-balance text-3xl font-semibold leading-tight tracking-[-0.045em] sm:text-5xl">不改变阅读，只把顺序调对。</h2>
+          <div><p className="flex items-center gap-3 text-[10px] font-semibold tracking-[0.15em] text-brand-600 dark:text-brand-300"><span className="font-mono text-text-subtle">02</span> HOW IT WORKS</p></div>
+          <h2 className="text-balance text-3xl font-semibold leading-tight tracking-[-0.045em] sm:text-5xl">Same reading. Better order.</h2>
         </div>
         <div className="mt-14 border-t" style={{ borderColor: 'var(--border-strong)' }}>
           {STEPS.map((s) => (
@@ -173,24 +173,24 @@ export function HowItWorks() {
 
 const FAQS = [
   {
-    q: '支持哪些输入格式？',
-    a: '目前支持粘贴文本、PDF、DOCX、EPUB、PPTX、TXT、Markdown 和公开网页链接。单个文件最大 20MB；扫描版 PDF、音视频和旧版 DOC 暂不支持。',
+    q: 'Which input formats are supported?',
+    a: 'Pasted text, PDF, DOCX, EPUB, PPTX, TXT, Markdown and public web links. Maximum 20MB per file. Scanned PDFs, audio, video and legacy DOC files are not supported yet.',
   },
   {
-    q: '节点上的页码准确吗？',
-    a: '准确。内容在切块阶段就把每一块和页码或章节位置绑定好了，模型只负责引用块的编号，位置信息由系统查表还原，不经过模型生成。',
+    q: 'Are the page numbers on nodes accurate?',
+    a: 'Yes. Each chunk is bound to its page number or section position during chunking. The model only references chunk IDs; the location is resolved by lookup, never generated by the model.',
   },
   {
-    q: '为什么有的网页抓不到内容？',
-    a: '需要登录、有反爬保护，或者完全依赖 JavaScript 渲染的页面，当前版本无法提取正文。普通文章页、文档站、博客一般没问题。',
+    q: 'Why can some web pages not be read?',
+    a: 'Pages that require a login, sit behind anti-bot protection, or render entirely through JavaScript cannot be extracted in the current version. Ordinary article pages, documentation sites and blogs are generally fine.',
   },
   {
-    q: '生成的脑图归谁？',
-    a: '归你。可以随时导出、删除。分享链接默认关闭，只有你主动打开公开后别人才能访问。',
+    q: 'Who owns the mind maps I generate?',
+    a: 'You do. You can export or delete them at any time. Share links are off by default — nobody else can access a map until you turn public sharing on yourself.',
   },
   {
-    q: '免费能用多少？',
-    a: '注册即赠送额度，够完整体验文本和网页输入。长文档和高质量模型会按当前套餐与额度计费。',
+    q: 'How much can I do on the free plan?',
+    a: 'Signing up grants 30 credits, enough to fully try text and web page inputs. Long documents and the high-quality model are charged against your plan and credit balance.',
   },
 ];
 
@@ -198,9 +198,9 @@ export function Faq() {
   return (
     <section id="faq" className="mx-auto grid max-w-7xl gap-12 px-5 py-24 sm:py-32 lg:grid-cols-[0.55fr_1fr] lg:px-8">
       <div className="lg:sticky lg:top-28 lg:self-start">
-        <p className="flex items-center gap-3 text-[10px] font-semibold tracking-[0.15em] text-brand-600 dark:text-brand-300"><span className="font-mono text-text-subtle">03</span> 常见问题</p>
-        <h2 className="mt-5 text-balance text-3xl font-semibold leading-tight tracking-[-0.045em] sm:text-5xl">开始之前，<br />再确认几件事。</h2>
-        <p className="mt-5 max-w-sm text-sm leading-7 text-text-muted">还有具体问题？写信到 support@mindmapany.com，我们会在 3 个工作日内回复。</p>
+        <p className="flex items-center gap-3 text-[10px] font-semibold tracking-[0.15em] text-brand-600 dark:text-brand-300"><span className="font-mono text-text-subtle">03</span> FAQ</p>
+        <h2 className="mt-5 text-balance text-3xl font-semibold leading-tight tracking-[-0.045em] sm:text-5xl">A few things<br />before you start.</h2>
+        <p className="mt-5 max-w-sm text-sm leading-7 text-text-muted">Still have a question? Email support@mindmapany.com and we usually reply within 3 business days.</p>
       </div>
       <div className="border-t" style={{ borderColor: 'var(--border-strong)' }}>
         {FAQS.map((f) => (

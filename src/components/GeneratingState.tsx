@@ -9,11 +9,11 @@ import { useEffect, useState } from 'react';
  */
 
 const STAGES = [
-  { at: 0, label: '正在提取内容…' },
-  { at: 3500, label: '正在切分并定位原文…' },
-  { at: 9000, label: '正在生成层级结构…' },
-  { at: 25000, label: '内容较长，正在分段归纳…' },
-  { at: 55000, label: '正在合并重复主题…' },
+  { at: 0, label: 'Extracting content…' },
+  { at: 3500, label: 'Chunking and anchoring to the source…' },
+  { at: 9000, label: 'Building the hierarchy…' },
+  { at: 25000, label: 'Long content — summarising section by section…' },
+  { at: 55000, label: 'Merging duplicate topics…' },
 ];
 
 export function GeneratingState() {
@@ -40,7 +40,7 @@ export function GeneratingState() {
         </span>
         <div className="min-w-0 flex-1">
           <p className="text-sm font-semibold">{stage.label}</p>
-          <p className="mt-0.5 text-xs tabular-nums text-text-subtle">已用 {Math.round(elapsed / 1000)} 秒</p>
+          <p className="mt-0.5 text-xs tabular-nums text-text-subtle">{Math.round(elapsed / 1000)}s elapsed</p>
         </div>
       </div>
 

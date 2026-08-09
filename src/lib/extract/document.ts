@@ -6,7 +6,7 @@ const ZIP_MAX_UNCOMPRESSED_BYTES = 48 * 1024 * 1024;
 const ZIP_MAX_ENTRIES = 1200;
 
 export const DOCUMENT_ACCEPT = '.docx,.epub,.pptx,.txt,.md,.markdown,text/plain,text/markdown';
-export const DOCUMENT_FORMAT_LABEL = 'DOCX、EPUB、PPTX、TXT 或 Markdown';
+export const DOCUMENT_FORMAT_LABEL = 'DOCX, EPUB, PPTX, TXT or Markdown';
 
 export interface DocumentInput {
   data: ArrayBuffer;
@@ -26,7 +26,7 @@ export function isSupportedDocument(filename?: string, mimeType?: string): boole
 
 export async function extractDocument(input: DocumentInput): Promise<ExtractedDoc> {
   if (input.data.byteLength > DOCUMENT_MAX_BYTES) {
-    throw new ExtractError('too_large', '文件超过 20MB 限制');
+    throw new ExtractError('too_large', 'The file exceeds the 20MB limit');
   }
 
   const ext = documentExtension(input.filename);
@@ -34,7 +34,7 @@ export async function extractDocument(input: DocumentInput): Promise<ExtractedDo
     return extractPlainText(input);
   }
   if (!['docx', 'epub', 'pptx'].includes(ext)) {
-    throw new ExtractError('unsupported', `暂不支持该文件格式，请上传 ${DOCUMENT_FORMAT_LABEL}`);
+    throw new ExtractError('unsupported', `That file format is not supported. Please upload ${DOCUMENT_FORMAT_LABEL}.`);
   }
 
   const bytes = new Uint8Array(input.data);
@@ -43,7 +43,7 @@ export async function extractDocument(input: DocumentInput): Promise<ExtractedDo
   try {
     files = unzipSync(bytes);
   } catch {
-    throw new ExtractError('unsupported', '文件无法解压，可能已损坏或受密码保护');
+    throw new ExtractError('unsupported', 'The file could not be unpacked — it may be corrupt or password-protected');
   }
 
   if (ext === 'docx') return extractDocx(files, input.filename);
@@ -53,9 +53,9 @@ export async function extractDocument(input: DocumentInput): Promise<ExtractedDo
 
 function extractPlainText(input: DocumentInput): ExtractedDoc {
   const text = new TextDecoder('utf-8', { fatal: false }).decode(input.data).replace(/^\uFEFF/, '');
-  if (text.includes('\0')) throw new ExtractError('unsupported', '文件不是可识别的 UTF-8 文本');
+  if (text.includes('\0')) throw new ExtractError('unsupported', 'The file is not recognisable UTF-8 text');
   const blocks = paragraphs(text);
-  if (!blocks.length) throw new ExtractError('empty', '文件中没有可用文本');
+  if (!blocks.length) throw new ExtractError('empty', 'The file contains no usable text');
   return {
     kind: 'document',
     title: cleanFilename(input.filename) || blocks[0].text.slice(0, 60),
@@ -66,14 +66,14 @@ function extractPlainText(input: DocumentInput): ExtractedDoc {
 
 function extractDocx(files: Unzipped, filename?: string): ExtractedDoc {
   const documentXml = readZipText(files, 'word/document.xml');
-  if (!documentXml) throw new ExtractError('unsupported', 'DOCX 缺少正文内容，文件可能已损坏');
+  if (!documentXml) throw new ExtractError('unsupported', 'The DOCX has no body content — the file may be corrupt');
 
   const blocks: Block[] = [];
   for (const match of documentXml.matchAll(/<w:p\b[\s\S]*?<\/w:p>/gi)) {
     const text = extractTaggedText(match[0], 'w:t');
     if (text) blocks.push({ text });
   }
-  if (!blocks.length) throw new ExtractError('empty', 'DOCX 中没有可用文本');
+  if (!blocks.length) throw new ExtractError('empty', 'The DOCX contains no usable text');
 
   const core = readZipText(files, 'docProps/core.xml');
   const metaTitle = core?.match(/<dc:title[^>]*>([\s\S]*?)<\/dc:title>/i)?.[1];
@@ -95,9 +95,9 @@ function extractPptx(files: Unzipped, filename?: string): ExtractedDoc {
     const xml = readZipText(files, name);
     if (!xml) continue;
     const text = extractTaggedText(xml, 'a:t');
-    if (text) blocks.push({ text, location: `第 ${slideNumber(name)} 页` });
+    if (text) blocks.push({ text, location: `Slide ${slideNumber(name)}` });
   }
-  if (!blocks.length) throw new ExtractError('empty', 'PPTX 中没有可提取的文字');
+  if (!blocks.length) throw new ExtractError('empty', 'The PPTX contains no extractable text');
   return {
     kind: 'document',
     title: cleanFilename(filename) || blocks[0].text.slice(0, 60),

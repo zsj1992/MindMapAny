@@ -24,7 +24,7 @@ export function SharedMap({ map }: { map: MindMap }) {
           <MindMapCanvas readOnly />
         </div>
         <div className="border-t px-4 py-2.5 text-center text-xs text-text-subtle" style={{ borderColor: 'var(--border)' }}>
-          由 <Link href="/" className="font-medium text-brand-600 hover:underline dark:text-brand-400">MindMapAny</Link> 生成 —— 把任何内容变成脑图
+          Made with <Link href="/" className="font-medium text-brand-600 hover:underline dark:text-brand-400">MindMapAny</Link> — turn any content into a mind map
         </div>
       </div>
     </ReactFlowProvider>

@@ -39,12 +39,12 @@ export default async function AppLayout({ children }: LayoutProps<'/app'>) {
           <span
             className="hidden items-center gap-2 rounded-lg border bg-bg-subtle px-3 py-2 text-xs font-medium tabular-nums text-text-muted sm:flex"
             style={{ borderColor: 'var(--border)' }}
-            title={profile ? '剩余积分' : '未登录：按试用额度使用'}
+            title={profile ? 'Credits remaining' : 'Not signed in — using trial allowance'}
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-3.5 w-3.5 text-accent-500">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z" />
             </svg>
-            {profile ? formatCredits(profile) : '试用'}
+            {profile ? formatCredits(profile) : 'Trial'}
           </span>
 
           <ThemeToggle />
@@ -58,9 +58,9 @@ export default async function AppLayout({ children }: LayoutProps<'/app'>) {
             />
           ) : (
             <>
-              <Link href="/support" className="btn btn-ghost hidden h-9 px-2 text-xs sm:inline-flex">支持</Link>
+              <Link href="/support" className="btn btn-ghost hidden h-9 px-2 text-xs sm:inline-flex">Support</Link>
               <Link href="/login?next=/app/new" className="btn btn-primary h-9 px-4 text-xs">
-                登录
+                Sign in
               </Link>
             </>
           )}
@@ -76,6 +76,6 @@ export default async function AppLayout({ children }: LayoutProps<'/app'>) {
 }
 
 function formatCredits(profile: { plan: Plan; credits: number }): string {
-  if (profile.plan === 'unlimited') return '无限';
+  if (profile.plan === 'unlimited') return 'Unlimited';
   return `${profile.credits}`;
 }

@@ -171,7 +171,7 @@ export function MindMapNodeCard({ id, data, selected }: NodeProps & { data: Mind
             collapseOnLeft ? '-left-2.5' : '-right-2.5'
           }`}
           style={{ borderColor: data.color, color: data.color }}
-          aria-label={data.collapsed ? '展开' : '折叠'}
+          aria-label={data.collapsed ? 'Expand' : 'Collapse'}
         >
           {data.collapsed ? data.childCount : '−'}
         </button>

@@ -32,7 +32,7 @@ export function ThemeToggle() {
     <button
       type="button"
       onClick={toggle}
-      aria-label={theme === 'dark' ? '切换到浅色模式' : '切换到深色模式'}
+      aria-label={theme === 'dark' ? 'Switch to light mode' : 'Switch to dark mode'}
       className="btn btn-ghost h-9 w-9 rounded-lg"
     >
       {theme === 'dark' ? (

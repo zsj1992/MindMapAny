@@ -24,7 +24,7 @@ export async function POST(req: Request) {
 
   const parsed = createSchema.safeParse(await req.json());
   if (!parsed.success) {
-    return NextResponse.json({ error: { code: 'bad_request', message: '脑图数据格式不合法' } }, { status: 400 });
+    return NextResponse.json({ error: { code: 'bad_request', message: 'The mind map data is not in a valid format' } }, { status: 400 });
   }
 
   const id = await create(user.id, {

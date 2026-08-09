@@ -26,17 +26,17 @@ async function loadShared(slug: string): Promise<{ map: MindMap; updatedAt: stri
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   const shared = await loadShared(slug);
-  if (!shared) return { title: '脑图不存在' };
+  if (!shared) return { title: 'Mind map not found' };
 
   const topics = shared.map.nodes
     .filter((n) => n.parentId !== null)
     .slice(0, 6)
     .map((n) => n.title)
     .join('、');
-  const description = `${shared.map.title}的思维导图：${topics}`.slice(0, 155);
+  const description = `Mind map of ${shared.map.title}: ${topics}`.slice(0, 155);
 
   return {
-    title: `${shared.map.title} — 思维导图 | MindMapAny`,
+    title: `${shared.map.title} — mind map | MindMapAny`,
     description,
     openGraph: {
       title: shared.map.title,

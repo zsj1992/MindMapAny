@@ -11,7 +11,7 @@ export default async function MapsPage() {
   if (!user) redirect('/login?next=/app/maps');
 
   const maps = await listOwned(user.id).catch(() => []);
-  if (!maps.length) return <Empty message="还没有保存的脑图。" />;
+  if (!maps.length) return <Empty message="No saved mind maps yet." />;
 
   return <main className="mx-auto max-w-4xl px-4 py-10"><MapLibrary initialMaps={maps} /></main>;
 }
@@ -21,7 +21,7 @@ function Empty({ message }: { message: string }) {
     <main className="mx-auto max-w-3xl px-4 py-20 text-center">
       <p className="text-sm text-text-muted">{message}</p>
       <Link href="/app/new" className="btn btn-primary mt-5 h-10 px-5">
-        生成第一张脑图
+        Create your first map
       </Link>
     </main>
   );

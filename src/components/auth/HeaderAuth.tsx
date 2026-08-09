@@ -20,7 +20,7 @@ export function HeaderAuth() {
   if (session?.user) {
     return (
       <Link href="/app/new" className="btn btn-primary h-9 px-4">
-        进入工作台
+        Open workbench
       </Link>
     );
   }
@@ -28,10 +28,10 @@ export function HeaderAuth() {
   return (
     <>
       <Link href="/login" className="btn btn-ghost h-9 px-3">
-        登录
+        Sign in
       </Link>
       <Link href="/app/new" className="btn btn-primary h-9 px-4">
-        免费开始
+        Start free
       </Link>
     </>
   );

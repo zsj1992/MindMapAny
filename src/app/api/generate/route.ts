@@ -53,7 +53,7 @@ export async function POST(req: Request) {
         limit: 3,
         windowSeconds: 86_400,
       });
-      if (!trial.allowed) return rateLimited(trial.resetAt, '今日免费试用次数已用完，请登录后继续');
+      if (!trial.allowed) return rateLimited(trial.resetAt, "You've used today's free trial runs. Sign in to continue.");
     }
 
     // ── 提取 ──
@@ -67,12 +67,12 @@ export async function POST(req: Request) {
         kind = 'text';
         doc = await extractDocument({ data: file, ...(filename ? { filename } : {}), ...(mimeType ? { mimeType } : {}) });
       } else {
-        throw new ExtractError('unsupported', '暂不支持该文件格式，请上传 PDF、DOCX、EPUB、PPTX、TXT 或 Markdown');
+        throw new ExtractError('unsupported', 'That file format is not supported. Please upload a PDF, DOCX, EPUB, PPTX, TXT or Markdown file.');
       }
     } else if (params.url?.trim()) {
       const url = params.url.trim();
       if (isYoutubeUrl(url)) {
-        throw new ExtractError('unsupported', 'YouTube 视频总结暂未开放，请先粘贴视频字幕或文字稿');
+        throw new ExtractError('unsupported', 'YouTube video summarisation is not available yet. Paste the captions or transcript instead.');
       }
       kind = 'web';
       doc = await extractWeb(url);
@@ -80,7 +80,7 @@ export async function POST(req: Request) {
       kind = 'text';
       doc = {
         kind: 'text',
-        title: params.text.trim().split('\n')[0].slice(0, 80) || '未命名内容',
+        title: params.text.trim().split('\n')[0].slice(0, 80) || 'Untitled content',
         blocks: params.text
           .split(/\n{2,}/)
           .map((t) => ({ text: t.trim() }))
@@ -88,21 +88,21 @@ export async function POST(req: Request) {
         notes: [],
       };
     } else {
-      return fail(400, 'bad_request', '请提供文本、链接或受支持的文件');
+      return fail(400, 'bad_request', 'Please provide text, a link, or a supported file');
     }
 
     const chars = totalChars(doc);
-    if (!chars) return fail(422, 'empty', '未提取到可用内容');
+    if (!chars) return fail(422, 'empty', 'No usable content could be extracted');
 
     // ── 配额校验 ──
     const tier = params.tier as ModelTier;
 
     if (!user) {
       if (!ANON_TRIAL_LIMITS.kinds.includes(kind)) {
-        return fail(401, 'login_required', '该输入类型需要登录后使用');
+        return fail(401, 'login_required', 'This input type requires you to sign in');
       }
       if (chars > ANON_TRIAL_LIMITS.maxChars) {
-        return fail(401, 'login_required', '试用仅支持较短内容，登录后可处理更长文档');
+        return fail(401, 'login_required', 'Trial runs only handle shorter content. Sign in to process longer documents.');
       }
     } else if (profile) {
       const gate = checkGate({
@@ -113,7 +113,7 @@ export async function POST(req: Request) {
         depth: params.depth as Depth,
         chars,
       });
-      if (!gate.ok) return fail(402, gate.code ?? 'forbidden', gate.reason ?? '配额不足');
+      if (!gate.ok) return fail(402, gate.code ?? 'forbidden', gate.reason ?? 'Quota exceeded');
     }
 
     const effectiveTier: ModelTier = user ? tier : ANON_TRIAL_LIMITS.tier;
@@ -122,7 +122,7 @@ export async function POST(req: Request) {
       : 0;
     if (user && profile && profile.plan !== 'unlimited' && cost > 0) {
       if (!(await reserveCredits(user.id, cost))) {
-        return fail(402, 'insufficient_credits', `积分不足，本次需要 ${cost} 积分`);
+        return fail(402, 'insufficient_credits', `Not enough credits — this run needs ${cost}`);
       }
       reserved = { userId: user.id, amount: cost };
     }
@@ -181,7 +181,7 @@ async function recordJobSafely(job: JobInput): Promise<void> {
   }
 }
 
-function rateLimited(resetAt: number, message = '当前请求过多，请稍后重试') {
+function rateLimited(resetAt: number, message = 'Too many requests right now. Please try again shortly.') {
   return NextResponse.json(
     { error: { code: 'rate_limited', message } },
     { status: 429, headers: { 'retry-after': String(Math.max(1, resetAt - Math.floor(Date.now() / 1000))) } },
@@ -200,7 +200,7 @@ async function readRequest(req: Request) {
     ) as Record<string, string>;
     const params = paramsSchema.parse(raw);
     if (entry instanceof File) {
-      if (entry.size > MAX_UPLOAD_BYTES) throw new ExtractError('too_large', '文件超过 20MB 限制');
+      if (entry.size > MAX_UPLOAD_BYTES) throw new ExtractError('too_large', 'The file exceeds the 20MB limit');
       return { params, file: await entry.arrayBuffer(), filename: entry.name, mimeType: entry.type };
     }
     return { params, file: null, filename: undefined, mimeType: undefined };
@@ -219,24 +219,24 @@ function describeError(err: unknown): { status: number; code: string; message: s
     return { status, code: err.code, message: err.message };
   }
   if (err instanceof z.ZodError) {
-    return { status: 400, code: 'bad_request', message: '请求参数不合法' };
+    return { status: 400, code: 'bad_request', message: 'Invalid request parameters' };
   }
   const message = err instanceof Error ? err.message : String(err);
   const name = err instanceof Error ? err.name : '';
   // Gateway 的各种配置/计费问题都是运维问题，不是用户的错，给一致的 503
   if (/^Gateway/.test(name) || /AI_GATEWAY_API_KEY|ai-gateway/.test(message)) {
     console.error('[generate] gateway', message);
-    return { status: 503, code: 'ai_unavailable', message: 'AI 服务暂不可用，请稍后重试' };
+    return { status: 503, code: 'ai_unavailable', message: 'The AI service is unavailable right now. Please try again shortly.' };
   }
   if (/rate.?limit|429/i.test(message)) {
-    return { status: 429, code: 'rate_limited', message: '当前请求过多，请稍后重试' };
+    return { status: 429, code: 'rate_limited', message: 'Too many requests right now. Please try again shortly.' };
   }
   if (/abort/i.test(`${name}${message}`)) {
-    return { status: 499, code: 'aborted', message: '生成已取消' };
+    return { status: 499, code: 'aborted', message: 'Generation was cancelled' };
   }
   if (/no usable outline/.test(message)) {
-    return { status: 502, code: 'generation_failed', message: '生成失败，请重试或换一种深度设置' };
+    return { status: 502, code: 'generation_failed', message: 'Generation failed. Try again, or pick a different depth setting.' };
   }
   console.error('[generate]', err);
-  return { status: 500, code: 'internal', message: '服务异常，请稍后重试' };
+  return { status: 500, code: 'internal', message: 'Something went wrong. Please try again shortly.' };
 }

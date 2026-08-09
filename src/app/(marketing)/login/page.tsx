@@ -10,15 +10,15 @@ import { getCurrentUser } from '@/lib/auth/session';
 export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
-  title: '登录',
-  description: '登录 MindMapAny，保存脑图、生成公开分享链接。',
+  title: 'Sign in',
+  description: 'Sign in to MindMapAny to save your mind maps and create public share links.',
   robots: { index: false },
 };
 
 const PERKS = [
-  '保存脑图，随时回来接着改',
-  '生成公开链接，别人不用注册也能看',
-  '注册即送 30 积分，已开放输入均可体验',
+  'Save your maps and pick up where you left off',
+  'Create a public link others can open without signing up',
+  '30 free credits on signup — try every available input type',
 ];
 
 export default async function LoginPage({ searchParams }: PageProps<'/login'>) {
@@ -41,9 +41,9 @@ export default async function LoginPage({ searchParams }: PageProps<'/login'>) {
         <div className="hidden lg:block">
           <Logo />
           <h1 className="mt-6 text-3xl font-semibold leading-tight tracking-tight">
-            登录后，
+            Sign in and your maps
             <br />
-            脑图才是<span className="text-gradient">你的</span>
+            are truly <span className="text-gradient">yours</span>
           </h1>
           <ul className="mt-6 space-y-3">
             {PERKS.map((p) => (
@@ -69,25 +69,25 @@ export default async function LoginPage({ searchParams }: PageProps<'/login'>) {
           <div className="lg:hidden">
             <Logo />
           </div>
-          <h2 className="mt-4 text-xl font-semibold tracking-tight lg:mt-0">开始使用</h2>
-          <p className="mt-1.5 text-sm text-text-muted">选择一种方式登录，几秒完成。</p>
+          <h2 className="mt-4 text-xl font-semibold tracking-tight lg:mt-0">Get started</h2>
+          <p className="mt-1.5 text-sm text-text-muted">Pick a sign-in method — it takes seconds.</p>
 
           {providers.length === 0 ? (
             <p className="mt-6 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:bg-amber-950/30 dark:text-amber-200">
-              登录未配置：需要设置 GOOGLE_CLIENT_ID / GITHUB_CLIENT_ID 等环境变量。
+              Sign-in is not configured: GOOGLE_CLIENT_ID / GITHUB_CLIENT_ID and related environment variables must be set.
             </p>
           ) : (
             <OAuthButtons providers={providers} next={next} />
           )}
 
           <p className="mt-6 text-center text-xs leading-relaxed text-text-subtle">
-            继续即表示同意我们处理你提交的内容用于生成脑图。
+            By continuing you agree that we may process the content you submit in order to generate mind maps.
             <br />
-            不想登录？
+            Rather not sign in?
             <Link href="/app/new" className="text-brand-600 underline-offset-2 hover:underline dark:text-brand-400">
-              直接试用
+              Try it directly
             </Link>
-            （文本和网页可用，但不能保存）
+            {' '}(text and web pages work, but nothing is saved)
           </p>
         </div>
       </div>

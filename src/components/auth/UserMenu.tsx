@@ -14,7 +14,7 @@ interface UserMenuProps {
 }
 
 const PLAN_NAMES: Record<Plan, string> = {
-  free: '免费版',
+  free: 'Free',
   basic: 'Basic',
   pro: 'Pro',
   unlimited: 'Unlimited',
@@ -25,7 +25,7 @@ export function UserMenu({ name, email, plan, credits }: UserMenuProps) {
   const [signingOut, setSigningOut] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const displayName = name?.trim() || email?.split('@')[0] || 'MindMapAny 用户';
+  const displayName = name?.trim() || email?.split('@')[0] || 'MindMapAny user';
   const initial = displayName.slice(0, 1).toUpperCase();
   const creditLimit = PLAN_CREDITS[plan];
   const creditPercent = plan === 'unlimited' ? 100 : Math.min(100, Math.max(0, (credits / creditLimit) * 100));
@@ -56,7 +56,7 @@ export function UserMenu({ name, email, plan, credits }: UserMenuProps) {
     <div ref={rootRef} className="relative">
       <button
         type="button"
-        aria-label="打开账户菜单"
+        aria-label="Open account menu"
         aria-haspopup="menu"
         aria-expanded={open}
         onClick={() => setOpen((value) => !value)}
@@ -90,7 +90,7 @@ export function UserMenu({ name, email, plan, credits }: UserMenuProps) {
             <div className="flex items-center justify-between gap-3">
               <span className="text-sm font-semibold text-brand-600">{PLAN_NAMES[plan]}</span>
               <span className="font-mono text-xs font-semibold tabular-nums text-text-muted">
-                {plan === 'unlimited' ? '无限积分' : `${credits} 积分`}
+                {plan === 'unlimited' ? 'Unlimited credits' : `${credits} credits`}
               </span>
             </div>
             <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-border-base">
@@ -101,15 +101,15 @@ export function UserMenu({ name, email, plan, credits }: UserMenuProps) {
           {plan !== 'unlimited' && (
             <div className="px-3 pb-2 pt-3">
               <Link href="/pricing" role="menuitem" onClick={() => setOpen(false)} className="btn btn-primary h-10 w-full text-xs">
-                升级套餐
+                Upgrade plan
               </Link>
             </div>
           )}
 
-          <nav className="p-2" aria-label="账户导航">
-            <MenuLink href="/billing" label="订阅管理" icon="card" onSelect={() => setOpen(false)} />
-            <MenuLink href="/support" label="帮助与反馈" icon="help" onSelect={() => setOpen(false)} />
-            <MenuLink href="/#faq" label="常见问题" icon="question" onSelect={() => setOpen(false)} />
+          <nav className="p-2" aria-label="Account navigation">
+            <MenuLink href="/billing" label="Subscription" icon="card" onSelect={() => setOpen(false)} />
+            <MenuLink href="/support" label="Help & feedback" icon="help" onSelect={() => setOpen(false)} />
+            <MenuLink href="/#faq" label="FAQ" icon="question" onSelect={() => setOpen(false)} />
           </nav>
 
           <div className="border-t p-2" style={{ borderColor: 'var(--border)' }}>
@@ -121,7 +121,7 @@ export function UserMenu({ name, email, plan, credits }: UserMenuProps) {
               className="flex h-10 w-full items-center gap-3 rounded-lg px-3 text-left text-sm font-medium text-text-muted transition-colors hover:bg-bg-subtle hover:text-text disabled:cursor-wait disabled:opacity-60"
             >
               <MenuIcon name="logout" />
-              {signingOut ? '正在退出…' : '退出登录'}
+              {signingOut ? 'Signing out…' : 'Sign out'}
             </button>
           </div>
         </div>

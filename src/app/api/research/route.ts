@@ -19,14 +19,14 @@ const bodySchema = z.object({
 export async function POST(req: Request) {
   const started = Date.now();
   const session = await getCurrentProfile();
-  if (!session?.user || !session.profile) return fail(401, 'login_required', '请先登录后使用深度研究');
+  if (!session?.user || !session.profile) return fail(401, 'login_required', 'Please sign in to use deep research');
   const limited = await rateLimitRequest(req, {
     scope: 'research:user:hour',
     subject: session.user.id,
     limit: 4,
     windowSeconds: 3_600,
   });
-  if (!limited.allowed) return fail(429, 'rate_limited', '深度研究请求过于频繁，请稍后重试');
+  if (!limited.allowed) return fail(429, 'rate_limited', 'Too many deep research requests. Please try again shortly.');
 
   let params: z.infer<typeof bodySchema>;
   try {
@@ -38,7 +38,7 @@ export async function POST(req: Request) {
 
   const cost = session.profile.plan === 'unlimited' ? 0 : RESEARCH_CREDITS;
   if (cost && !(await reserveCredits(session.user.id, cost))) {
-    return fail(402, 'insufficient_credits', `深度研究需要 ${RESEARCH_CREDITS} 积分`);
+    return fail(402, 'insufficient_credits', `Deep research costs ${RESEARCH_CREDITS} credits`);
   }
 
   const encoder = new TextEncoder();
@@ -110,16 +110,16 @@ async function recordJobSafely(job: JobInput): Promise<void> {
 }
 
 function describe(error: unknown) {
-  if (error instanceof z.ZodError) return { status: 400, code: 'bad_request', message: '请输入 6–500 字的研究问题' };
+  if (error instanceof z.ZodError) return { status: 400, code: 'bad_request', message: 'Please enter a research question of 6–500 characters' };
   if (error instanceof ResearchError) {
     const status = error.code === 'provider_unconfigured' ? 503 : error.code === 'rate_limited' ? 429 : 502;
     return { status, code: error.code, message: error.message };
   }
   const message = error instanceof Error ? error.message : String(error);
-  if (/abort/i.test(message)) return { status: 499, code: 'aborted', message: '研究任务已取消' };
-  if (/rate.?limit|429/i.test(message)) return { status: 429, code: 'rate_limited', message: '当前请求过多，请稍后重试' };
+  if (/abort/i.test(message)) return { status: 499, code: 'aborted', message: 'The research run was cancelled' };
+  if (/rate.?limit|429/i.test(message)) return { status: 429, code: 'rate_limited', message: 'Too many requests right now. Please try again shortly.' };
   console.error('[research]', error);
-  return { status: 500, code: 'internal', message: '深度研究暂时失败，请稍后重试' };
+  return { status: 500, code: 'internal', message: 'Deep research failed for now. Please try again shortly.' };
 }
 
 function fail(status: number, code: string, message: string) {

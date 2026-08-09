@@ -4,7 +4,7 @@ export function PolicyPage({
   eyebrow,
   title,
   description,
-  updated = '2026 年 8 月 9 日',
+  updated = 'August 9, 2026',
   children,
 }: {
   eyebrow: string;
@@ -20,7 +20,7 @@ export function PolicyPage({
           <span className="eyebrow">{eyebrow}</span>
           <h1 className="mt-4 text-4xl font-bold tracking-[-0.04em] sm:text-5xl">{title}</h1>
           <p className="mt-5 max-w-2xl text-base leading-8 text-text-muted">{description}</p>
-          <p className="mt-4 text-xs text-text-subtle">最后更新：{updated}</p>
+          <p className="mt-4 text-xs text-text-subtle">Last updated: {updated}</p>
         </div>
       </section>
 

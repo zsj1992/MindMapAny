@@ -71,26 +71,26 @@ const ICONS = {
 };
 
 const PRIMARY = [
-  { href: '/app/new', label: '快速开始', icon: ICONS.spark },
-  { href: '/app/research', label: '深度研究', icon: ICONS.research, badge: '新' },
-  { href: '/app/maps', label: '我的脑图', icon: ICONS.maps },
+  { href: '/app/new', label: 'Quick start', icon: ICONS.spark },
+  { href: '/app/research', label: 'Deep research', icon: ICONS.research, badge: 'New' },
+  { href: '/app/maps', label: 'My mind maps', icon: ICONS.maps },
 ];
 
 const GROUPS = [
   {
-    label: '上传文件',
+    label: 'Upload a file',
     items: [
       { label: 'PDF', icon: ICONS.pdf, href: '/app/pdf' },
-      { label: 'Word 文档', icon: ICONS.document, href: '/app/docx' },
-      { label: 'EPUB 电子书', icon: ICONS.ebook, href: '/app/epub' },
-      { label: 'PPT 演示文稿', icon: ICONS.slides, href: '/app/pptx' },
+      { label: 'Word document', icon: ICONS.document, href: '/app/docx' },
+      { label: 'EPUB ebook', icon: ICONS.ebook, href: '/app/epub' },
+      { label: 'PowerPoint deck', icon: ICONS.slides, href: '/app/pptx' },
     ],
   },
   {
-    label: '粘贴内容',
+    label: 'Paste content',
     items: [
-      { label: '长文本', icon: ICONS.text, href: '/app/text' },
-      { label: '网页文章', icon: ICONS.web, href: '/app/web' },
+      { label: 'Long text', icon: ICONS.text, href: '/app/text' },
+      { label: 'Web article', icon: ICONS.web, href: '/app/web' },
     ],
   },
 ] satisfies Array<{ label: string; items: Array<{ label: string; icon: ReactNode; href: string }> }>;
@@ -98,7 +98,7 @@ const GROUPS = [
 export function SidebarTrigger() {
   const setOpen = useDrawer((s) => s.setOpen);
   return (
-    <button type="button" onClick={() => setOpen(true)} aria-label="打开导航" className="btn btn-ghost h-9 w-9 lg:hidden">
+    <button type="button" onClick={() => setOpen(true)} aria-label="Open navigation" className="btn btn-ghost h-9 w-9 lg:hidden">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4">
         <path strokeLinecap="round" d="M4 7h16M4 12h16M4 17h16" />
       </svg>
@@ -148,7 +148,7 @@ export function AppSidebar() {
     <>
       {open && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <button type="button" aria-label="关闭导航" className="absolute inset-0 bg-black/40" onClick={() => setOpen(false)} />
+          <button type="button" aria-label="Close navigation" className="absolute inset-0 bg-black/40" onClick={() => setOpen(false)} />
           <aside
             className="absolute left-0 top-0 h-full w-72 border-r bg-surface shadow-2xl"
             style={{ borderColor: 'var(--border)' }}

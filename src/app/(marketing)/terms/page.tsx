@@ -3,46 +3,50 @@ import Link from 'next/link';
 import { PolicyPage } from '@/components/site/PolicyPage';
 
 export const metadata: Metadata = {
-  title: '服务条款',
-  description: 'MindMapAny 的账户、内容、AI 输出、订阅、可接受使用及责任规则。',
+  title: 'Terms of Service',
+  description: 'MindMapAny rules on accounts, content, AI output, subscriptions, acceptable use and liability.',
   alternates: { canonical: '/terms' },
 };
 
 export default function TermsPage() {
   return (
-    <PolicyPage eyebrow="使用规则" title="服务条款" description="这些条款说明你可以如何使用 MindMapAny，以及双方在内容、订阅与服务方面的责任。">
-      <h2>1. 接受条款</h2>
-      <p>访问或使用 MindMapAny 即表示你同意本条款及<Link href="/privacy">隐私政策</Link>。如你代表组织使用服务，你确认有权代表该组织接受本条款。</p>
+    <PolicyPage
+      eyebrow="Rules of use"
+      title="Terms of Service"
+      description="These terms explain how you may use MindMapAny, and what each side is responsible for when it comes to content, subscriptions and the service itself."
+    >
+      <h2>1. Acceptance of these terms</h2>
+      <p>By accessing or using MindMapAny you agree to these terms and to our <Link href="/privacy">Privacy Policy</Link>. If you are using the service on behalf of an organisation, you confirm that you are authorised to accept these terms for that organisation.</p>
 
-      <h2>2. 服务内容</h2>
-      <p>MindMapAny 提供把文本、文档和网页内容整理为可编辑思维导图的工具。功能、额度和支持范围以当前<Link href="/pricing">价格页面</Link>为准。我们可能持续改进或调整功能，但不会追溯性收取未明确同意的费用。</p>
+      <h2>2. What the service does</h2>
+      <p>MindMapAny turns text, documents and web content into editable mind maps. Available features, allowances and support scope are those listed on the current <Link href="/pricing">pricing page</Link>. We may continue to improve or adjust features, but we will not retroactively charge you for anything you have not clearly agreed to.</p>
 
-      <h2>3. 账户与安全</h2>
-      <p>你应提供准确的账户信息、妥善保护登录凭据，并对账户内的活动负责。发现未经授权的访问时，请立即联系支持。你不得共享账户以规避套餐限制。</p>
+      <h2>3. Accounts and security</h2>
+      <p>You agree to provide accurate account information, keep your credentials secure, and take responsibility for activity in your account. Contact support immediately if you notice unauthorised access. You may not share an account in order to work around plan limits.</p>
 
-      <h2>4. 你的内容</h2>
-      <p>你保留对所提交内容和生成脑图的权利。你授予我们一项有限许可，仅用于托管、处理、展示和传输内容，以便提供、维护及保护服务。你确认有权处理所提交的内容，并对公开分享设置及其后果负责。</p>
+      <h2>4. Your content</h2>
+      <p>You retain your rights in the content you submit and the mind maps you generate. You grant us a limited licence to host, process, display and transmit that content solely in order to provide, maintain and protect the service. You confirm that you have the right to process the content you submit, and you are responsible for your public sharing settings and their consequences.</p>
 
-      <h2>5. AI 输出</h2>
-      <p>AI 生成结果可能不完整、不准确或存在误解，不构成法律、医疗、财务或其他专业意见。你应在使用、发布或据此作出决定前自行核验重要信息与原始来源。</p>
+      <h2>5. AI output</h2>
+      <p>AI-generated results may be incomplete, inaccurate or misinterpreted, and do not constitute legal, medical, financial or other professional advice. Verify important information against the original source before relying on it, publishing it or making decisions based on it.</p>
 
-      <h2>6. 可接受使用</h2>
-      <p>不得使用服务侵犯他人权利、传播恶意软件、绕过安全措施、实施欺诈或骚扰、生成违法内容、对系统进行未经授权的自动化访问，或以异常负载影响其他用户。违反规则时，我们可以限制或终止相关账户，并在法律要求时配合主管机关。</p>
+      <h2>6. Acceptable use</h2>
+      <p>You may not use the service to infringe the rights of others, distribute malware, circumvent security measures, commit fraud or harassment, generate unlawful content, gain unauthorised automated access to our systems, or place abnormal load on the service in a way that affects other users. Where these rules are broken we may restrict or terminate the account concerned, and cooperate with the competent authorities where the law requires it.</p>
 
-      <h2>7. 订阅与付款</h2>
-      <p>付费套餐按月或按年预付并自动续订，直至取消。结账页会在付款前显示币种、税费、周期和应付总额。Creem 作为 Merchant of Record 处理付款、账单与适用税费。你可以随时通过<Link href="/billing">订阅管理</Link>取消；除非另有说明，取消后权益持续到已付周期结束。</p>
+      <h2>7. Subscriptions and payment</h2>
+      <p>Paid plans are prepaid monthly or annually and renew automatically until cancelled. The checkout page shows the currency, taxes, billing period and total due before you pay. Creem acts as Merchant of Record and handles payment, billing and applicable taxes. You can cancel at any time from <Link href="/billing">subscription management</Link>; unless stated otherwise, access continues until the end of the period you have paid for.</p>
 
-      <h2>8. 退款</h2>
-      <p>退款条件、申请时限和处理方式见<Link href="/refund-policy">退款与取消政策</Link>。该政策不限制适用法律赋予消费者的强制性权利。</p>
+      <h2>8. Refunds</h2>
+      <p>Refund eligibility, request windows and processing are set out in our <Link href="/refund-policy">Refund &amp; Cancellation Policy</Link>. That policy does not limit mandatory consumer rights granted by applicable law.</p>
 
-      <h2>9. 服务可用性与责任限制</h2>
-      <p>我们努力保持服务稳定，但不保证服务始终不中断或完全无误。在法律允许的最大范围内，服务按“现状”和“可用”提供；我们不对间接、附带或后果性损失负责。对于因本服务产生的全部索赔，我们的累计责任不超过索赔发生前 12 个月内你为服务支付的金额。</p>
+      <h2>9. Availability and limitation of liability</h2>
+      <p>We work to keep the service stable, but we do not guarantee uninterrupted or error-free operation. To the maximum extent permitted by law the service is provided &quot;as is&quot; and &quot;as available&quot;, and we are not liable for indirect, incidental or consequential losses. Our total aggregate liability for all claims arising from the service will not exceed the amount you paid for the service in the 12 months before the claim arose.</p>
 
-      <h2>10. 终止与变更</h2>
-      <p>你可以随时停止使用服务。对于严重违规、安全风险或法律要求，我们可以暂停或终止访问。条款发生重大变化时，我们会合理提前通知；继续使用即表示接受更新后的条款。</p>
+      <h2>10. Termination and changes</h2>
+      <p>You may stop using the service at any time. We may suspend or terminate access in cases of serious violation, security risk or legal requirement. Where these terms change materially we will give reasonable advance notice; continuing to use the service means you accept the updated terms.</p>
 
-      <h2>11. 联系</h2>
-      <p>条款、账户或服务问题请联系 <a href="mailto:support@mindmapany.com">support@mindmapany.com</a>，我们通常会在 3 个工作日内回复。</p>
+      <h2>11. Contact</h2>
+      <p>For questions about these terms, your account or the service, email <a href="mailto:support@mindmapany.com">support@mindmapany.com</a>. We usually reply within 3 business days.</p>
     </PolicyPage>
   );
 }

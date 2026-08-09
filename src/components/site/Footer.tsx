@@ -3,31 +3,31 @@ import { Logo } from './Logo';
 
 const COLUMNS = [
   {
-    title: '产品',
+    title: 'Product',
     links: [
-      { label: '工具中心', href: '/tools' },
-      { label: '价格', href: '/pricing' },
-      { label: '我的脑图', href: '/app/maps' },
-      { label: '常见问题', href: '/#faq' },
+      { label: 'Tools', href: '/tools' },
+      { label: 'Pricing', href: '/pricing' },
+      { label: 'My mind maps', href: '/app/maps' },
+      { label: 'FAQ', href: '/#faq' },
     ],
   },
   {
-    title: '工具与资源',
+    title: 'Tools & resources',
     links: [
-      { label: 'PDF 转思维导图', href: '/tools/pdf-to-mind-map' },
-      { label: '文本转思维导图', href: '/tools/text-to-mind-map' },
-      { label: '网页转思维导图', href: '/tools/webpage-to-mind-map' },
-      { label: '博客', href: '/blog' },
+      { label: 'PDF to mind map', href: '/tools/pdf-to-mind-map' },
+      { label: 'Text to mind map', href: '/tools/text-to-mind-map' },
+      { label: 'Web page to mind map', href: '/tools/webpage-to-mind-map' },
+      { label: 'Blog', href: '/blog' },
     ],
   },
   {
-    title: '支持与条款',
+    title: 'Support & legal',
     links: [
-      { label: '联系支持', href: '/support' },
-      { label: '订阅管理', href: '/billing' },
-      { label: '隐私政策', href: '/privacy' },
-      { label: '服务条款', href: '/terms' },
-      { label: '退款与取消', href: '/refund-policy' },
+      { label: 'Contact support', href: '/support' },
+      { label: 'Manage subscription', href: '/billing' },
+      { label: 'Privacy Policy', href: '/privacy' },
+      { label: 'Terms of Service', href: '/terms' },
+      { label: 'Refunds & cancellation', href: '/refund-policy' },
     ],
   },
 ];
@@ -39,7 +39,7 @@ export function Footer() {
         <div className="lg:col-span-2">
           <Logo />
           <p className="mt-4 max-w-xs text-sm leading-7 text-text-muted">
-            把复杂内容变成清晰、可编辑、可追溯的知识结构。
+            Turn complex content into clear, editable, traceable knowledge structures.
           </p>
           <a href="mailto:support@mindmapany.com" className="mt-4 inline-flex text-sm font-medium text-brand-600 hover:text-brand-700">
             support@mindmapany.com

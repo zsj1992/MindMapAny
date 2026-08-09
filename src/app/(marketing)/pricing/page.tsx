@@ -3,8 +3,8 @@ import Link from 'next/link';
 import { PLAN_CREDITS, PLAN_LIMITS, type Plan } from '@/lib/credits';
 
 export const metadata: Metadata = {
-  title: '价格与套餐',
-  description: '查看 MindMapAny 免费版、Basic、Pro 与 Unlimited 套餐的积分、模型和文档上限。',
+  title: 'Pricing & plans',
+  description: 'Compare credits, models and document limits across the MindMapAny Free, Basic, Pro and Unlimited plans.',
   alternates: { canonical: '/pricing' },
 };
 
@@ -12,50 +12,50 @@ const PLANS = [
   {
     plan: 'free',
     name: 'Free',
-    eyebrow: '免费开始',
-    description: '体验常用内容输入，适合偶尔整理文章和资料。',
+    eyebrow: 'Start free',
+    description: 'Try the common input types. Good for occasional articles and reference material.',
     price: '$0',
-    annualPrice: '永久免费',
-    creditLabel: '注册赠送积分',
-    extras: ['文本 / 文档 / 电子书 / 网页', '编辑、导出与公开分享'],
-    action: '免费开始',
+    annualPrice: 'Free forever',
+    creditLabel: 'credits on signup',
+    extras: ['Text / documents / ebooks / web pages', 'Editing, export and public sharing'],
+    action: 'Start free',
     href: '/app/new',
   },
   {
     plan: 'basic',
     name: 'Basic',
-    eyebrow: '日常使用',
-    description: '面向日常学习和办公，更充足的月度使用额度。',
-    price: '$8.99 / 月',
-    annualPrice: '$64.68 / 年（相当于 $5.39 / 月）',
-    creditLabel: '积分 / 月',
-    extras: ['全部已开放内容输入', '保存、分享与多格式导出'],
-    action: '开始使用 Basic',
+    eyebrow: 'Everyday use',
+    description: 'For day-to-day study and work, with a comfortable monthly allowance.',
+    price: '$8.99 / month',
+    annualPrice: '$64.68 / year (works out to $5.39 / month)',
+    creditLabel: 'credits / month',
+    extras: ['All available input types', 'Save, share and export in every format'],
+    action: 'Get Basic',
     href: '/app/new',
   },
   {
     plan: 'pro',
     name: 'Pro',
-    eyebrow: '推荐方案',
-    description: '为深度研究和长文档设计，解锁高质量模型。',
-    price: '$17.99 / 月',
-    annualPrice: '$129.48 / 年（相当于 $10.79 / 月）',
-    creditLabel: '积分 / 月',
-    extras: ['详细脑图模式', '优先处理复杂长文档'],
-    action: '开始使用 Pro',
+    eyebrow: 'Recommended',
+    description: 'Built for deep research and long documents. Unlocks the high-quality model.',
+    price: '$17.99 / month',
+    annualPrice: '$129.48 / year (works out to $10.79 / month)',
+    creditLabel: 'credits / month',
+    extras: ['Detailed map mode', 'Handles complex, long documents'],
+    action: 'Get Pro',
     href: '/app/new',
     featured: true,
   },
   {
     plan: 'unlimited',
     name: 'Unlimited',
-    eyebrow: '重度使用',
-    description: '面向高频创作者与研究人员，不再计算月度积分。',
-    price: '$26.99 / 月',
-    annualPrice: '$194.28 / 年（相当于 $16.19 / 月）',
-    creditLabel: '不限积分',
-    extras: ['全部 Pro 能力', '公平使用原则下不限额度'],
-    action: '开始使用 Unlimited',
+    eyebrow: 'Heavy use',
+    description: 'For high-volume creators and researchers. No monthly credit counting.',
+    price: '$26.99 / month',
+    annualPrice: '$194.28 / year (works out to $16.19 / month)',
+    creditLabel: 'unlimited credits',
+    extras: ['Everything in Pro', 'Unlimited usage under a fair use policy'],
+    action: 'Get Unlimited',
     href: '/app/new',
   },
 ] as const satisfies ReadonlyArray<{
@@ -80,9 +80,9 @@ function creditsLabel(plan: Plan): string {
 function coreLimits(plan: Plan): string[] {
   const limits = PLAN_LIMITS[plan];
   return [
-    limits.tiers.includes('quality') ? '快速 + 高质量 AI 模型' : '快速 AI 模型',
-    `最长 ${limits.maxChars.toLocaleString()} 字符`,
-    `PDF 最多 ${limits.maxPdfPages} 页`,
+    limits.tiers.includes('quality') ? 'Fast + high-quality AI models' : 'Fast AI model',
+    `Up to ${limits.maxChars.toLocaleString()} characters`,
+    `PDFs up to ${limits.maxPdfPages} pages`,
   ];
 }
 
@@ -92,14 +92,14 @@ export default function PricingPage() {
       <section className="hero-glow relative overflow-hidden border-b" style={{ borderColor: 'var(--border)' }}>
         <div className="grid-lines pointer-events-none absolute inset-0 opacity-35" aria-hidden="true" />
         <div className="relative mx-auto max-w-4xl px-5 py-16 text-center sm:py-20">
-          <span className="eyebrow">简单、透明、按需升级</span>
-          <h1 className="mt-5 text-4xl font-bold tracking-[-0.04em] sm:text-5xl">从免费体验开始</h1>
+          <span className="eyebrow">Simple, transparent, upgrade when you need to</span>
+          <h1 className="mt-5 text-4xl font-bold tracking-[-0.04em] sm:text-5xl">Start free</h1>
           <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-text-muted">
-            所有价格均以美元计价。选择月付保持灵活，选择年付可节省 40%；税费会在结账前明确显示。
+            All prices are in USD. Pay monthly to stay flexible, or pay annually and save 40%. Taxes are shown clearly before checkout.
           </p>
           <div className="mt-7 inline-flex items-center gap-2 rounded-full border bg-surface px-4 py-2 text-xs font-semibold text-text-muted shadow-sm">
             <span className="h-2 w-2 rounded-full bg-accent-500" />
-            注册即赠 30 积分，已开放输入均可体验
+            30 free credits on signup — try every available input type
           </div>
         </div>
       </section>
@@ -153,10 +153,10 @@ export default function PricingPage() {
               ) : (
                 <div className="mt-7 grid gap-2">
                   <a href={`/api/checkout?plan=${plan.plan}&period=annual`} className="btn btn-primary h-11 w-full">
-                    年付订阅 <span aria-hidden="true">→</span>
+                    Subscribe yearly <span aria-hidden="true">→</span>
                   </a>
                   <a href={`/api/checkout?plan=${plan.plan}&period=monthly`} className="btn btn-secondary h-10 w-full text-xs">
-                    按月订阅
+                    Subscribe monthly
                   </a>
                 </div>
               )}
@@ -166,18 +166,18 @@ export default function PricingPage() {
 
         <div className="mt-10 rounded-2xl border bg-surface p-6 sm:flex sm:items-center sm:justify-between sm:gap-8 sm:p-8">
           <div>
-            <h2 className="text-lg font-bold">团队或机构需要更高额度？</h2>
-            <p className="mt-2 text-sm leading-6 text-text-muted">联系我们了解统一额度管理、采购与专属支持。通常在 3 个工作日内回复。</p>
+            <h2 className="text-lg font-bold">Need more for a team or institution?</h2>
+            <p className="mt-2 text-sm leading-6 text-text-muted">Get in touch about pooled credits, procurement and dedicated support. We usually reply within 3 business days.</p>
           </div>
-          <a href="mailto:support@mindmapany.com?subject=MindMapAny%20团队方案" className="btn btn-secondary mt-5 h-11 shrink-0 px-5 sm:mt-0">联系支持</a>
+          <a href="mailto:support@mindmapany.com?subject=MindMapAny%20team%20plan" className="btn btn-secondary mt-5 h-11 shrink-0 px-5 sm:mt-0">Contact support</a>
         </div>
 
         <p className="mx-auto mt-6 max-w-3xl text-center text-xs leading-6 text-text-subtle">
-          结账时请使用当前 MindMapAny 账号的邮箱，以便付款后自动开通权益。
+          Please check out with the same email as your MindMapAny account so your plan activates automatically after payment.
           <br />
-          订阅会按所选周期自动续费，直至取消。付款由 Creem 作为 Merchant of Record 处理。
-          你可以随时进入<Link href="/billing" className="mx-1 font-medium text-brand-600 hover:text-brand-700">订阅管理</Link>取消，退款条件见
-          <Link href="/refund-policy" className="ml-1 font-medium text-brand-600 hover:text-brand-700">退款与取消政策</Link>。
+          Subscriptions renew automatically for the billing period you choose until you cancel. Payments are processed by Creem as Merchant of Record.
+          You can cancel any time from<Link href="/billing" className="mx-1 font-medium text-brand-600 hover:text-brand-700">subscription management</Link>; refund terms are in our
+          <Link href="/refund-policy" className="ml-1 font-medium text-brand-600 hover:text-brand-700">Refund &amp; Cancellation Policy</Link>.
         </p>
       </section>
     </main>
