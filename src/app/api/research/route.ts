@@ -23,37 +23,71 @@ export async function POST(req: Request) {
     return fail(402, 'insufficient_credits', `深度研究需要 ${RESEARCH_CREDITS} 积分`);
   }
 
+  let params: z.infer<typeof bodySchema>;
   try {
-    const params = bodySchema.parse(await req.json());
-    const result = await runDeepResearch({ ...params, signal: req.signal });
-    const cost = session.profile.plan === 'unlimited' ? 0 : RESEARCH_CREDITS;
-    if (cost) await chargeCredits(session.user.id, cost);
-    await recordJob({
-      userId: session.user.id,
-      status: 'succeeded',
-      sourceKind: 'web',
-      sourceChars: params.query.length,
-      modelTier: 'fast:research-web',
-      inputTokens: result.usage.inputTokens,
-      outputTokens: result.usage.outputTokens,
-      creditsCharged: cost,
-      durationMs: Date.now() - started,
-      warnings: [`${result.sources.length} research sources`, `${result.usage.webSearchRequests} web search requests`],
-    });
-    return NextResponse.json({ ...result, creditsCharged: cost });
+    params = bodySchema.parse(await req.json());
   } catch (error) {
     const described = describe(error);
-    await recordJob({
-      userId: session.user.id,
-      status: 'failed',
-      sourceKind: 'web',
-      modelTier: 'fast:research-web',
-      durationMs: Date.now() - started,
-      errorCode: described.code,
-      errorMessage: described.message,
-    });
     return fail(described.status, described.code, described.message);
   }
+
+  const encoder = new TextEncoder();
+  const stream = new ReadableStream({
+    async start(controller) {
+      let closed = false;
+      const send = (event: unknown) => {
+        if (closed) return;
+        try {
+          controller.enqueue(encoder.encode(`${JSON.stringify(event)}\n`));
+        } catch {
+          closed = true;
+        }
+      };
+      try {
+        const result = await runDeepResearch({
+          ...params,
+          signal: req.signal,
+          onProgress: (progress) => send({ type: 'progress', ...progress }),
+        });
+        const cost = session.profile.plan === 'unlimited' ? 0 : RESEARCH_CREDITS;
+        if (cost) await chargeCredits(session.user.id, cost);
+        await recordJob({
+          userId: session.user.id,
+          status: 'succeeded',
+          sourceKind: 'web',
+          sourceChars: params.query.length,
+          modelTier: 'fast:research-web',
+          inputTokens: result.usage.inputTokens,
+          outputTokens: result.usage.outputTokens,
+          creditsCharged: cost,
+          durationMs: Date.now() - started,
+          warnings: [`${result.plan.length} research tasks`, `${result.sources.length} research sources`, `${result.usage.webSearchRequests} web search requests`],
+        });
+        send({ type: 'result', data: { ...result, creditsCharged: cost } });
+      } catch (error) {
+        const described = describe(error);
+        await recordJob({
+          userId: session.user.id,
+          status: 'failed',
+          sourceKind: 'web',
+          modelTier: 'fast:research-web',
+          durationMs: Date.now() - started,
+          errorCode: described.code,
+          errorMessage: described.message,
+        });
+        send({ type: 'error', error: { code: described.code, message: described.message } });
+      } finally {
+        if (!closed) controller.close();
+      }
+    },
+  });
+
+  return new Response(stream, {
+    headers: {
+      'content-type': 'application/x-ndjson; charset=utf-8',
+      'cache-control': 'no-cache, no-transform',
+    },
+  });
 }
 
 function describe(error: unknown) {

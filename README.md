@@ -9,7 +9,7 @@
 ```
 输入 → 提取(Block[]) → 切块(chunkId ↔ 页码/时间戳) → LLM 产 Markdown 大纲 → 确定性解析成 JSON → 渲染/编辑/导出
 
-研究问题 → DeepSeek Web Search → 带编号引用的研究报告 → 同一脑图生成管线
+研究问题 → DeepSeek 研究计划 → Web Search 与带引用报告 → 同一章节骨架的脑图
 ```
 
 两个关键设计决定：
@@ -40,7 +40,7 @@ cp .env.example .env.local   # 至少填 AI_GATEWAY_API_KEY
 npm run dev
 ```
 
-未配置 Supabase 时，登录/保存/分享自动降级为不可用，普通生成功能照常。深度研究复用服务端 `DEEPSEEK_API_KEY`。
+未配置 Supabase 时，登录/保存/分享自动降级为不可用，普通生成功能照常。深度研究复用服务端 `DEEPSEEK_API_KEY`，并通过 NDJSON 流式返回研究计划、检索和脑图阶段。
 
 ```bash
 npm test        # 解析器 + 管线回归测试
