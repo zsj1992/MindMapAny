@@ -152,14 +152,14 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
 
   if (!map) {
     return (
-      <div className="mx-auto w-full max-w-3xl px-5 py-12 sm:py-16">
+      <div className="mx-auto flex h-full min-h-0 w-full max-w-4xl flex-col justify-center overflow-y-auto px-4 py-4 sm:px-6 lg:overflow-hidden lg:py-5">
         {title && (
-          <div className="mb-9 text-center">
-            <span className="mb-4 inline-flex items-center gap-2 rounded-full border bg-surface px-3 py-1 text-[11px] font-semibold text-text-muted shadow-sm">
+          <div className="mb-5 shrink-0 text-center">
+            <span className="mb-2 inline-flex items-center gap-2 rounded-full border bg-surface px-2.5 py-0.5 text-[10px] font-semibold text-text-muted shadow-sm">
               <span className="h-1.5 w-1.5 rounded-full bg-accent-500" /> AI 内容理解工作台
             </span>
-            <h1 className="text-3xl font-bold tracking-[-0.035em] sm:text-4xl">{title}</h1>
-            {subtitle && <p className="mx-auto mt-3 max-w-xl text-sm leading-7 text-text-muted">{subtitle}</p>}
+            <h1 className="text-2xl font-bold tracking-[-0.035em] sm:text-3xl">{title}</h1>
+            {subtitle && <p className="mx-auto mt-1.5 max-w-xl text-xs leading-5 text-text-muted sm:text-[13px]">{subtitle}</p>}
           </div>
         )}
         {busy ? (
