@@ -6,6 +6,7 @@ import { MindMapCanvas } from '@/components/canvas/MindMapCanvas';
 import { InputPanel, type GenerateParams, type InputMode, type InputPanelCopy } from '@/components/InputPanel';
 import { GeneratingState } from '@/components/GeneratingState';
 import { Toolbar } from '@/components/Toolbar';
+import { trackEvent } from '@/lib/analytics';
 import type { MindMap } from '@/lib/mindmap/schema';
 import { useEditor } from '@/store/editor';
 
@@ -61,6 +62,12 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
 
   const generate = useCallback(
     async (params: GenerateParams) => {
+      const inputType = params.file ? 'pdf' : params.url ? (isYoutube(params.url) ? 'youtube' : 'web') : 'text';
+      trackEvent('mindmap_generation_started', {
+        input_type: inputType,
+        depth: params.depth,
+        language: params.language,
+      });
       setBusy(true);
       setError(null);
       setNotes([]);
@@ -84,16 +91,25 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
         // Workers 的类型定义里 json() 返回 unknown，比浏览器的 any 严格，这里显式收窄
         const body = (await res.json()) as Partial<GenerateResponse> & { error?: { message?: string; code?: string } };
         if (!res.ok) {
+          trackEvent('mindmap_generation_failed', { input_type: inputType, error_code: body?.error?.code ?? 'request_failed' });
           setError(body?.error?.message ?? '生成失败，请重试');
           return;
         }
         const data = body as GenerateResponse;
+        trackEvent('mindmap_generation_completed', {
+          input_type: inputType,
+          depth: params.depth,
+          language: params.language,
+          credits_charged: data.creditsCharged,
+          node_count: data.map.nodes.length,
+        });
         load(data.map);
         setNotes([...data.notes, ...data.warnings.slice(0, 2)]);
-        setSourceKind(params.file ? 'pdf' : params.url ? (isYoutube(params.url) ? 'youtube' : 'web') : 'text');
+        setSourceKind(inputType);
         setSavedId(null);
         setShareUrl(null);
       } catch {
+        trackEvent('mindmap_generation_failed', { input_type: inputType, error_code: 'network_error' });
         setError('网络异常，请重试');
       } finally {
         setBusy(false);

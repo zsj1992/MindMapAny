@@ -1,11 +1,15 @@
 import type { Metadata } from 'next';
 import { Geist } from 'next/font/google';
+import Script from 'next/script';
 import './globals.css';
 import { themeScript } from '@/components/site/ThemeToggle';
 
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
 
 const siteUrl = process.env.SITE_URL ?? 'https://mindmapany.com';
+const gaMeasurementId = process.env.NODE_ENV === 'production'
+  ? (process.env.NEXT_PUBLIC_GA_MEASUREMENT_ID ?? 'G-WKHBCSF9Q0')
+  : null;
 
 export const metadata: Metadata = {
   metadataBase: new URL(siteUrl),
@@ -39,7 +43,23 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
         {/* 必须在样式和首屏之前执行，否则深色模式会白闪一帧 */}
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
-      <body className="flex min-h-full flex-col">{children}</body>
+      <body className="flex min-h-full flex-col">
+        {children}
+        {gaMeasurementId && (
+          <>
+            <Script src={`https://www.googletagmanager.com/gtag/js?id=${gaMeasurementId}`} strategy="afterInteractive" />
+            <Script id="google-analytics" strategy="afterInteractive">
+              {`
+                window.dataLayer = window.dataLayer || [];
+                function gtag(){dataLayer.push(arguments);}
+                window.gtag = gtag;
+                gtag('js', new Date());
+                gtag('config', '${gaMeasurementId}', { anonymize_ip: true });
+              `}
+            </Script>
+          </>
+        )}
+      </body>
     </html>
   );
 }

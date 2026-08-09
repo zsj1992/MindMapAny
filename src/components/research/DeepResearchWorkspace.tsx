@@ -4,6 +4,7 @@ import { ReactFlowProvider } from '@xyflow/react';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { MindMapCanvas } from '@/components/canvas/MindMapCanvas';
+import { trackEvent } from '@/lib/analytics';
 import type { MindMap } from '@/lib/mindmap/schema';
 import { useEditor } from '@/store/editor';
 
@@ -69,6 +70,7 @@ export function DeepResearchWorkspace() {
 
   const submit = async () => {
     if (query.trim().length < 6 || busy) return;
+    trackEvent('deep_research_started', { depth, language });
     setBusy(true);
     setError(null);
     setErrorCode(null);
@@ -108,6 +110,13 @@ export function DeepResearchWorkspace() {
             if (event.plan) setPlan(event.plan);
             if (event.sourceCount) setSourceCount(event.sourceCount);
           } else if (event.type === 'result') {
+            trackEvent('deep_research_completed', {
+              depth,
+              language,
+              source_count: event.data.sources.length,
+              task_count: event.data.plan.length,
+              credits_charged: event.data.creditsCharged,
+            });
             load(event.data.map);
             setResult(event.data);
             setPlan(event.data.plan);
@@ -121,6 +130,11 @@ export function DeepResearchWorkspace() {
       }
       if (!completed) throw new Error('研究结果生成不完整');
     } catch (requestError) {
+      trackEvent('deep_research_failed', {
+        depth,
+        language,
+        error_code: requestError instanceof ResearchRequestError ? requestError.code ?? 'request_failed' : 'network_error',
+      });
       setError(requestError instanceof Error ? requestError.message : '网络异常，请重试');
       setErrorCode(requestError instanceof ResearchRequestError ? requestError.code ?? null : null);
     } finally {
