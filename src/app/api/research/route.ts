@@ -1,0 +1,75 @@
+import { NextResponse } from 'next/server';
+import { z } from 'zod';
+import { getCurrentProfile } from '@/lib/auth/session';
+import { chargeCredits } from '@/lib/db/repositories/profiles';
+import { record as recordJob } from '@/lib/db/repositories/jobs';
+import { ResearchError, runDeepResearch } from '@/lib/research';
+
+export const maxDuration = 300;
+export const runtime = 'nodejs';
+
+const RESEARCH_CREDITS = 10;
+const bodySchema = z.object({
+  query: z.string().trim().min(6).max(500),
+  language: z.enum(['zh-CN', 'zh-TW', 'en', 'ja', 'ko', 'es']).default('zh-CN'),
+  depth: z.enum(['standard', 'detailed']).default('detailed'),
+});
+
+export async function POST(req: Request) {
+  const started = Date.now();
+  const session = await getCurrentProfile();
+  if (!session?.user || !session.profile) return fail(401, 'login_required', '请先登录后使用深度研究');
+  if (session.profile.plan !== 'unlimited' && session.profile.credits < RESEARCH_CREDITS) {
+    return fail(402, 'insufficient_credits', `深度研究需要 ${RESEARCH_CREDITS} 积分`);
+  }
+
+  try {
+    const params = bodySchema.parse(await req.json());
+    const result = await runDeepResearch({ ...params, signal: req.signal });
+    const cost = session.profile.plan === 'unlimited' ? 0 : RESEARCH_CREDITS;
+    if (cost) await chargeCredits(session.user.id, cost);
+    await recordJob({
+      userId: session.user.id,
+      status: 'succeeded',
+      sourceKind: 'web',
+      sourceChars: params.query.length,
+      modelTier: 'quality:research',
+      inputTokens: result.usage.inputTokens,
+      outputTokens: result.usage.outputTokens,
+      creditsCharged: cost,
+      durationMs: Date.now() - started,
+      warnings: [`${result.sources.length} research sources`],
+    });
+    return NextResponse.json({ ...result, creditsCharged: cost });
+  } catch (error) {
+    const described = describe(error);
+    await recordJob({
+      userId: session.user.id,
+      status: 'failed',
+      sourceKind: 'web',
+      modelTier: 'quality:research',
+      durationMs: Date.now() - started,
+      errorCode: described.code,
+      errorMessage: described.message,
+    });
+    return fail(described.status, described.code, described.message);
+  }
+}
+
+function describe(error: unknown) {
+  if (error instanceof z.ZodError) return { status: 400, code: 'bad_request', message: '请输入 6–500 字的研究问题' };
+  if (error instanceof ResearchError) {
+    const status = error.code === 'provider_unconfigured' ? 503 : error.code === 'rate_limited' ? 429 : 502;
+    return { status, code: error.code, message: error.message };
+  }
+  const message = error instanceof Error ? error.message : String(error);
+  if (/abort/i.test(message)) return { status: 499, code: 'aborted', message: '研究任务已取消' };
+  if (/rate.?limit|429/i.test(message)) return { status: 429, code: 'rate_limited', message: '当前请求过多，请稍后重试' };
+  console.error('[research]', error);
+  return { status: 500, code: 'internal', message: '深度研究暂时失败，请稍后重试' };
+}
+
+function fail(status: number, code: string, message: string) {
+  return NextResponse.json({ error: { code, message } }, { status });
+}
+

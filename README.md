@@ -4,10 +4,12 @@
 
 ## 架构
 
-一条通用管线，四种输入共用：
+一条通用管线，四种输入共用；深度研究在上游增加“检索 + 多来源报告”阶段：
 
 ```
 输入 → 提取(Block[]) → 切块(chunkId ↔ 页码/时间戳) → LLM 产 Markdown 大纲 → 确定性解析成 JSON → 渲染/编辑/导出
+
+研究问题 → Jina Search 检索并提取网页 → 带编号引用的研究报告 → 同一脑图生成管线
 ```
 
 两个关键设计决定：
@@ -38,7 +40,7 @@ cp .env.example .env.local   # 至少填 AI_GATEWAY_API_KEY
 npm run dev
 ```
 
-未配置 Supabase 时，登录/保存/分享自动降级为不可用，生成功能照常。
+未配置 Supabase 时，登录/保存/分享自动降级为不可用，普通生成功能照常。深度研究还需要服务端 `JINA_API_KEY`。
 
 ```bash
 npm test        # 解析器 + 管线回归测试
@@ -55,6 +57,6 @@ vercel deploy --prod
 
 ## 当前边界
 
-已实现：文本 / PDF / 网页 / YouTube 字幕、编辑、折叠、PNG/SVG/Markdown 导出、保存、公开分享页（SSR + OG + sitemap）、积分与套餐闸门。
+已实现：文本 / PDF / 网页 / YouTube 字幕、带引用的多来源深度研究、编辑、折叠、PNG/SVG/Markdown 导出、保存、公开分享页（SSR + OG + sitemap）、积分与套餐闸门。
 
 不支持：扫描件 OCR、音视频转录、纯 JS 渲染页面、需登录页面、无字幕视频、协作、PPT/Excel。

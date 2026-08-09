@@ -25,6 +25,13 @@ const ICONS = {
     <path strokeLinecap="round" strokeLinejoin="round" d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z" />,
     'text-brand-500',
   ),
+  research: icon(
+    <>
+      <circle cx="10" cy="10" r="6" />
+      <path strokeLinecap="round" d="M14.5 14.5L20 20M10 7v6M7 10h6" />
+    </>,
+    'text-brand-500',
+  ),
   pdf: icon(
     <>
       <path strokeLinejoin="round" d="M14 3v5h5" />
@@ -64,6 +71,7 @@ const ICONS = {
 
 const PRIMARY = [
   { href: '/app/new', label: '快速开始', icon: ICONS.spark },
+  { href: '/app/research', label: '深度研究', icon: ICONS.research, badge: 'NEW' },
   { href: '/app/maps', label: '我的脑图', icon: ICONS.maps },
 ];
 
@@ -158,12 +166,14 @@ function NavLink({
   icon,
   active,
   onNavigate,
+  badge,
 }: {
   href: string;
   label: string;
   icon: ReactNode;
   active: boolean;
   onNavigate: () => void;
+  badge?: string;
 }) {
   return (
     <Link
@@ -176,6 +186,7 @@ function NavLink({
       {active && <span className="absolute left-0 h-5 w-0.5 rounded-full bg-brand-600" />}
       {icon}
       {label}
+      {badge && <span className="ml-auto rounded-md bg-brand-100 px-1.5 py-0.5 text-[9px] font-bold text-brand-700 dark:bg-brand-900/50 dark:text-brand-200">{badge}</span>}
     </Link>
   );
 }
