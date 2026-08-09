@@ -51,6 +51,9 @@ export default async function AppLayout({ children }: LayoutProps<'/app'>) {
 
           {user ? (
             <>
+              <Link href="/billing" className="btn btn-ghost hidden h-9 px-2 text-xs sm:inline-flex">
+                订阅管理
+              </Link>
               <Link href="/pricing" className="btn btn-secondary h-9 px-3.5 text-xs">
                 升级
               </Link>
@@ -63,9 +66,12 @@ export default async function AppLayout({ children }: LayoutProps<'/app'>) {
               <SignOutButton className="btn btn-ghost h-9 px-2 text-xs" />
             </>
           ) : (
-            <Link href="/login?next=/app/new" className="btn btn-primary h-9 px-4 text-xs">
-              登录
-            </Link>
+            <>
+              <Link href="/support" className="btn btn-ghost hidden h-9 px-2 text-xs sm:inline-flex">支持</Link>
+              <Link href="/login?next=/app/new" className="btn btn-primary h-9 px-4 text-xs">
+                登录
+              </Link>
+            </>
           )}
         </div>
       </header>

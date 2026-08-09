@@ -11,6 +11,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base: MetadataRoute.Sitemap = [
     { url: siteUrl, changeFrequency: 'weekly', priority: 1 },
     { url: `${siteUrl}/pricing`, changeFrequency: 'monthly', priority: 0.7 },
+    { url: `${siteUrl}/support`, changeFrequency: 'monthly', priority: 0.55 },
+    { url: `${siteUrl}/billing`, changeFrequency: 'monthly', priority: 0.45 },
+    { url: `${siteUrl}/privacy`, changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${siteUrl}/terms`, changeFrequency: 'yearly', priority: 0.3 },
+    { url: `${siteUrl}/refund-policy`, changeFrequency: 'yearly', priority: 0.35 },
     { url: `${siteUrl}/tools`, changeFrequency: 'weekly', priority: 0.9 },
     ...TOOL_PAGES.map(({ slug }) => ({
       url: `${siteUrl}/tools/${slug}`,

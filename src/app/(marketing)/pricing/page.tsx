@@ -12,8 +12,10 @@ const PLANS = [
   {
     plan: 'free',
     name: 'Free',
-    eyebrow: '免费内测',
+    eyebrow: '免费开始',
     description: '完整体验四种内容输入，适合偶尔整理文章和资料。',
+    price: '$0',
+    annualPrice: '永久免费',
     creditLabel: '注册赠送积分',
     extras: ['文本 / PDF / 网页 / YouTube', '编辑、导出与公开分享'],
     action: '免费开始',
@@ -22,20 +24,26 @@ const PLANS = [
   {
     plan: 'basic',
     name: 'Basic',
-    eyebrow: '即将开放',
+    eyebrow: '日常使用',
     description: '面向日常学习和办公，更充足的月度使用额度。',
+    price: '$8.99 / 月',
+    annualPrice: '$64.68 / 年（相当于 $5.39 / 月）',
     creditLabel: '积分 / 月',
     extras: ['四种内容输入', '保存、分享与多格式导出'],
-    action: '即将开放',
+    action: '开始使用 Basic',
+    href: '/app/new',
   },
   {
     plan: 'pro',
     name: 'Pro',
     eyebrow: '推荐方案',
     description: '为深度研究和长文档设计，解锁高质量模型。',
+    price: '$17.99 / 月',
+    annualPrice: '$129.48 / 年（相当于 $10.79 / 月）',
     creditLabel: '积分 / 月',
     extras: ['详细脑图模式', '优先处理复杂长文档'],
-    action: '即将开放',
+    action: '开始使用 Pro',
+    href: '/app/new',
     featured: true,
   },
   {
@@ -43,15 +51,20 @@ const PLANS = [
     name: 'Unlimited',
     eyebrow: '重度使用',
     description: '面向高频创作者与研究人员，不再计算月度积分。',
+    price: '$26.99 / 月',
+    annualPrice: '$194.28 / 年（相当于 $16.19 / 月）',
     creditLabel: '不限积分',
     extras: ['全部 Pro 能力', '公平使用原则下不限额度'],
-    action: '即将开放',
+    action: '开始使用 Unlimited',
+    href: '/app/new',
   },
 ] as const satisfies ReadonlyArray<{
   plan: Plan;
   name: string;
   eyebrow: string;
   description: string;
+  price: string;
+  annualPrice: string;
   creditLabel: string;
   extras: readonly string[];
   action: string;
@@ -82,7 +95,7 @@ export default function PricingPage() {
           <span className="eyebrow">简单、透明、按需升级</span>
           <h1 className="mt-5 text-4xl font-bold tracking-[-0.04em] sm:text-5xl">从免费体验开始</h1>
           <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-text-muted">
-            目前所有用户都处于免费内测阶段。付费订阅上线前，我们不会展示无法购买的价格，也不会突然扣费。
+            所有价格均以美元计价。选择月付保持灵活，选择年付可节省 40%；税费会在结账前明确显示。
           </p>
           <div className="mt-7 inline-flex items-center gap-2 rounded-full border bg-surface px-4 py-2 text-xs font-semibold text-text-muted shadow-sm">
             <span className="h-2 w-2 rounded-full bg-accent-500" />
@@ -114,6 +127,10 @@ export default function PricingPage() {
               <p className="mt-3 min-h-14 text-sm leading-6 text-text-muted">{plan.description}</p>
 
               <div className="mt-6 border-y py-5" style={{ borderColor: 'var(--border)' }}>
+                <div className="mb-4">
+                  <div className="text-2xl font-bold tracking-[-0.03em]">{plan.price}</div>
+                  <div className="mt-1 text-xs leading-5 text-text-muted">{plan.annualPrice}</div>
+                </div>
                 <div className="flex items-end gap-2">
                   <span className="text-4xl font-bold tracking-[-0.04em]">{creditsLabel(plan.plan)}</span>
                   <span className="pb-1 text-xs font-medium text-text-muted">{plan.creditLabel}</span>
@@ -129,15 +146,9 @@ export default function PricingPage() {
                 ))}
               </ul>
 
-              {'href' in plan ? (
-                <Link href={plan.href} className="btn btn-primary mt-7 h-11 w-full">
-                  {plan.action} <span aria-hidden="true">→</span>
-                </Link>
-              ) : (
-                <span className="btn mt-7 h-11 w-full cursor-default border bg-bg-subtle text-text-subtle">
-                  {plan.action}
-                </span>
-              )}
+              <Link href={plan.href} className="btn btn-primary mt-7 h-11 w-full">
+                {plan.action} <span aria-hidden="true">→</span>
+              </Link>
             </article>
           ))}
         </div>
@@ -145,10 +156,16 @@ export default function PricingPage() {
         <div className="mt-10 rounded-2xl border bg-surface p-6 sm:flex sm:items-center sm:justify-between sm:gap-8 sm:p-8">
           <div>
             <h2 className="text-lg font-bold">团队或机构需要更高额度？</h2>
-            <p className="mt-2 text-sm leading-6 text-text-muted">团队方案将在支付系统上线后开放，包含统一额度管理和专属支持。</p>
+            <p className="mt-2 text-sm leading-6 text-text-muted">联系我们了解统一额度管理、采购与专属支持。通常在 3 个工作日内回复。</p>
           </div>
-          <Link href="/app/new" className="btn btn-secondary mt-5 h-11 shrink-0 px-5 sm:mt-0">先体验产品</Link>
+          <a href="mailto:support@mindmapany.com?subject=MindMapAny%20团队方案" className="btn btn-secondary mt-5 h-11 shrink-0 px-5 sm:mt-0">联系支持</a>
         </div>
+
+        <p className="mx-auto mt-6 max-w-3xl text-center text-xs leading-6 text-text-subtle">
+          订阅会按所选周期自动续费，直至取消。付款由 Creem 作为 Merchant of Record 处理。
+          你可以随时进入<Link href="/billing" className="mx-1 font-medium text-brand-600 hover:text-brand-700">订阅管理</Link>取消，退款条件见
+          <Link href="/refund-policy" className="ml-1 font-medium text-brand-600 hover:text-brand-700">退款与取消政策</Link>。
+        </p>
       </section>
     </main>
   );

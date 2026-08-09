@@ -179,6 +179,18 @@
     background: color-mix(in srgb, var(--surface) 92%, transparent);
     box-shadow: 0 1px 2px rgb(15 23 42 / 0.04), 0 18px 48px rgb(15 23 42 / 0.06);
   }
+  .policy-content h2 {
+    @apply mt-9 text-xl font-bold tracking-tight first:mt-0;
+  }
+  .policy-content p {
+    @apply mt-3 text-sm leading-7 text-text-muted;
+  }
+  .policy-content ul {
+    @apply mt-3 list-disc space-y-2 pl-6 text-sm leading-7 text-text-muted;
+  }
+  .policy-content a {
+    @apply font-medium text-brand-600 underline decoration-brand-200 underline-offset-2 hover:text-brand-700;
+  }
   .animate-in-up {
     animation: in-up 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
