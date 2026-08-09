@@ -1,13 +1,15 @@
-/** 标记：把任何内容映射出来的折叠地图与知识定位点 */
+/** 标记：一个中心主题连接五个信息节点 */
 export function Logo({ className = '' }: { className?: string }) {
   return (
     <span className={`inline-flex items-center gap-2.5 ${className}`}>
-      <svg viewBox="0 0 32 32" className="h-7 w-7 drop-shadow-sm" aria-hidden="true">
-        <rect width="32" height="32" rx="9" fill="#12345B" />
-        <path d="M4.5 8.5l7.5-2.5 8 3 7.5-2.5v17l-7.5 2.5-8-3-7.5 2.5z" fill="white" stroke="white" strokeWidth="1.5" strokeLinejoin="round" />
-        <path d="M12 6v17M20 9v17" fill="none" stroke="#12345B" strokeWidth="1.5" />
-        <circle cx="16" cy="16" r="4" fill="#34D3BE" stroke="#12345B" strokeWidth="1.5" />
-        <circle cx="16" cy="16" r="1.25" fill="white" />
+      <svg viewBox="0 0 1024 1024" className="h-7 w-7 drop-shadow-sm" aria-hidden="true">
+        <path d="M840.533 490.667l-17.066-85.334L554.667 460.8V170.667h-85.334v262.4L172.8 241.067l-46.933 72.533 324.266 209.067L200.533 849.067l68.267 51.2 241.067-315.734 179.2 270.934 72.533-46.934-179.2-266.666z" fill="#CFD8DC" />
+        <circle cx="512" cy="512" r="149.333" fill="#3F51B5" />
+        <circle cx="512" cy="170.667" r="106.667" fill="#00BCD4" />
+        <circle cx="832" cy="448" r="106.667" fill="#00BCD4" />
+        <circle cx="149.333" cy="277.333" r="106.667" fill="#00BCD4" />
+        <circle cx="234.667" cy="874.667" r="106.667" fill="#00BCD4" />
+        <circle cx="725.333" cy="832" r="106.667" fill="#00BCD4" />
       </svg>
       <span className="text-[15px] font-bold tracking-[-0.02em]">MindMapAny</span>
     </span>

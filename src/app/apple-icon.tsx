@@ -7,11 +7,16 @@ export default function AppleIcon() {
   return new ImageResponse(
     (
       <svg width="180" height="180" viewBox="0 0 180 180" xmlns="http://www.w3.org/2000/svg">
-        <rect width="180" height="180" rx="42" fill="#102f53" />
-        <path d="M25 48l42-14 46 17 42-14v96l-42 14-46-17-42 14z" fill="#fff" stroke="#fff" strokeWidth="8" strokeLinejoin="round" />
-        <path d="M67 34v96M113 51v96" fill="none" stroke="#102f53" strokeWidth="8" strokeLinejoin="round" />
-        <circle cx="90" cy="90" r="23" fill="#34d3be" stroke="#102f53" strokeWidth="8" />
-        <circle cx="90" cy="90" r="7" fill="#fff" />
+        <rect width="180" height="180" rx="42" fill="#f7f9fc" />
+        <g transform="scale(.17578125)">
+          <path d="M840.533 490.667l-17.066-85.334L554.667 460.8V170.667h-85.334v262.4L172.8 241.067l-46.933 72.533 324.266 209.067L200.533 849.067l68.267 51.2 241.067-315.734 179.2 270.934 72.533-46.934-179.2-266.666z" fill="#CFD8DC" />
+          <circle cx="512" cy="512" r="149.333" fill="#3F51B5" />
+          <circle cx="512" cy="170.667" r="106.667" fill="#00BCD4" />
+          <circle cx="832" cy="448" r="106.667" fill="#00BCD4" />
+          <circle cx="149.333" cy="277.333" r="106.667" fill="#00BCD4" />
+          <circle cx="234.667" cy="874.667" r="106.667" fill="#00BCD4" />
+          <circle cx="725.333" cy="832" r="106.667" fill="#00BCD4" />
+        </g>
       </svg>
     ),
     size,
