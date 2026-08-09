@@ -146,9 +146,20 @@ export default function PricingPage() {
                 ))}
               </ul>
 
-              <Link href={plan.href} className="btn btn-primary mt-7 h-11 w-full">
-                {plan.action} <span aria-hidden="true">→</span>
-              </Link>
+              {plan.plan === 'free' ? (
+                <Link href={plan.href} className="btn btn-primary mt-7 h-11 w-full">
+                  {plan.action} <span aria-hidden="true">→</span>
+                </Link>
+              ) : (
+                <div className="mt-7 grid gap-2">
+                  <Link href={`/api/checkout?plan=${plan.plan}&period=annual`} className="btn btn-primary h-11 w-full">
+                    年付订阅 <span aria-hidden="true">→</span>
+                  </Link>
+                  <Link href={`/api/checkout?plan=${plan.plan}&period=monthly`} className="btn btn-secondary h-10 w-full text-xs">
+                    按月订阅
+                  </Link>
+                </div>
+              )}
             </article>
           ))}
         </div>
@@ -162,6 +173,8 @@ export default function PricingPage() {
         </div>
 
         <p className="mx-auto mt-6 max-w-3xl text-center text-xs leading-6 text-text-subtle">
+          结账时请使用当前 MindMapAny 账号的邮箱，以便付款后自动开通权益。
+          <br />
           订阅会按所选周期自动续费，直至取消。付款由 Creem 作为 Merchant of Record 处理。
           你可以随时进入<Link href="/billing" className="mx-1 font-medium text-brand-600 hover:text-brand-700">订阅管理</Link>取消，退款条件见
           <Link href="/refund-policy" className="ml-1 font-medium text-brand-600 hover:text-brand-700">退款与取消政策</Link>。

@@ -1,9 +1,10 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getCurrentProfile } from '@/lib/auth/session';
-import { chargeCredits } from '@/lib/db/repositories/profiles';
+import { refundCredits, reserveCredits } from '@/lib/db/repositories/profiles';
 import { record as recordJob } from '@/lib/db/repositories/jobs';
 import { ResearchError, runDeepResearch } from '@/lib/research';
+import { rateLimitRequest } from '@/lib/rate-limit';
 
 export const maxDuration = 300;
 export const runtime = 'nodejs';
@@ -19,9 +20,13 @@ export async function POST(req: Request) {
   const started = Date.now();
   const session = await getCurrentProfile();
   if (!session?.user || !session.profile) return fail(401, 'login_required', '请先登录后使用深度研究');
-  if (session.profile.plan !== 'unlimited' && session.profile.credits < RESEARCH_CREDITS) {
-    return fail(402, 'insufficient_credits', `深度研究需要 ${RESEARCH_CREDITS} 积分`);
-  }
+  const limited = await rateLimitRequest(req, {
+    scope: 'research:user:hour',
+    subject: session.user.id,
+    limit: 4,
+    windowSeconds: 3_600,
+  });
+  if (!limited.allowed) return fail(429, 'rate_limited', '深度研究请求过于频繁，请稍后重试');
 
   let params: z.infer<typeof bodySchema>;
   try {
@@ -29,6 +34,11 @@ export async function POST(req: Request) {
   } catch (error) {
     const described = describe(error);
     return fail(described.status, described.code, described.message);
+  }
+
+  const cost = session.profile.plan === 'unlimited' ? 0 : RESEARCH_CREDITS;
+  if (cost && !(await reserveCredits(session.user.id, cost))) {
+    return fail(402, 'insufficient_credits', `深度研究需要 ${RESEARCH_CREDITS} 积分`);
   }
 
   const encoder = new TextEncoder();
@@ -49,9 +59,7 @@ export async function POST(req: Request) {
           signal: req.signal,
           onProgress: (progress) => send({ type: 'progress', ...progress }),
         });
-        const cost = session.profile.plan === 'unlimited' ? 0 : RESEARCH_CREDITS;
-        if (cost) await chargeCredits(session.user.id, cost);
-        await recordJob({
+        await recordJobSafely({
           userId: session.user.id,
           status: 'succeeded',
           sourceKind: 'web',
@@ -66,7 +74,8 @@ export async function POST(req: Request) {
         send({ type: 'result', data: { ...result, creditsCharged: cost } });
       } catch (error) {
         const described = describe(error);
-        await recordJob({
+        if (cost) await refundCredits(session.user.id, cost).catch(() => undefined);
+        await recordJobSafely({
           userId: session.user.id,
           status: 'failed',
           sourceKind: 'web',
@@ -88,6 +97,16 @@ export async function POST(req: Request) {
       'cache-control': 'no-cache, no-transform',
     },
   });
+}
+
+type JobInput = Parameters<typeof recordJob>[0];
+
+async function recordJobSafely(job: JobInput): Promise<void> {
+  try {
+    await recordJob(job);
+  } catch (error) {
+    console.error('[jobs] failed_to_record', error);
+  }
 }
 
 function describe(error: unknown) {

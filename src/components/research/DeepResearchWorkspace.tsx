@@ -3,6 +3,7 @@
 import { ReactFlowProvider } from '@xyflow/react';
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { MindMapCanvas } from '@/components/canvas/MindMapCanvas';
 import { trackEvent } from '@/lib/analytics';
 import type { MindMap } from '@/lib/mindmap/schema';
@@ -47,6 +48,7 @@ const LANGUAGES = [
 ] as const;
 
 export function DeepResearchWorkspace() {
+  const router = useRouter();
   const load = useEditor((state) => state.load);
   const [query, setQuery] = useState('');
   const [language, setLanguage] = useState('zh-CN');
@@ -118,6 +120,7 @@ export function DeepResearchWorkspace() {
               credits_charged: event.data.creditsCharged,
             });
             load(event.data.map);
+            router.refresh();
             setResult(event.data);
             setPlan(event.data.plan);
             setView('map');

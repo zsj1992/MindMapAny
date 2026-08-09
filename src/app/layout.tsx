@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import { Geist } from 'next/font/google';
 import Script from 'next/script';
 import './globals.css';
+import { ClientTelemetry } from '@/components/ClientTelemetry';
 import { themeScript } from '@/components/site/ThemeToggle';
 
 const geistSans = Geist({ variable: '--font-geist-sans', subsets: ['latin'] });
@@ -44,6 +45,7 @@ export default function RootLayout({ children }: LayoutProps<'/'>) {
         <script dangerouslySetInnerHTML={{ __html: themeScript }} />
       </head>
       <body className="flex min-h-full flex-col">
+        <ClientTelemetry />
         {children}
         {gaMeasurementId && (
           <>

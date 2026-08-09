@@ -7,10 +7,11 @@ import { ExtractError, totalChars, type ExtractedDoc, type InputKind } from '@/l
 import { extractWeb } from '@/lib/extract/web';
 import { isYoutubeUrl } from '@/lib/extract/youtube';
 import { getCurrentProfile } from '@/lib/auth/session';
-import { chargeCredits } from '@/lib/db/repositories/profiles';
+import { refundCredits, reserveCredits } from '@/lib/db/repositories/profiles';
 import { record as recordJob } from '@/lib/db/repositories/jobs';
 import { generateMindMap, type ModelTier } from '@/lib/mindmap/generate';
 import { DEPTHS, PURPOSES, type Depth, type Purpose } from '@/lib/mindmap/schema';
+import { rateLimitRequest } from '@/lib/rate-limit';
 
 // map-reduce 长文档可能跑到几分钟，Fluid Compute 默认 300s 够用，不引入队列
 export const maxDuration = 300;
@@ -29,9 +30,31 @@ export async function POST(req: Request) {
   const started = Date.now();
   let doc: ExtractedDoc | null = null;
   let kind: InputKind = 'text';
+  let reserved: { userId: string; amount: number } | null = null;
+  let jobUserId: string | null = null;
 
   try {
     const { params, file, filename, mimeType } = await readRequest(req);
+    const session = await getCurrentProfile();
+    const user = session?.user ?? null;
+    const profile = session?.profile ?? null;
+    jobUserId = user?.id ?? null;
+
+    const burst = await rateLimitRequest(req, {
+      scope: user ? 'generate:user:minute' : 'generate:anon:minute',
+      ...(user ? { subject: user.id } : {}),
+      limit: user ? 10 : 2,
+      windowSeconds: 60,
+    });
+    if (!burst.allowed) return rateLimited(burst.resetAt);
+    if (!user) {
+      const trial = await rateLimitRequest(req, {
+        scope: 'generate:anon:day',
+        limit: 3,
+        windowSeconds: 86_400,
+      });
+      if (!trial.allowed) return rateLimited(trial.resetAt, '今日免费试用次数已用完，请登录后继续');
+    }
 
     // ── 提取 ──
     if (file) {
@@ -72,9 +95,6 @@ export async function POST(req: Request) {
     if (!chars) return fail(422, 'empty', '未提取到可用内容');
 
     // ── 配额校验 ──
-    const session = await getCurrentProfile();
-    const user = session?.user ?? null;
-    const profile = session?.profile ?? null;
     const tier = params.tier as ModelTier;
 
     if (!user) {
@@ -96,8 +116,18 @@ export async function POST(req: Request) {
       if (!gate.ok) return fail(402, gate.code ?? 'forbidden', gate.reason ?? '配额不足');
     }
 
-    // ── 生成 ──
     const effectiveTier: ModelTier = user ? tier : ANON_TRIAL_LIMITS.tier;
+    const cost = user && profile?.plan !== 'unlimited'
+      ? estimateCredits({ kind, tier: effectiveTier, depth: params.depth as Depth, chars })
+      : 0;
+    if (user && profile && profile.plan !== 'unlimited' && cost > 0) {
+      if (!(await reserveCredits(user.id, cost))) {
+        return fail(402, 'insufficient_credits', `积分不足，本次需要 ${cost} 积分`);
+      }
+      reserved = { userId: user.id, amount: cost };
+    }
+
+    // ── 生成 ──
     const { map, warnings, usage } = await generateMindMap({
       doc,
       language: params.language,
@@ -107,14 +137,9 @@ export async function POST(req: Request) {
       signal: req.signal,
     });
 
-    // ── 扣费与记账 ──
-    const cost = user
-      ? estimateCredits({ kind, tier: effectiveTier, depth: params.depth as Depth, chars })
-      : 0;
-    if (user && profile && profile.plan !== 'unlimited' && cost > 0) {
-      await chargeCredits(user.id, cost);
-    }
-    await recordJob({
+    // ── 记账 ──
+    reserved = null;
+    await recordJobSafely({
       userId: user?.id ?? null,
       status: 'succeeded',
       sourceKind: kind,
@@ -131,8 +156,9 @@ export async function POST(req: Request) {
     return NextResponse.json({ map, warnings, notes: doc.notes, usage, creditsCharged: cost });
   } catch (err) {
     const { status, code, message } = describeError(err);
-    await recordJob({
-      userId: null,
+    if (reserved) await refundCredits(reserved.userId, reserved.amount).catch(() => undefined);
+    await recordJobSafely({
+      userId: jobUserId,
       status: 'failed',
       sourceKind: kind,
       sourceUrl: doc?.url ?? null,
@@ -143,6 +169,23 @@ export async function POST(req: Request) {
     });
     return fail(status, code, message);
   }
+}
+
+type JobInput = Parameters<typeof recordJob>[0];
+
+async function recordJobSafely(job: JobInput): Promise<void> {
+  try {
+    await recordJob(job);
+  } catch (error) {
+    console.error('[jobs] failed_to_record', error);
+  }
+}
+
+function rateLimited(resetAt: number, message = '当前请求过多，请稍后重试') {
+  return NextResponse.json(
+    { error: { code: 'rate_limited', message } },
+    { status: 429, headers: { 'retry-after': String(Math.max(1, resetAt - Math.floor(Date.now() / 1000))) } },
+  );
 }
 
 const MAX_UPLOAD_BYTES = 20 * 1024 * 1024;

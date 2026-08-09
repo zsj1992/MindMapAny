@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getCurrentUser } from '@/lib/auth/session';
-import { deleteOwned, getOwnedOrPublic, setPublicOwned, updateOwned } from '@/lib/db/repositories/maps';
+import { deleteOwned, getOwnedOrPublic, renameOwned, setPublicOwned, updateOwned } from '@/lib/db/repositories/maps';
 import { mindMapSchema } from '@/lib/mindmap/schema';
 
 export const runtime = 'nodejs';
@@ -9,6 +9,7 @@ export const runtime = 'nodejs';
 const updateSchema = z.object({
   map: mindMapSchema.optional(),
   isPublic: z.boolean().optional(),
+  title: z.string().trim().min(1).max(120).optional(),
 });
 
 type Ctx = { params: Promise<{ id: string }> };
@@ -32,6 +33,12 @@ export async function PUT(req: Request, { params }: Ctx) {
 
   if (parsed.data.map) {
     const ok = await updateOwned(id, user.id, parsed.data.map);
+    if (!ok) return NextResponse.json({ error: { code: 'not_found' } }, { status: 404 });
+  }
+
+
+  if (parsed.data.title !== undefined) {
+    const ok = await renameOwned(id, user.id, parsed.data.title);
     if (!ok) return NextResponse.json({ error: { code: 'not_found' } }, { status: 404 });
   }
 

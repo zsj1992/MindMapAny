@@ -1,6 +1,7 @@
 'use client';
 
 import { ReactFlowProvider } from '@xyflow/react';
+import { useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { MindMapCanvas } from '@/components/canvas/MindMapCanvas';
 import { InputPanel, type GenerateParams, type InputMode, type InputPanelCopy } from '@/components/InputPanel';
@@ -28,6 +29,7 @@ export interface WorkspaceProps {
 }
 
 export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, copy }: WorkspaceProps) {
+  const router = useRouter();
   const map = useEditor((s) => s.map);
   const dirty = useEditor((s) => s.dirty);
   const load = useEditor((s) => s.load);
@@ -108,6 +110,7 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
           node_count: data.map.nodes.length,
         });
         load(data.map);
+        router.refresh();
         setNotes([...data.notes, ...data.warnings.slice(0, 2)]);
         setSourceKind(inputType === 'document' ? 'text' : inputType);
         setSavedId(null);
@@ -119,7 +122,7 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
         setBusy(false);
       }
     },
-    [load],
+    [load, router],
   );
 
   const save = useCallback(async (): Promise<string | null> => {

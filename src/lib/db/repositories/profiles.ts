@@ -19,10 +19,22 @@ export interface Profile {
 export async function getOrCreate(userId: string, email: string | null): Promise<Profile> {
   const db = getDb();
   const found = await db
-    .prepare(`select id, email, plan, credits from profiles where id = ?1`)
+    .prepare(`select id, email, plan, credits, credits_reset_at from profiles where id = ?1`)
     .bind(userId)
-    .first<Profile>();
-  if (found) return found;
+    .first<Profile & { credits_reset_at: number }>();
+  if (found) {
+    const monthlyPlan = found.plan === 'basic' || found.plan === 'pro';
+    const nextResetAt = found.credits_reset_at + 30 * 86_400;
+    if (monthlyPlan && nowSec() >= nextResetAt) {
+      const resetAt = nowSec();
+      await db
+        .prepare(`update profiles set credits = ?1, credits_reset_at = ?2 where id = ?3 and credits_reset_at = ?4`)
+        .bind(PLAN_CREDITS[found.plan], resetAt, userId, found.credits_reset_at)
+        .run();
+      return { id: found.id, email: found.email, plan: found.plan, credits: PLAN_CREDITS[found.plan] };
+    }
+    return { id: found.id, email: found.email, plan: found.plan, credits: found.credits };
+  }
 
   await db
     .prepare(
@@ -46,4 +58,23 @@ export async function chargeCredits(userId: string, amount: number): Promise<voi
     .prepare(`update profiles set credits = max(0, credits - ?1) where id = ?2`)
     .bind(amount, userId)
     .run();
+}
+
+/**
+ * Reserve credits before an expensive model call. The balance predicate and
+ * decrement live in the same SQL statement, which closes the concurrent-request
+ * gap left by a read-then-charge flow.
+ */
+export async function reserveCredits(userId: string, amount: number): Promise<boolean> {
+  if (amount <= 0) return true;
+  const result = await getDb()
+    .prepare(`update profiles set credits = credits - ?1 where id = ?2 and credits >= ?1`)
+    .bind(amount, userId)
+    .run();
+  return (result.meta.changes ?? 0) > 0;
+}
+
+export async function refundCredits(userId: string, amount: number): Promise<void> {
+  if (amount <= 0) return;
+  await getDb().prepare(`update profiles set credits = credits + ?1 where id = ?2`).bind(amount, userId).run();
 }

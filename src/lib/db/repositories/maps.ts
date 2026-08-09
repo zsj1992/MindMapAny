@@ -148,6 +148,29 @@ export async function updateOwned(id: string, userId: string, map: MindMap): Pro
   return (res.meta.changes ?? 0) > 0;
 }
 
+/** Rename both the summary column and the root title inside the stored map. */
+export async function renameOwned(id: string, userId: string, title: string): Promise<boolean> {
+  const found = await getDb()
+    .prepare(`select data from maps where id = ?1 and user_id = ?2`)
+    .bind(id, userId)
+    .first<{ data: string }>();
+  if (!found) return false;
+  let parsed: ReturnType<typeof mindMapSchema.safeParse>;
+  try {
+    parsed = mindMapSchema.safeParse(JSON.parse(found.data));
+  } catch {
+    return false;
+  }
+  if (!parsed.success) return false;
+  const root = parsed.data.nodes.find((node) => node.parentId === null);
+  const map: MindMap = {
+    ...parsed.data,
+    title,
+    nodes: parsed.data.nodes.map((node) => (node.id === root?.id ? { ...node, title } : node)),
+  };
+  return updateOwned(id, userId, map);
+}
+
 export async function setPublicOwned(
   id: string,
   userId: string,
