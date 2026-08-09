@@ -12,21 +12,12 @@ const COLUMNS = [
     ],
   },
   {
-    title: 'AI 工具',
+    title: '工具与资源',
     links: [
       { label: 'PDF 转思维导图', href: '/tools/pdf-to-mind-map' },
       { label: '文本转思维导图', href: '/tools/text-to-mind-map' },
-      { label: 'Word 文档转脑图', href: '/app/docx' },
       { label: '网页转思维导图', href: '/tools/webpage-to-mind-map' },
-    ],
-  },
-  {
-    title: '学习资源',
-    links: [
       { label: '博客', href: '/blog' },
-      { label: 'AI 思维导图指南', href: '/blog/ai-mind-map-guide' },
-      { label: 'PDF 转脑图教程', href: '/blog/how-to-convert-pdf-to-mind-map' },
-      { label: '脑图与摘要的区别', href: '/blog/mind-map-vs-summary' },
     ],
   },
   {
@@ -44,7 +35,7 @@ const COLUMNS = [
 export function Footer() {
   return (
     <footer className="border-t bg-surface" style={{ borderColor: 'var(--border)' }}>
-      <div className="mx-auto grid max-w-7xl gap-10 px-5 py-14 sm:grid-cols-2 lg:grid-cols-6 lg:px-8">
+      <div className="mx-auto grid max-w-7xl gap-10 px-5 py-16 sm:grid-cols-2 lg:grid-cols-5 lg:px-8">
         <div className="lg:col-span-2">
           <Logo />
           <p className="mt-4 max-w-xs text-sm leading-7 text-text-muted">

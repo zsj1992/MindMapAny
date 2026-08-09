@@ -14,6 +14,7 @@ const FEATURES = [
   {
     title: '多种输入，一条管线',
     body: '粘贴文本、上传 PDF / DOCX / EPUB / PPTX，或丢一个网页链接。提取方式不同，出来的结构一样干净。',
+    detail: '7 种来源',
     icon: (
       <Icon
         path={
@@ -28,6 +29,7 @@ const FEATURES = [
   {
     title: '每个节点都能回到原文',
     body: 'PDF 节点标着页码，PPTX 节点标着幻灯片位置。位置在切块阶段就锚定好，不是让模型凭印象编出来的。',
+    detail: '确定性引用',
     icon: (
       <Icon
         path={
@@ -42,6 +44,7 @@ const FEATURES = [
   {
     title: '层级稳定，不是流水账',
     body: '长文档走分段摘要再合并，重复主题会被合并，孤立节点会被剔除。三档深度对应不同的层数和节点预算。',
+    detail: '最多 5 层',
     icon: (
       <Icon
         path={
@@ -58,6 +61,7 @@ const FEATURES = [
   {
     title: '生成完还能改',
     body: '双击改字，Tab 加子节点，Enter 加同级，空格折叠。不是一张只能看的静态图。',
+    detail: '快捷编辑',
     icon: (
       <Icon
         path={<path strokeLinecap="round" strokeLinejoin="round" d="M4 20h4L18.5 9.5a2.1 2.1 0 00-3-3L5 17v3z" />}
@@ -67,6 +71,7 @@ const FEATURES = [
   {
     title: '导出与分享',
     body: 'PNG、SVG、Markdown 一键导出。生成公开链接后，别人不用注册也能看。',
+    detail: '3 种导出',
     icon: (
       <Icon
         path={
@@ -81,6 +86,7 @@ const FEATURES = [
   {
     title: '30+ 语言输出',
     body: '英文论文可以直接产出中文脑图，原文语言和输出语言互不影响。',
+    detail: '跨语言整理',
     icon: (
       <Icon
         path={
@@ -95,29 +101,42 @@ const FEATURES = [
 ];
 
 export function Features() {
+  const layout = [
+    'md:col-span-7 md:row-span-2 bg-[#102f53] text-white',
+    'md:col-span-5',
+    'md:col-span-5',
+    'md:col-span-4',
+    'md:col-span-4',
+    'md:col-span-4',
+  ];
   return (
-    <section id="features" className="mx-auto max-w-7xl px-5 py-20 sm:py-28 lg:px-8">
-      <div className="max-w-2xl">
-        <p className="eyebrow">为认真阅读而设计</p>
-        <h2 className="mt-4 text-3xl font-bold tracking-[-0.035em] sm:text-4xl">
-          不止是摘要，是真正可用的知识结构
-        </h2>
-        <p className="mt-4 text-base leading-7 text-text-muted">从提取、理解到编辑与分享，每一步都围绕“可信、清晰、可回溯”设计。</p>
+    <section id="features" className="mx-auto max-w-7xl px-5 py-24 sm:py-32 lg:px-8">
+      <div className="grid gap-6 md:grid-cols-[0.55fr_1fr] md:items-end">
+        <div>
+          <p className="flex items-center gap-3 text-[10px] font-semibold tracking-[0.15em] text-brand-600 dark:text-brand-300"><span className="font-mono text-text-subtle">01</span> 产品能力</p>
+          <p className="mt-3 max-w-xs text-sm leading-7 text-text-muted">为需要认真阅读、核验和整理长内容的人设计。</p>
+        </div>
+        <div>
+          <h2 className="text-balance text-3xl font-semibold leading-tight tracking-[-0.045em] sm:text-5xl">摘要告诉你“说了什么”，<br className="hidden sm:block" />结构告诉你“为什么”。</h2>
+        </div>
       </div>
 
-      <div className="mt-12 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+      <div className="mt-14 grid gap-3 md:grid-cols-12 md:auto-rows-[11.5rem]">
         {FEATURES.map((f, index) => (
-          <div
+          <article
             key={f.title}
-            className={`card group relative overflow-hidden p-6 transition-all hover:-translate-y-0.5 hover:border-brand-300 hover:shadow-xl ${index === 1 ? 'sm:col-span-2 lg:col-span-1' : ''}`}
+            className={`group relative min-h-[11.5rem] overflow-hidden rounded-[1.15rem] border p-6 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_20px_50px_rgb(18_48_78/0.10)] ${layout[index]}`}
+            style={{ borderColor: index === 0 ? 'rgb(255 255 255 / 0.1)' : 'var(--border)' }}
           >
-            <span className="absolute right-5 top-4 text-4xl font-bold text-bg-muted">0{index + 1}</span>
-            <div className="relative flex h-11 w-11 items-center justify-center rounded-xl bg-[#102f53] text-white shadow-sm">
+            <span className={`absolute right-5 top-4 font-mono text-[10px] ${index === 0 ? 'text-white/35' : 'text-text-subtle'}`}>0{index + 1}</span>
+            <div className={`relative flex h-9 w-9 items-center justify-center rounded-lg ${index === 0 ? 'bg-white/10 text-cyan-200' : 'bg-bg-muted text-[#102f53] dark:text-brand-300'}`}>
               {f.icon}
             </div>
-            <h3 className="relative mt-5 text-base font-bold">{f.title}</h3>
-            <p className="relative mt-2 text-sm leading-7 text-text-muted">{f.body}</p>
-          </div>
+            <h3 className={`relative mt-5 text-base font-semibold ${index === 0 ? 'text-white' : 'text-text'}`}>{f.title}</h3>
+            <p className={`relative mt-2 max-w-xl text-sm leading-7 ${index === 0 ? 'text-blue-100/70' : 'text-text-muted'}`}>{f.body}</p>
+            <p className={`absolute bottom-5 right-5 font-mono text-[10px] font-semibold ${index === 0 ? 'text-cyan-300' : 'text-brand-600 dark:text-brand-300'}`}>{f.detail}</p>
+            {index === 0 && <div className="absolute -bottom-20 -right-16 h-56 w-56 rounded-full border border-white/10" aria-hidden="true" />}
+          </article>
         ))}
       </div>
     </section>
@@ -132,19 +151,19 @@ const STEPS = [
 
 export function HowItWorks() {
   return (
-    <section id="how-it-works" className="border-y bg-[#0d2948] text-white" style={{ borderColor: 'var(--border)' }}>
-      <div className="mx-auto max-w-7xl px-5 py-20 sm:py-28 lg:px-8">
-        <div className="max-w-2xl">
-          <p className="text-xs font-semibold uppercase tracking-[0.16em] text-cyan-300">工作流程</p>
-          <h2 className="mt-4 text-3xl font-bold tracking-[-0.035em] sm:text-4xl">三步，把长内容变成清晰决策</h2>
+    <section id="how-it-works" className="border-y bg-bg-subtle" style={{ borderColor: 'var(--border)' }}>
+      <div className="mx-auto max-w-7xl px-5 py-24 sm:py-28 lg:px-8">
+        <div className="grid gap-6 md:grid-cols-[0.55fr_1fr] md:items-end">
+          <div><p className="flex items-center gap-3 text-[10px] font-semibold tracking-[0.15em] text-brand-600 dark:text-brand-300"><span className="font-mono text-text-subtle">02</span> 工作流程</p></div>
+          <h2 className="text-balance text-3xl font-semibold leading-tight tracking-[-0.045em] sm:text-5xl">不改变阅读，只把顺序调对。</h2>
         </div>
-        <div className="mt-12 grid gap-4 sm:grid-cols-3">
+        <div className="mt-14 border-t" style={{ borderColor: 'var(--border-strong)' }}>
           {STEPS.map((s) => (
-            <div key={s.n} className="relative rounded-2xl border border-white/10 bg-white/[0.045] p-6 backdrop-blur-sm">
-              <span className="flex h-9 w-9 items-center justify-center rounded-full bg-cyan-300 text-xs font-bold tabular-nums text-[#0d2948]">{s.n}</span>
-              <h3 className="mt-5 text-lg font-bold">{s.title}</h3>
-              <p className="mt-2 text-sm leading-7 text-blue-100/70">{s.body}</p>
-            </div>
+            <article key={s.n} className="grid gap-4 border-b py-7 sm:grid-cols-[5rem_0.7fr_1fr] sm:items-center" style={{ borderColor: 'var(--border)' }}>
+              <span className="font-mono text-xs font-semibold text-accent-600">/{s.n}</span>
+              <h3 className="text-xl font-semibold tracking-[-0.02em]">{s.title}</h3>
+              <p className="max-w-xl text-sm leading-7 text-text-muted">{s.body}</p>
+            </article>
           ))}
         </div>
       </div>
@@ -177,27 +196,28 @@ const FAQS = [
 
 export function Faq() {
   return (
-    <section id="faq" className="mx-auto max-w-4xl px-5 py-20 sm:py-28">
-      <div className="text-center">
-        <p className="eyebrow">FAQ</p>
-        <h2 className="mt-4 text-3xl font-bold tracking-[-0.035em] sm:text-4xl">你可能还想知道</h2>
+    <section id="faq" className="mx-auto grid max-w-7xl gap-12 px-5 py-24 sm:py-32 lg:grid-cols-[0.55fr_1fr] lg:px-8">
+      <div className="lg:sticky lg:top-28 lg:self-start">
+        <p className="flex items-center gap-3 text-[10px] font-semibold tracking-[0.15em] text-brand-600 dark:text-brand-300"><span className="font-mono text-text-subtle">03</span> 常见问题</p>
+        <h2 className="mt-5 text-balance text-3xl font-semibold leading-tight tracking-[-0.045em] sm:text-5xl">开始之前，<br />再确认几件事。</h2>
+        <p className="mt-5 max-w-sm text-sm leading-7 text-text-muted">还有具体问题？写信到 support@mindmapany.com，我们会在 3 个工作日内回复。</p>
       </div>
-      <div className="mt-10 space-y-3">
+      <div className="border-t" style={{ borderColor: 'var(--border-strong)' }}>
         {FAQS.map((f) => (
-          <details key={f.q} className="card group px-5 py-5 sm:px-6 [&_summary::-webkit-details-marker]:hidden">
-            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 font-semibold">
+          <details key={f.q} className="group border-b py-6 [&_summary::-webkit-details-marker]:hidden" style={{ borderColor: 'var(--border)' }}>
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-base font-semibold">
               {f.q}
               <svg
                 viewBox="0 0 24 24"
                 fill="none"
                 stroke="currentColor"
                 strokeWidth="2"
-                className="h-4 w-4 shrink-0 text-text-subtle transition-transform group-open:rotate-180"
+                className="h-4 w-4 shrink-0 text-text-subtle transition-transform duration-200 group-open:rotate-180"
               >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 9l6 6 6-6" />
               </svg>
             </summary>
-            <p className="mt-3 text-sm leading-relaxed text-text-muted">{f.a}</p>
+            <p className="mt-4 max-w-2xl pr-8 text-sm leading-7 text-text-muted">{f.a}</p>
           </details>
         ))}
       </div>
