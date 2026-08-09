@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
-import { Faq, Features, HowItWorks } from '@/components/site/Sections';
+import { Faq, Features, HowItWorks, InputTypes } from '@/components/site/Sections';
 import { JsonLd } from '@/components/seo/JsonLd';
 import { Footer } from '@/components/site/Footer';
 import { HeroMap } from '@/components/site/HeroMap';
@@ -138,10 +138,11 @@ export default function HomePage() {
         </section>
 
         <Features />
+        <InputTypes />
         <HowItWorks />
         <Faq />
 
-        <section className="px-5 pb-24 pt-8 sm:pb-32 sm:pt-12 lg:px-8">
+        <section className="px-5 pb-20 pt-4 sm:pb-24 sm:pt-8 lg:px-8">
           <div className="relative mx-auto grid max-w-7xl overflow-hidden rounded-[1.5rem] bg-[#102f53] px-6 py-10 text-white shadow-[0_28px_80px_rgb(15_47_82/0.18)] sm:px-10 sm:py-12 lg:grid-cols-[1fr_auto] lg:items-end lg:px-14">
             <div className="pointer-events-none absolute -right-10 -top-20 h-72 w-72 rounded-full border border-white/10" aria-hidden="true" />
             <div className="pointer-events-none absolute -right-2 -top-12 h-44 w-44 rounded-full border border-white/10" aria-hidden="true" />

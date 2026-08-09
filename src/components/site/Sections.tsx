@@ -1,3 +1,4 @@
+import Link from 'next/link';
 import type { ReactNode } from 'react';
 
 /* 落地页的信息区块。纯服务端组件，不带任何交互，保证首屏和 SEO。 */
@@ -110,8 +111,8 @@ export function Features() {
     'md:col-span-4',
   ];
   return (
-    <section id="features" className="mx-auto max-w-7xl px-5 py-24 sm:py-32 lg:px-8">
-      <div className="grid gap-6 md:grid-cols-[0.55fr_1fr] md:items-end">
+    <section id="features" className="mx-auto max-w-7xl px-5 py-20 sm:py-24 lg:px-8">
+      <div className="grid gap-4 md:grid-cols-[0.42fr_1fr] md:items-end">
         <div>
           <p className="flex items-center gap-3 text-[10px] font-semibold tracking-[0.15em] text-brand-600 dark:text-brand-300"><span className="font-mono text-text-subtle">01</span> CAPABILITIES</p>
           <p className="mt-3 max-w-xs text-sm leading-7 text-text-muted">Built for people who need to read, verify and organise long content carefully.</p>
@@ -121,11 +122,11 @@ export function Features() {
         </div>
       </div>
 
-      <div className="mt-14 grid gap-3 md:grid-cols-12 md:auto-rows-[11.5rem]">
+      <div className="mt-10 grid gap-3 md:grid-cols-12 md:auto-rows-[minmax(11.5rem,auto)]">
         {FEATURES.map((f, index) => (
           <article
             key={f.title}
-            className={`group relative min-h-[11.5rem] overflow-hidden rounded-[1.15rem] border p-6 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_20px_50px_rgb(18_48_78/0.10)] ${layout[index]}`}
+            className={`group relative flex min-h-[11.5rem] flex-col overflow-hidden rounded-[1.15rem] border p-6 transition-all duration-300 hover:-translate-y-0.5 hover:shadow-[0_20px_50px_rgb(18_48_78/0.10)] ${layout[index]}`}
             style={{ borderColor: index === 0 ? 'rgb(255 255 255 / 0.1)' : 'var(--border)' }}
           >
             <span className={`absolute right-5 top-4 font-mono text-[10px] ${index === 0 ? 'text-white/35' : 'text-text-subtle'}`}>0{index + 1}</span>
@@ -133,11 +134,82 @@ export function Features() {
               {f.icon}
             </div>
             <h3 className={`relative mt-5 text-base font-semibold ${index === 0 ? 'text-white' : 'text-text'}`}>{f.title}</h3>
-            <p className={`relative mt-2 max-w-xl text-sm leading-7 ${index === 0 ? 'text-blue-100/70' : 'text-text-muted'}`}>{f.body}</p>
-            <p className={`absolute bottom-5 right-5 font-mono text-[10px] font-semibold ${index === 0 ? 'text-cyan-300' : 'text-brand-600 dark:text-brand-300'}`}>{f.detail}</p>
+            <p className={`relative mt-2 max-w-xl pr-6 text-sm leading-7 ${index === 0 ? 'text-blue-100/70' : 'text-text-muted'}`}>{f.body}</p>
+            <p className={`relative mt-auto pt-5 text-right font-mono text-[10px] font-semibold ${index === 0 ? 'text-cyan-300' : 'text-brand-600 dark:text-brand-300'}`}>{f.detail}</p>
             {index === 0 && <div className="absolute -bottom-20 -right-16 h-56 w-56 rounded-full border border-white/10" aria-hidden="true" />}
           </article>
         ))}
+      </div>
+    </section>
+  );
+}
+
+/* 六种输入各自的差异点。既是给读者的分流入口，也是首页到工具页的内链。 */
+const INPUT_TYPES = [
+  {
+    name: 'PDF',
+    href: '/tools/pdf-to-mind-map',
+    anchor: 'Page numbers',
+    body: 'Papers, reports and white papers. Every node keeps the page it came from, so checking a figure means opening one page rather than re-reading the file. Text-based PDFs only — scans need OCR first.',
+  },
+  {
+    name: 'Word',
+    href: '/tools/docx-to-mind-map',
+    anchor: 'Document order',
+    body: 'Specifications, drafts and long reports. Body paragraphs and table text are read in order. A DOCX has no fixed pages until Word renders it, so nodes anchor to position in the document rather than a page number.',
+  },
+  {
+    name: 'EPUB',
+    href: '/tools/epub-to-mind-map',
+    anchor: 'Chapter titles',
+    body: 'Whole books, read in the order the publisher defined. Nodes carry the chapter they came from, which is the stable anchor for an ebook — page numbers shift with font size. DRM-protected files cannot be opened.',
+  },
+  {
+    name: 'PowerPoint',
+    href: '/tools/pptx-to-mind-map',
+    anchor: 'Slide numbers',
+    body: 'Conference talks, training decks and proposals. Slide text is pulled in deck order and every node is labelled with its slide. Speaker notes and images are not read, so decks that hide the substance in notes will map thin.',
+  },
+  {
+    name: 'Long text',
+    href: '/tools/text-to-mind-map',
+    anchor: 'Paste and go',
+    body: 'Meeting minutes, transcripts, research notes, anything you can select and copy. The fastest way to see whether a pile of unstructured writing actually holds a coherent argument.',
+  },
+  {
+    name: 'Web pages',
+    href: '/tools/webpage-to-mind-map',
+    anchor: 'Section anchors',
+    body: 'Articles, documentation and encyclopedia entries. We pull the body text and drop the navigation and ads. Pages behind a login, anti-bot protection or pure client-side rendering cannot be read.',
+  },
+];
+
+export function InputTypes() {
+  return (
+    <section id="inputs" className="border-t" style={{ borderColor: 'var(--border)' }}>
+      <div className="mx-auto max-w-7xl px-5 py-20 sm:py-24 lg:px-8">
+        <div className="grid gap-4 md:grid-cols-[0.42fr_1fr] md:items-end">
+          <div>
+            <p className="flex items-center gap-3 text-[10px] font-semibold tracking-[0.15em] text-brand-600 dark:text-brand-300"><span className="font-mono text-text-subtle">02</span> BY INPUT TYPE</p>
+            <p className="mt-3 max-w-xs text-sm leading-7 text-text-muted">Each format is extracted differently, and each one anchors its nodes to something different.</p>
+          </div>
+          <h2 className="text-balance text-3xl font-semibold leading-tight tracking-[-0.045em] sm:text-4xl">What are you starting from?</h2>
+        </div>
+
+        <div className="mt-10 grid gap-x-8 gap-y-7 sm:grid-cols-2 lg:grid-cols-3">
+          {INPUT_TYPES.map((input) => (
+            <article key={input.name} className="border-t pt-5" style={{ borderColor: 'var(--border-strong)' }}>
+              <div className="flex items-baseline justify-between gap-3">
+                <h3 className="text-lg font-semibold tracking-tight">{input.name}</h3>
+                <span className="shrink-0 font-mono text-[10px] font-semibold text-accent-600">{input.anchor}</span>
+              </div>
+              <p className="mt-3 text-sm leading-7 text-text-muted">{input.body}</p>
+              <Link href={input.href} className="mt-4 inline-flex text-xs font-semibold text-brand-600 transition-colors hover:text-brand-700 dark:text-brand-300">
+                {input.name} to mind map <span aria-hidden="true">→</span>
+              </Link>
+            </article>
+          ))}
+        </div>
       </div>
     </section>
   );
@@ -152,17 +224,17 @@ const STEPS = [
 export function HowItWorks() {
   return (
     <section id="how-it-works" className="border-y bg-bg-subtle" style={{ borderColor: 'var(--border)' }}>
-      <div className="mx-auto max-w-7xl px-5 py-24 sm:py-28 lg:px-8">
-        <div className="grid gap-6 md:grid-cols-[0.55fr_1fr] md:items-end">
-          <div><p className="flex items-center gap-3 text-[10px] font-semibold tracking-[0.15em] text-brand-600 dark:text-brand-300"><span className="font-mono text-text-subtle">02</span> HOW IT WORKS</p></div>
-          <h2 className="text-balance text-3xl font-semibold leading-tight tracking-[-0.045em] sm:text-5xl">Same reading. Better order.</h2>
+      <div className="mx-auto max-w-6xl px-5 py-20 sm:py-24 lg:px-8">
+        <div className="grid gap-4 md:grid-cols-[0.42fr_1fr] md:items-end">
+          <div><p className="flex items-center gap-3 text-[10px] font-semibold tracking-[0.15em] text-brand-600 dark:text-brand-300"><span className="font-mono text-text-subtle">03</span> HOW IT WORKS</p></div>
+          <h2 className="text-balance text-3xl font-semibold leading-tight tracking-[-0.045em] sm:text-4xl">Same reading. Better order.</h2>
         </div>
-        <div className="mt-14 border-t" style={{ borderColor: 'var(--border-strong)' }}>
+        <div className="mt-10 border-t" style={{ borderColor: 'var(--border-strong)' }}>
           {STEPS.map((s) => (
-            <article key={s.n} className="grid gap-4 border-b py-7 sm:grid-cols-[5rem_0.7fr_1fr] sm:items-center" style={{ borderColor: 'var(--border)' }}>
+            <article key={s.n} className="grid gap-x-6 gap-y-2 border-b py-6 sm:grid-cols-[3rem_minmax(0,15.5rem)_minmax(0,1fr)] sm:items-baseline" style={{ borderColor: 'var(--border)' }}>
               <span className="font-mono text-xs font-semibold text-accent-600">/{s.n}</span>
-              <h3 className="text-xl font-semibold tracking-[-0.02em]">{s.title}</h3>
-              <p className="max-w-xl text-sm leading-7 text-text-muted">{s.body}</p>
+              <h3 className="text-lg font-semibold tracking-[-0.02em] sm:text-xl">{s.title}</h3>
+              <p className="max-w-2xl text-sm leading-7 text-text-muted">{s.body}</p>
             </article>
           ))}
         </div>
@@ -192,20 +264,36 @@ const FAQS = [
     q: 'How much can I do on the free plan?',
     a: 'Signing up grants 30 credits, enough to fully try text and web page inputs. Long documents and the high-quality model are charged against your plan and credit balance.',
   },
+  {
+    q: 'Do I have to sign up to try it?',
+    a: 'No. You can generate a map straight away without an account, using a daily trial allowance, for text and web page inputs. Signing in is what lets you save maps, create share links, use longer documents and keep a credit balance.',
+  },
+  {
+    q: 'How do credits work?',
+    a: 'Credits are charged per generation, and the cost depends on the input type, the model tier and how long the content is — a short article costs a fraction of a 200-page report. Your remaining balance is shown in the workbench, and if a generation fails the credits are returned to your account.',
+  },
+  {
+    q: 'Can I edit the map after it is generated, or is it a fixed image?',
+    a: 'You can edit it. Double-click a node to rename it, Tab adds a child, Enter adds a sibling, Space collapses a branch, and Delete removes one. Layout, colour theme, typography and branch numbering are all adjustable, and the formatting is saved with the map.',
+  },
+  {
+    q: 'What can I export, and can I share a map with someone who has no account?',
+    a: 'Maps export to PNG, SVG and Markdown. You can also switch on a public link, which lets anyone open a read-only view without signing up. Sharing is off by default and you can turn it off again at any time.',
+  },
 ];
 
 export function Faq() {
   return (
-    <section id="faq" className="mx-auto grid max-w-7xl gap-12 px-5 py-24 sm:py-32 lg:grid-cols-[0.55fr_1fr] lg:px-8">
+    <section id="faq" className="mx-auto grid max-w-6xl gap-x-14 gap-y-10 px-5 py-20 sm:py-24 lg:grid-cols-[0.42fr_1fr] lg:px-8">
       <div className="lg:sticky lg:top-28 lg:self-start">
-        <p className="flex items-center gap-3 text-[10px] font-semibold tracking-[0.15em] text-brand-600 dark:text-brand-300"><span className="font-mono text-text-subtle">03</span> FAQ</p>
-        <h2 className="mt-5 text-balance text-3xl font-semibold leading-tight tracking-[-0.045em] sm:text-5xl">A few things<br />before you start.</h2>
-        <p className="mt-5 max-w-sm text-sm leading-7 text-text-muted">Still have a question? Email support@mindmapany.com and we usually reply within 3 business days.</p>
+        <p className="flex items-center gap-3 text-[10px] font-semibold tracking-[0.15em] text-brand-600 dark:text-brand-300"><span className="font-mono text-text-subtle">04</span> FAQ</p>
+        <h2 className="mt-4 text-balance text-3xl font-semibold leading-tight tracking-[-0.045em] sm:text-4xl">A few things<br />before you start.</h2>
+        <p className="mt-4 max-w-xs text-sm leading-7 text-text-muted">Still have a question? Email support@mindmapany.com and we usually reply within 3 business days.</p>
       </div>
       <div className="border-t" style={{ borderColor: 'var(--border-strong)' }}>
         {FAQS.map((f) => (
-          <details key={f.q} className="group border-b py-6 [&_summary::-webkit-details-marker]:hidden" style={{ borderColor: 'var(--border)' }}>
-            <summary className="flex cursor-pointer list-none items-center justify-between gap-4 text-base font-semibold">
+          <details key={f.q} className="group border-b py-5 [&_summary::-webkit-details-marker]:hidden" style={{ borderColor: 'var(--border)' }}>
+            <summary className="flex cursor-pointer list-none items-center justify-between gap-6 text-[15px] font-semibold leading-6">
               {f.q}
               <svg
                 viewBox="0 0 24 24"
@@ -217,7 +305,7 @@ export function Faq() {
                 <path strokeLinecap="round" strokeLinejoin="round" d="M6 9l6 6 6-6" />
               </svg>
             </summary>
-            <p className="mt-4 max-w-2xl pr-8 text-sm leading-7 text-text-muted">{f.a}</p>
+            <p className="mt-3 max-w-2xl pr-6 text-sm leading-7 text-text-muted">{f.a}</p>
           </details>
         ))}
       </div>
