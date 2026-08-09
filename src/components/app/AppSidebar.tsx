@@ -36,12 +36,6 @@ const ICONS = {
       <path strokeLinejoin="round" d="M19 8v11a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5z" />
     </>,
   ),
-  youtube: icon(
-    <>
-      <rect x="3" y="6" width="18" height="12" rx="3" />
-      <path d="M11 10l4 2-4 2v-4z" fill="currentColor" stroke="none" />
-    </>,
-  ),
   text: icon(<path strokeLinecap="round" d="M5 7h14M5 12h14M5 17h8" />),
   web: icon(
     <>
@@ -67,41 +61,11 @@ const ICONS = {
       <path strokeLinecap="round" d="M8 20l4-4 4 4M8 8h8M8 11h5" />
     </>,
   ),
-  video: icon(
-    <>
-      <rect x="3" y="5" width="14" height="14" rx="2" />
-      <path strokeLinejoin="round" d="M17 10l4-2v8l-4-2v-4z" />
-    </>,
-  ),
-  email: icon(
-    <>
-      <rect x="3" y="5" width="18" height="14" rx="2" />
-      <path strokeLinejoin="round" d="M4 7l8 6 8-6" />
-    </>,
-  ),
-  social: icon(
-    <>
-      <circle cx="6" cy="12" r="2" /><circle cx="18" cy="6" r="2" /><circle cx="18" cy="18" r="2" />
-      <path d="M8 11l8-4M8 13l8 4" />
-    </>,
-  ),
-  audio: icon(
-    <>
-      <path strokeLinecap="round" strokeLinejoin="round" d="M9 18V6l10-2v12" />
-      <ellipse cx="6.5" cy="18" rx="2.5" ry="2" /><ellipse cx="16.5" cy="16" rx="2.5" ry="2" />
-    </>,
-  ),
   maps: icon(
     <>
       <rect x="3" y="4" width="7" height="6" rx="1.5" />
       <rect x="14" y="9" width="7" height="5" rx="1.5" />
       <rect x="14" y="16" width="7" height="4" rx="1.5" />
-    </>,
-  ),
-  lock: icon(
-    <>
-      <rect x="5" y="11" width="14" height="9" rx="2" />
-      <path d="M8 11V8a4 4 0 018 0v3" />
     </>,
   ),
 };
@@ -114,46 +78,22 @@ const PRIMARY = [
 
 const GROUPS = [
   {
-    label: '总结 PDF / 文档',
+    label: '上传文件',
     items: [
       { label: 'PDF', icon: ICONS.pdf, href: '/app/pdf' },
-      { label: 'Word 文档', icon: ICONS.document },
-      { label: '电子书', icon: ICONS.ebook },
-      { label: '研究论文', icon: ICONS.research },
-      { label: 'PPT / 表格', icon: ICONS.slides },
+      { label: 'Word 文档', icon: ICONS.document, href: '/app/docx' },
+      { label: 'EPUB 电子书', icon: ICONS.ebook, href: '/app/epub' },
+      { label: 'PPT 演示文稿', icon: ICONS.slides, href: '/app/pptx' },
     ],
   },
   {
-    label: '总结视频',
-    items: [
-      { label: 'YouTube', icon: ICONS.youtube, href: '/app/youtube' },
-      { label: '视频文件', icon: ICONS.video },
-    ],
-  },
-  {
-    label: '总结文本',
+    label: '粘贴内容',
     items: [
       { label: '长文本', icon: ICONS.text, href: '/app/text' },
-      { label: '邮件', icon: ICONS.email },
-    ],
-  },
-  {
-    label: '总结网页',
-    items: [
       { label: '网页文章', icon: ICONS.web, href: '/app/web' },
-      { label: '博客文章', icon: ICONS.document },
-      { label: '社交媒体', icon: ICONS.social },
     ],
   },
-  {
-    label: '总结音频',
-    items: [
-      { label: '音频文件', icon: ICONS.audio },
-      { label: '播客', icon: ICONS.audio },
-      { label: '会议录音', icon: ICONS.audio },
-    ],
-  },
-] satisfies Array<{ label: string; items: Array<{ label: string; icon: ReactNode; href?: string }> }>;
+] satisfies Array<{ label: string; items: Array<{ label: string; icon: ReactNode; href: string }> }>;
 
 export function SidebarTrigger() {
   const setOpen = useDrawer((s) => s.setOpen);
@@ -186,21 +126,17 @@ export function AppSidebar() {
           <section key={group.label}>
             <p className="px-3 pb-1.5 text-[10px] font-bold tracking-[0.04em] text-text-subtle">{group.label}</p>
             <div className="space-y-0.5">
-              {group.items.map((item) =>
-                item.href ? (
-                  <NavLink
-                    key={item.label}
-                    href={item.href}
-                    label={item.label}
-                    icon={item.icon}
-                    active={pathname === item.href}
-                    onNavigate={() => setOpen(false)}
-                    compact
-                  />
-                ) : (
-                  <PlannedItem key={item.label} label={item.label} icon={item.icon} />
-                ),
-              )}
+              {group.items.map((item) => (
+                <NavLink
+                  key={item.label}
+                  href={item.href}
+                  label={item.label}
+                  icon={item.icon}
+                  active={pathname === item.href}
+                  onNavigate={() => setOpen(false)}
+                  compact
+                />
+              ))}
             </div>
           </section>
         ))}
@@ -262,15 +198,5 @@ function NavLink({
       {label}
       {badge && <span className="ml-auto text-[9px] font-bold text-brand-600 dark:text-brand-300">{badge}</span>}
     </Link>
-  );
-}
-
-function PlannedItem({ label, icon }: { label: string; icon: ReactNode }) {
-  return (
-    <span className="flex cursor-not-allowed items-center gap-3 rounded-xl px-3 py-2 text-[12px] text-text-subtle" title="即将支持">
-      <span className="opacity-55">{icon}</span>
-      <span>{label}</span>
-      <span className="ml-auto opacity-35">{ICONS.lock}</span>
-    </span>
   );
 }

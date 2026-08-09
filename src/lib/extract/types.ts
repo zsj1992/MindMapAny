@@ -2,6 +2,7 @@ import type { SourceRef } from '@/lib/mindmap/schema';
 
 export const INPUT_KINDS = ['text', 'pdf', 'web', 'youtube'] as const;
 export type InputKind = (typeof INPUT_KINDS)[number];
+export type ExtractedKind = InputKind | 'document';
 
 /**
  * 所有输入格式统一提取成 Block[]，下游切块/生成/溯源完全共用一条管线。
@@ -15,10 +16,12 @@ export interface Block {
   startSec?: number;
   /** web: 最近的一个标题锚点 */
   anchor?: string;
+  /** docx/epub/pptx: 章节、幻灯片等确定性位置 */
+  location?: string;
 }
 
 export interface ExtractedDoc {
-  kind: InputKind;
+  kind: ExtractedKind;
   title: string;
   blocks: Block[];
   /** 原始地址，web/youtube 有 */
@@ -40,6 +43,8 @@ export function blockToSource(doc: ExtractedDoc, block: Block, chunkId: string):
       return { type: 'youtube', chunkId, startSec: block.startSec ?? 0 };
     case 'web':
       return { type: 'web', chunkId, url: doc.url ?? '', ...(block.anchor ? { anchor: block.anchor } : {}) };
+    case 'document':
+      return { type: 'document', chunkId, ...(block.location ? { location: block.location } : {}) };
     default:
       return { type: 'text', chunkId };
   }

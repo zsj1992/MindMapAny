@@ -17,8 +17,8 @@ export const metadata: Metadata = {
     default: 'MindMapAny — 把任何内容变成脑图',
     template: '%s | MindMapAny',
   },
-  description: '文本、PDF、网页、YouTube 一键生成可编辑、可溯源的思维导图。每个节点都能回到原文页码或视频时间戳。',
-  keywords: ['思维导图', '脑图生成', 'PDF 转脑图', 'AI 思维导图', 'YouTube 总结'],
+  description: '文本、PDF、Word、EPUB、PPT 和网页一键生成可编辑、可溯源的思维导图。',
+  keywords: ['思维导图', '脑图生成', 'PDF 转脑图', 'Word 转脑图', 'AI 思维导图'],
   openGraph: {
     type: 'website',
     siteName: 'MindMapAny',

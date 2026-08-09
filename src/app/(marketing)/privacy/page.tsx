@@ -20,7 +20,7 @@ export default function PrivacyPage() {
       <h2>2. 我们收集的信息</h2>
       <ul>
         <li><strong>账户信息：</strong>登录邮箱、昵称、头像及身份验证所需标识。</li>
-        <li><strong>你提交的内容：</strong>文本、PDF、网页或视频链接，以及由此生成、编辑和保存的思维导图。</li>
+        <li><strong>你提交的内容：</strong>文本、文档或网页链接，以及由此生成、编辑和保存的思维导图。</li>
         <li><strong>使用与设备信息：</strong>IP 地址、浏览器类型、访问时间、错误日志、功能使用情况和必要的安全记录。</li>
         <li><strong>交易信息：</strong>套餐、订单和订阅状态。完整支付卡信息由 Creem 等支付服务商处理，我们不会保存完整卡号。</li>
       </ul>
@@ -48,4 +48,3 @@ export default function PrivacyPage() {
     </PolicyPage>
   );
 }
-

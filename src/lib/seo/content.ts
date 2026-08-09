@@ -45,33 +45,6 @@ export const TOOL_PAGES: ToolPage[] = [
     ],
   },
   {
-    slug: 'youtube-to-mind-map',
-    appPath: '/app/youtube',
-    eyebrow: 'AI 视频学习工具',
-    title: 'YouTube 视频转思维导图',
-    description: '粘贴公开视频链接，把长视频字幕整理成结构清晰的脑图，并从节点跳回对应时间点。',
-    seoTitle: 'YouTube 转思维导图 — 带时间戳的 AI 视频总结',
-    seoDescription: '粘贴 YouTube 链接，自动读取字幕并生成多层级思维导图。节点保留视频时间戳，适合课程、访谈与演讲总结。',
-    primaryKeyword: 'YouTube 转思维导图',
-    relatedKeywords: ['视频转脑图', 'YouTube 视频总结', '视频字幕总结', '课程视频笔记'],
-    benefits: [
-      { title: '一小时视频压缩成一张图', description: '用主题分支呈现内容脉络，比线性摘要更容易快速浏览。' },
-      { title: '时间戳可追溯', description: '点击来源提示即可定位到对应片段，重要信息能够回看核验。' },
-      { title: '适合跨语言学习', description: '原视频和输出语言互不限制，可以直接生成中文学习框架。' },
-    ],
-    steps: [
-      { title: '粘贴 YouTube 链接', description: '使用带公开字幕的视频链接。' },
-      { title: '自动读取字幕', description: '系统按时间切分字幕并识别主题之间的层级。' },
-      { title: '查看脑图与时间点', description: '编辑节点，按时间戳复看原片段并导出。' },
-    ],
-    useCases: ['整理公开课和教学视频', '提取访谈与播客视频观点', '复盘产品演示与行业分享', '生成带时间点的学习笔记'],
-    faq: [
-      { question: '没有字幕的视频可以处理吗？', answer: '当前依赖公开视频字幕，暂不包含语音转录；没有字幕时会提示无法提取。' },
-      { question: '时间戳准确吗？', answer: '时间点来自字幕分段而非模型猜测，通常会落在对应内容开始附近。' },
-      { question: '可以总结其他视频平台吗？', answer: '目前公开版本先支持 YouTube，后续会把视频输入能力扩展到更多来源。' },
-    ],
-  },
-  {
     slug: 'text-to-mind-map',
     appPath: '/app/text',
     eyebrow: 'AI 内容整理工具',
@@ -152,7 +125,7 @@ export const BLOG_POSTS: BlogPost[] = [
   {
     slug: 'ai-mind-map-guide',
     title: 'AI 思维导图完整指南：从信息提取到可用知识结构',
-    description: '了解 AI 思维导图如何把长文本、PDF、网页和视频转换成层级结构，以及判断生成质量的实用标准。',
+    description: '了解 AI 思维导图如何把长文本、PDF、Word、电子书和网页转换成层级结构，以及判断生成质量的实用标准。',
     category: '指南',
     publishedAt: '2026-08-08',
     updatedAt: '2026-08-08',
@@ -166,7 +139,7 @@ export const BLOG_POSTS: BlogPost[] = [
         title: '什么是 AI 思维导图',
         paragraphs: [
           'AI 思维导图不是把一段文字换成彩色方框，而是先识别内容中的主题、从属关系和关键信息，再把这些关系转换成可以浏览和编辑的树状结构。好的结果应该让读者先看到全局，再逐层进入细节。',
-          '传统自动摘要主要压缩文字长度，思维导图则强调信息之间的关系。对于论文、报告、课程视频和规则文档，结构往往比一段更短的文字更有价值。',
+          '传统自动摘要主要压缩文字长度，思维导图则强调信息之间的关系。对于论文、报告、电子书和规则文档，结构往往比一段更短的文字更有价值。',
         ],
       },
       {
@@ -179,7 +152,7 @@ export const BLOG_POSTS: BlogPost[] = [
         id: 'input-types',
         title: '不同输入类型需要不同的处理方式',
         paragraphs: [
-          'PDF 需要保留页码并识别章节；视频需要先获得字幕并绑定时间点；网页需要过滤导航和广告；纯文本则更依赖语义分类。统一的画布不代表背后的提取流程相同。',
+          'PDF 需要保留页码并识别章节；EPUB 需要遵循书脊阅读顺序；PPTX 需要按幻灯片定位；网页需要过滤导航和广告。统一的画布不代表背后的提取流程相同。',
           '因此，选择工具时不能只看最终图片是否漂亮，还要检查它是否真的理解了内容来源、是否允许编辑，以及是否能回到原文验证。',
         ],
       },

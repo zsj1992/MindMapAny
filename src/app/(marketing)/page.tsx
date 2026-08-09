@@ -9,7 +9,7 @@ import { SITE_URL } from '@/lib/seo/content';
 export const metadata: Metadata = {
   title: 'MindMapAny — 把任何内容变成结构清晰、可溯源的脑图',
   description:
-    '粘贴文本、上传 PDF、输入网页或 YouTube 链接，几秒生成可编辑的思维导图。每个节点都能回到原文页码或视频时间戳。',
+    '粘贴文本，或上传 PDF、Word、EPUB、PPTX 和网页文章，几秒生成可编辑、可溯源的思维导图。',
   alternates: { canonical: '/' },
 };
 
@@ -17,7 +17,6 @@ const INPUTS = [
   { label: '长文本', href: '/tools/text-to-mind-map' },
   { label: 'PDF', href: '/tools/pdf-to-mind-map' },
   { label: '网页文章', href: '/tools/webpage-to-mind-map' },
-  { label: 'YouTube', href: '/tools/youtube-to-mind-map' },
 ];
 
 export default function HomePage() {
@@ -68,8 +67,8 @@ export default function HomePage() {
               </h1>
 
               <p className="mt-6 max-w-xl text-base leading-8 text-text-muted sm:text-lg">
-                把 PDF、网页、YouTube 或长文本变成层级清晰的思维导图。
-                每条结论都保留页码与时间戳，随时回到原文核验。
+                把 PDF、Word、电子书、网页或长文本变成层级清晰的思维导图。
+                重要结论保留页码、章节等位置，随时回到原文核验。
               </p>
 
               <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -118,7 +117,7 @@ export default function HomePage() {
         <section className="border-y bg-surface" style={{ borderColor: 'var(--border)' }}>
           <div className="mx-auto grid max-w-7xl grid-cols-2 gap-px px-5 sm:grid-cols-4 lg:px-8">
             {[
-              ['4 种', '内容输入方式'],
+              ['7 种', '内容输入格式'],
               ['30+', '输出语言'],
               ['110', '单图最大节点'],
               ['100%', '来源定位可核验'],

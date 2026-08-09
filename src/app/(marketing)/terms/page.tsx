@@ -15,7 +15,7 @@ export default function TermsPage() {
       <p>访问或使用 MindMapAny 即表示你同意本条款及<Link href="/privacy">隐私政策</Link>。如你代表组织使用服务，你确认有权代表该组织接受本条款。</p>
 
       <h2>2. 服务内容</h2>
-      <p>MindMapAny 提供把文本、文档、网页和视频内容整理为可编辑思维导图的工具。功能、额度和支持范围以当前<Link href="/pricing">价格页面</Link>为准。我们可能持续改进或调整功能，但不会追溯性收取未明确同意的费用。</p>
+      <p>MindMapAny 提供把文本、文档和网页内容整理为可编辑思维导图的工具。功能、额度和支持范围以当前<Link href="/pricing">价格页面</Link>为准。我们可能持续改进或调整功能，但不会追溯性收取未明确同意的费用。</p>
 
       <h2>3. 账户与安全</h2>
       <p>你应提供准确的账户信息、妥善保护登录凭据，并对账户内的活动负责。发现未经授权的访问时，请立即联系支持。你不得共享账户以规避套餐限制。</p>
@@ -46,4 +46,3 @@ export default function TermsPage() {
     </PolicyPage>
   );
 }
-

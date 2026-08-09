@@ -6,7 +6,7 @@ import { BLOG_POSTS, SITE_URL } from '@/lib/seo/content';
 
 export const metadata: Metadata = {
   title: 'AI 思维导图指南与方法',
-  description: '关于 AI 思维导图、PDF 与视频内容整理、知识结构和学习方法的实用指南。',
+  description: '关于 AI 思维导图、文档内容整理、知识结构和学习方法的实用指南。',
   alternates: { canonical: '/blog' },
 };
 

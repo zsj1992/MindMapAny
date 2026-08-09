@@ -18,7 +18,7 @@ export const metadata: Metadata = {
 const PERKS = [
   '保存脑图，随时回来接着改',
   '生成公开链接，别人不用注册也能看',
-  '注册即送 30 积分，四种输入全部可用',
+  '注册即送 30 积分，已开放输入均可体验',
 ];
 
 export default async function LoginPage({ searchParams }: PageProps<'/login'>) {

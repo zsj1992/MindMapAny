@@ -27,7 +27,7 @@ const TABS = [
   },
   {
     id: 'url',
-    label: '网页 / YouTube',
+    label: '网页链接',
     icon: icon(
       <>
         <circle cx="12" cy="12" r="9" />
@@ -37,7 +37,7 @@ const TABS = [
   },
   {
     id: 'pdf',
-    label: 'PDF',
+    label: '上传文件',
     icon: icon(
       <>
         <path strokeLinejoin="round" d="M14 3v5h5" />
@@ -65,13 +65,15 @@ const LANGUAGES = [
 ];
 
 /** 来源页只放一种输入，快速开始页保留三个 tab */
-export type InputMode = 'all' | 'text' | 'pdf' | 'web' | 'youtube';
+export type InputMode = 'all' | 'text' | 'pdf' | 'docx' | 'epub' | 'pptx' | 'web';
 
 const MODE_TAB: Record<Exclude<InputMode, 'all'>, Tab> = {
   text: 'text',
   pdf: 'pdf',
+  docx: 'pdf',
+  epub: 'pdf',
+  pptx: 'pdf',
   web: 'url',
-  youtube: 'url',
 };
 
 export interface InputPanelCopy {
@@ -103,7 +105,16 @@ export function InputPanel({
   const fileRef = useRef<HTMLInputElement>(null);
 
   // PDF 示例是链接，当前版本不能直接当文件用，先不在 PDF 页展示
-  const examples = mode === 'pdf' ? [] : (copy?.examples ?? []);
+  const examples = ['pdf', 'docx', 'epub', 'pptx'].includes(mode) ? [] : (copy?.examples ?? []);
+  const fileAccept = mode === 'pdf'
+    ? '.pdf,application/pdf'
+    : mode === 'docx'
+      ? '.docx,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+      : mode === 'epub'
+        ? '.epub,application/epub+zip'
+        : mode === 'pptx'
+          ? '.pptx,application/vnd.openxmlformats-officedocument.presentationml.presentation'
+          : '.pdf,.docx,.epub,.pptx,.txt,.md,.markdown,application/pdf,text/plain,text/markdown';
 
   const ready = tab === 'text' ? text.trim().length > 20 : tab === 'url' ? /^https?:\/\//.test(url.trim()) : !!file;
 
@@ -124,7 +135,7 @@ export function InputPanel({
     e.preventDefault();
     setDragging(false);
     const dropped = e.dataTransfer.files?.[0];
-    if (dropped?.type === 'application/pdf') {
+    if (dropped && isAcceptedFile(dropped, mode)) {
       setFile(dropped);
       setTab('pdf');
     }
@@ -183,17 +194,11 @@ export function InputPanel({
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && submit()}
-              placeholder={
-                mode === 'youtube'
-                  ? '粘贴 YouTube 视频链接…'
-                  : mode === 'web'
-                    ? '粘贴网页文章链接…'
-                    : 'https://example.com/article 或 YouTube 链接'
-              }
+              placeholder={mode === 'web' ? '粘贴网页文章链接…' : 'https://example.com/article'}
               className="field h-14 border-0 bg-bg-subtle px-4 text-sm shadow-none"
             />
             <p className="mt-2 truncate px-1 text-[11px] text-text-subtle">
-              {copy?.hint ?? '暂不支持需要登录的页面、纯 JS 渲染的页面，以及没有字幕的视频'}
+              {copy?.hint ?? '暂不支持需要登录、有反爬保护或纯 JS 渲染的页面'}
             </p>
           </div>
         )}
@@ -210,7 +215,7 @@ export function InputPanel({
             <input
               ref={fileRef}
               type="file"
-              accept="application/pdf"
+              accept={fileAccept}
               hidden
               onChange={(e) => setFile(e.target.files?.[0] ?? null)}
             />
@@ -227,8 +232,8 @@ export function InputPanel({
               </>
             ) : (
               <>
-                <span>拖入 PDF，或点击选择文件</span>
-                <span className="text-xs text-text-subtle">{copy?.hint ?? '最大 20MB / 200 页，暂不支持扫描件'}</span>
+                <span>拖入文件，或点击选择</span>
+                <span className="text-xs text-text-subtle">{copy?.hint ?? 'PDF、DOCX、EPUB、PPTX、TXT、Markdown · 最大 20MB'}</span>
               </>
             )}
           </button>
@@ -301,6 +306,20 @@ export function InputPanel({
       </footer>
     </section>
   );
+}
+
+function isAcceptedFile(file: File, mode: InputMode): boolean {
+  const ext = file.name.toLowerCase().match(/\.([a-z0-9]+)$/)?.[1] ?? '';
+  const allowed = mode === 'pdf'
+    ? ['pdf']
+    : mode === 'docx'
+      ? ['docx']
+      : mode === 'epub'
+        ? ['epub']
+        : mode === 'pptx'
+          ? ['pptx']
+          : ['pdf', 'docx', 'epub', 'pptx', 'txt', 'md', 'markdown'];
+  return allowed.includes(ext);
 }
 
 function Spinner() {

@@ -16,7 +16,7 @@ const COLUMNS = [
     links: [
       { label: 'PDF 转思维导图', href: '/tools/pdf-to-mind-map' },
       { label: '文本转思维导图', href: '/tools/text-to-mind-map' },
-      { label: 'YouTube 转思维导图', href: '/tools/youtube-to-mind-map' },
+      { label: 'Word 文档转脑图', href: '/app/docx' },
       { label: '网页转思维导图', href: '/tools/webpage-to-mind-map' },
     ],
   },

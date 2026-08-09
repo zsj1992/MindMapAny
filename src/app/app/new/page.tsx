@@ -8,6 +8,6 @@ export const metadata: Metadata = {
 
 export default function NewMapPage() {
   return (
-    <Workspace title="生成一张脑图" subtitle="粘贴文本、上传 PDF，或丢一个网页 / YouTube 链接进来。" />
+    <Workspace title="生成一张脑图" subtitle="粘贴文本、上传文档，或丢一个网页链接进来。" />
   );
 }

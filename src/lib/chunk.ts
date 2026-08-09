@@ -1,4 +1,4 @@
-import { blockToSource, type ExtractedDoc } from '@/lib/extract/types';
+import { blockToSource, type Block, type ExtractedDoc } from '@/lib/extract/types';
 import type { PromptChunk } from '@/lib/mindmap/prompt';
 import type { SourceRef } from '@/lib/mindmap/schema';
 
@@ -18,10 +18,11 @@ export interface ChunkResult {
   chunkIndex: Map<string, SourceRef>;
 }
 
-function hintFor(doc: ExtractedDoc, block: { page?: number; startSec?: number; anchor?: string }): string | undefined {
+function hintFor(doc: ExtractedDoc, block: Block): string | undefined {
   if (doc.kind === 'pdf' && block.page) return `p.${block.page}`;
   if (doc.kind === 'youtube' && block.startSec !== undefined) return formatTimestamp(block.startSec);
   if (doc.kind === 'web' && block.anchor) return block.anchor;
+  if (doc.kind === 'document' && block.location) return block.location;
   return undefined;
 }
 

@@ -13,7 +13,7 @@ export interface SourceExample {
 
 export interface SourceCopy {
   kind: InputKind;
-  slug: 'text' | 'pdf' | 'web' | 'youtube';
+  slug: 'text' | 'pdf' | 'docx' | 'epub' | 'pptx' | 'web';
   nav: string;
   title: string;
   subtitle: string;
@@ -39,19 +39,38 @@ export const SOURCE_COPY: Record<SourceCopy['slug'], SourceCopy> = {
       { label: 'BERT 论文', value: 'https://arxiv.org/pdf/1810.04805' },
     ],
   },
-  youtube: {
-    kind: 'youtube',
-    slug: 'youtube',
-    nav: 'YouTube',
-    title: 'YouTube 视频转思维导图',
-    subtitle: '把一小时的视频压成一屏结构，点节点直接跳到对应时间点。',
-    seoTitle: 'YouTube 视频转思维导图 — 带时间戳的视频总结',
-    seoDescription: '粘贴 YouTube 链接，自动读取字幕生成思维导图。每个节点带时间戳，可跳回视频对应位置。',
-    hint: '仅支持已有字幕的公开视频，暂不支持语音转录',
-    examples: [
-      { label: 'MIT 线性代数公开课', value: 'https://www.youtube.com/watch?v=ZK3O402wf1c' },
-      { label: 'TED：拖延症心理学', value: 'https://www.youtube.com/watch?v=arj7oStGLkU' },
-    ],
+  docx: {
+    kind: 'text',
+    slug: 'docx',
+    nav: 'Word 文档',
+    title: 'Word 文档转思维导图',
+    subtitle: '上传 DOCX，提取段落与表格文字，整理成可编辑的层级结构。',
+    seoTitle: 'Word 文档转思维导图 — DOCX 自动总结',
+    seoDescription: '上传 DOCX Word 文档，自动提取正文并生成层级清晰、可编辑的思维导图。',
+    hint: '支持 DOCX，最大 20MB；暂不支持旧版 .doc 与密码保护文件',
+    examples: [],
+  },
+  epub: {
+    kind: 'text',
+    slug: 'epub',
+    nav: '电子书',
+    title: 'EPUB 电子书转思维导图',
+    subtitle: '按电子书阅读顺序提取章节，把整本书整理成结构化脑图。',
+    seoTitle: 'EPUB 电子书转思维导图 — 按章节自动总结',
+    seoDescription: '上传 EPUB 电子书，按章节阅读顺序提取正文并生成可编辑思维导图。',
+    hint: '支持 EPUB，最大 20MB；不读取 DRM 保护电子书',
+    examples: [],
+  },
+  pptx: {
+    kind: 'text',
+    slug: 'pptx',
+    nav: 'PPT 演示文稿',
+    title: 'PPT 演示文稿转思维导图',
+    subtitle: '逐页提取 PPTX 文字，把演示结构和关键论点整理成脑图。',
+    seoTitle: 'PPT 转思维导图 — PPTX 逐页提取与总结',
+    seoDescription: '上传 PPTX 演示文稿，逐页提取文字并生成可编辑思维导图。',
+    hint: '支持 PPTX，最大 20MB；图片、音视频与动画不会被读取',
+    examples: [],
   },
   text: {
     kind: 'text',

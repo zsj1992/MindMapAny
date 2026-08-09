@@ -27,6 +27,8 @@ function sourceLabel(source: SourceRef): string {
     case 'web':
       // 没抓到章节锚点时不显示徽标 —— 每个节点都挂个"原文"是纯噪音，零信息量
       return source.anchor ? source.anchor.slice(0, 16) : '';
+    case 'document':
+      return source.location?.slice(0, 16) ?? '';
     default:
       return '';
   }

@@ -6,7 +6,7 @@ import { SITE_URL, TOOL_PAGES } from '@/lib/seo/content';
 
 export const metadata: Metadata = {
   title: 'AI 思维导图工具中心',
-  description: '使用 AI 将 PDF、YouTube 视频、网页文章和长文本转换为可编辑、可追溯的多层级思维导图。',
+  description: '使用 AI 将 PDF、Word、电子书、网页文章和长文本转换为可编辑、可追溯的多层级思维导图。',
   alternates: { canonical: '/tools' },
 };
 

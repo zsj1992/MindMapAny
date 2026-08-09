@@ -5,7 +5,7 @@ import { SOURCE_COPY, SOURCE_SLUGS, type SourceCopy } from '@/lib/sources';
 
 /**
  * 每种来源一个独立路由。除了产品结构上更清晰，
- * 这四个页面也是可以单独索引的落地页（"PDF 转思维导图" 这类词就落在这里）。
+ * 每种来源页也承接对应的搜索意图（例如“PDF 转思维导图”）。
  */
 
 type Props = { params: Promise<{ kind: string }> };

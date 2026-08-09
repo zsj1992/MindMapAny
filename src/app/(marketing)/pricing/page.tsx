@@ -13,11 +13,11 @@ const PLANS = [
     plan: 'free',
     name: 'Free',
     eyebrow: '免费开始',
-    description: '完整体验四种内容输入，适合偶尔整理文章和资料。',
+    description: '体验常用内容输入，适合偶尔整理文章和资料。',
     price: '$0',
     annualPrice: '永久免费',
     creditLabel: '注册赠送积分',
-    extras: ['文本 / PDF / 网页 / YouTube', '编辑、导出与公开分享'],
+    extras: ['文本 / 文档 / 电子书 / 网页', '编辑、导出与公开分享'],
     action: '免费开始',
     href: '/app/new',
   },
@@ -29,7 +29,7 @@ const PLANS = [
     price: '$8.99 / 月',
     annualPrice: '$64.68 / 年（相当于 $5.39 / 月）',
     creditLabel: '积分 / 月',
-    extras: ['四种内容输入', '保存、分享与多格式导出'],
+    extras: ['全部已开放内容输入', '保存、分享与多格式导出'],
     action: '开始使用 Basic',
     href: '/app/new',
   },
@@ -99,7 +99,7 @@ export default function PricingPage() {
           </p>
           <div className="mt-7 inline-flex items-center gap-2 rounded-full border bg-surface px-4 py-2 text-xs font-semibold text-text-muted shadow-sm">
             <span className="h-2 w-2 rounded-full bg-accent-500" />
-            注册即赠 30 积分，四种输入均可体验
+            注册即赠 30 积分，已开放输入均可体验
           </div>
         </div>
       </section>

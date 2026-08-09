@@ -1,10 +1,11 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { ANON_TRIAL_LIMITS, checkGate, estimateCredits } from '@/lib/credits';
+import { extractDocument, isSupportedDocument } from '@/lib/extract/document';
 import { extractPdf } from '@/lib/extract/pdf';
 import { ExtractError, totalChars, type ExtractedDoc, type InputKind } from '@/lib/extract/types';
 import { extractWeb } from '@/lib/extract/web';
-import { extractYoutube, isYoutubeUrl } from '@/lib/extract/youtube';
+import { isYoutubeUrl } from '@/lib/extract/youtube';
 import { getCurrentProfile } from '@/lib/auth/session';
 import { chargeCredits } from '@/lib/db/repositories/profiles';
 import { record as recordJob } from '@/lib/db/repositories/jobs';
@@ -30,19 +31,28 @@ export async function POST(req: Request) {
   let kind: InputKind = 'text';
 
   try {
-    const { params, file, filename } = await readRequest(req);
+    const { params, file, filename, mimeType } = await readRequest(req);
 
     // ── 提取 ──
     if (file) {
-      kind = 'pdf';
-      doc = await extractPdf({ data: file, ...(filename ? { filename } : {}) });
+      const isPdf = filename?.toLowerCase().endsWith('.pdf') || mimeType === 'application/pdf';
+      if (isPdf) {
+        kind = 'pdf';
+        doc = await extractPdf({ data: file, ...(filename ? { filename } : {}) });
+      } else if (isSupportedDocument(filename, mimeType)) {
+        // 通用文档沿用文本配额和数据库类型；提取器内部仍保留章节/页码溯源。
+        kind = 'text';
+        doc = await extractDocument({ data: file, ...(filename ? { filename } : {}), ...(mimeType ? { mimeType } : {}) });
+      } else {
+        throw new ExtractError('unsupported', '暂不支持该文件格式，请上传 PDF、DOCX、EPUB、PPTX、TXT 或 Markdown');
+      }
     } else if (params.url?.trim()) {
       const url = params.url.trim();
-      kind = isYoutubeUrl(url) ? 'youtube' : 'web';
-      doc =
-        kind === 'youtube'
-          ? await extractYoutube(url, params.language.split('-')[0])
-          : await extractWeb(url);
+      if (isYoutubeUrl(url)) {
+        throw new ExtractError('unsupported', 'YouTube 视频总结暂未开放，请先粘贴视频字幕或文字稿');
+      }
+      kind = 'web';
+      doc = await extractWeb(url);
     } else if (params.text?.trim()) {
       kind = 'text';
       doc = {
@@ -55,7 +65,7 @@ export async function POST(req: Request) {
         notes: [],
       };
     } else {
-      return fail(400, 'bad_request', '请提供文本、链接或 PDF 文件');
+      return fail(400, 'bad_request', '请提供文本、链接或受支持的文件');
     }
 
     const chars = totalChars(doc);
@@ -148,12 +158,12 @@ async function readRequest(req: Request) {
     const params = paramsSchema.parse(raw);
     if (entry instanceof File) {
       if (entry.size > MAX_UPLOAD_BYTES) throw new ExtractError('too_large', '文件超过 20MB 限制');
-      return { params, file: await entry.arrayBuffer(), filename: entry.name };
+      return { params, file: await entry.arrayBuffer(), filename: entry.name, mimeType: entry.type };
     }
-    return { params, file: null, filename: undefined };
+    return { params, file: null, filename: undefined, mimeType: undefined };
   }
   const params = paramsSchema.parse(await req.json());
-  return { params, file: null, filename: undefined };
+  return { params, file: null, filename: undefined, mimeType: undefined };
 }
 
 function fail(status: number, code: string, message: string) {

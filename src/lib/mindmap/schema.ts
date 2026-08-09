@@ -32,6 +32,7 @@ export const sourceRefSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('pdf'), chunkId: z.string(), page: z.number().int().positive() }),
   z.object({ type: z.literal('web'), chunkId: z.string(), url: z.string().url(), anchor: z.string().optional() }),
   z.object({ type: z.literal('youtube'), chunkId: z.string(), startSec: z.number().int().nonnegative() }),
+  z.object({ type: z.literal('document'), chunkId: z.string(), location: z.string().max(120).optional() }),
 ]);
 export type SourceRef = z.infer<typeof sourceRefSchema>;
 

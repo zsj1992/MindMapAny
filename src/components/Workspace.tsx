@@ -62,7 +62,11 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
 
   const generate = useCallback(
     async (params: GenerateParams) => {
-      const inputType = params.file ? 'pdf' : params.url ? (isYoutube(params.url) ? 'youtube' : 'web') : 'text';
+      const inputType = params.file
+        ? (params.file.name.toLowerCase().endsWith('.pdf') ? 'pdf' : 'document')
+        : params.url
+          ? (isYoutube(params.url) ? 'youtube' : 'web')
+          : 'text';
       trackEvent('mindmap_generation_started', {
         input_type: inputType,
         depth: params.depth,
@@ -105,7 +109,7 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
         });
         load(data.map);
         setNotes([...data.notes, ...data.warnings.slice(0, 2)]);
-        setSourceKind(inputType);
+        setSourceKind(inputType === 'document' ? 'text' : inputType);
         setSavedId(null);
         setShareUrl(null);
       } catch {

@@ -10,7 +10,7 @@ const PAGES = [
   { name: 'landing', path: '/', full: true },
   { name: 'app-new', path: '/app/new' },
   { name: 'app-pdf', path: '/app/pdf' },
-  { name: 'app-youtube', path: '/app/youtube' },
+  { name: 'app-docx', path: '/app/docx' },
 ];
 
 const b = await chromium.launch();
