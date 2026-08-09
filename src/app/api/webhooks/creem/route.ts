@@ -43,12 +43,34 @@ export async function POST(req: Request) {
     const details = creemEventDetails(event.object, event.eventType);
     if (GRANT_EVENTS.has(event.eventType)) {
       const plan = details.productId ? planForProduct(details.productId) : null;
-      if (!plan) throw new Error(`unknown_product:${details.productId ?? 'missing'}`);
+      if (!plan) {
+        console.warn('[billing] webhook_ignored', {
+          eventId: event.id,
+          eventType: event.eventType,
+          reason: 'unknown_product',
+          productId: details.productId,
+        });
+        return NextResponse.json({ ok: true, ignored: 'unknown_product' });
+      }
       const granted = await grantSubscription({ ...details, plan, status: event.eventType });
-      if (!granted) throw new Error(`profile_not_found:${details.email ?? 'missing_email'}`);
+      if (!granted) {
+        console.warn('[billing] webhook_ignored', {
+          eventId: event.id,
+          eventType: event.eventType,
+          reason: 'profile_not_found',
+        });
+        return NextResponse.json({ ok: true, ignored: 'profile_not_found' });
+      }
     } else if (REVOKE_EVENTS.has(event.eventType)) {
       const revoked = await revokeSubscription({ ...details, status: event.eventType });
-      if (!revoked) throw new Error(`profile_not_found:${details.email ?? 'missing_email'}`);
+      if (!revoked) {
+        console.warn('[billing] webhook_ignored', {
+          eventId: event.id,
+          eventType: event.eventType,
+          reason: 'profile_not_found',
+        });
+        return NextResponse.json({ ok: true, ignored: 'profile_not_found' });
+      }
     }
     console.info('[billing] webhook_processed', { eventId: event.id, eventType: event.eventType });
     return NextResponse.json({ ok: true });
