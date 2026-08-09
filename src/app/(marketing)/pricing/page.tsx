@@ -152,12 +152,12 @@ export default function PricingPage() {
                 </Link>
               ) : (
                 <div className="mt-7 grid gap-2">
-                  <Link href={`/api/checkout?plan=${plan.plan}&period=annual`} className="btn btn-primary h-11 w-full">
+                  <a href={`/api/checkout?plan=${plan.plan}&period=annual`} className="btn btn-primary h-11 w-full">
                     年付订阅 <span aria-hidden="true">→</span>
-                  </Link>
-                  <Link href={`/api/checkout?plan=${plan.plan}&period=monthly`} className="btn btn-secondary h-10 w-full text-xs">
+                  </a>
+                  <a href={`/api/checkout?plan=${plan.plan}&period=monthly`} className="btn btn-secondary h-10 w-full text-xs">
                     按月订阅
-                  </Link>
+                  </a>
                 </div>
               )}
             </article>

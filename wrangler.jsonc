@@ -3,6 +3,17 @@
   "name": "mindmapany",
   "main": ".open-next/worker.js",
   "compatibility_date": "2026-08-01",
+  // 仪表盘维护的加密密钥必须跨版本保留；缺少核心密钥时阻止误部署。
+  "keep_vars": true,
+  "secrets": {
+    "required": [
+      "BETTER_AUTH_SECRET",
+      "CREEM_WEBHOOK_SECRET",
+      "DEEPSEEK_API_KEY",
+      "GOOGLE_CLIENT_ID",
+      "GOOGLE_CLIENT_SECRET"
+    ]
+  },
   // nodejs_compat 必须开：Next 运行时和我们的 PDF 解析都依赖 Node API 垫片
   "compatibility_flags": ["nodejs_compat"],
   "assets": {
