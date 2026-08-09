@@ -117,10 +117,6 @@ export default function HomePage() {
                   {['可编辑节点', '页码引用', 'PNG / SVG / MD'].map((label) => <span key={label} className="border-r px-3 py-3 text-center text-[10px] font-medium text-text-subtle last:border-r-0" style={{ borderColor: 'var(--border)' }}>{label}</span>)}
                 </div>
               </div>
-              <div className="absolute -bottom-5 right-5 hidden items-center gap-3 rounded-xl border bg-[#102f53] px-4 py-3 text-white shadow-xl sm:flex" style={{ borderColor: 'rgb(255 255 255 / 0.1)' }}>
-                <span className="flex h-7 w-7 items-center justify-center rounded-md bg-white/10 text-xs">✓</span>
-                <span><span className="block text-[9px] text-blue-100/60">结构检查</span><span className="text-[11px] font-semibold">4 层主题 · 无孤立节点</span></span>
-              </div>
             </div>
           </div>
 
