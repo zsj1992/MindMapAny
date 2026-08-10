@@ -5,6 +5,25 @@ initOpenNextCloudflareForDev();
 
 const nextConfig: NextConfig = {
   poweredByHeader: false,
+  /**
+   * www 永久跳主域。
+   *
+   * wrangler.jsonc 里两个域名都是 custom domain，谁也不跳谁 —— 两边都返回 200
+   * 且内容逐字节相同。canonical 指向主域能缓解，但 Google 仍会两边都抓，
+   * 浪费抓取预算，外链权重也会分散到两个主机名上。
+   *
+   * 用 next.config 的 host 匹配而不是中间件：Next 16 的 proxy 只能跑 Node.js runtime，
+   * OpenNext 在构建阶段直接拒绝。redirects 会编进路由清单，在边缘就完成跳转。
+   */
+  async redirects() {
+    const host = [{ type: 'host' as const, value: 'www.mindmapany.com' }];
+    return [
+      // 根路径单列一条：':path*' 匹配空串时不会被替换，Location 里会原样吐出
+      // "https://mindmapany.com/:path*" 这个字面量 —— 实测确实如此。
+      { source: '/', has: host, destination: 'https://mindmapany.com/', permanent: true },
+      { source: '/:path+', has: host, destination: 'https://mindmapany.com/:path+', permanent: true },
+    ];
+  },
   async headers() {
     const scriptPolicy = process.env.NODE_ENV === 'development'
       ? "script-src 'self' 'unsafe-inline' 'unsafe-eval' https://www.googletagmanager.com"
