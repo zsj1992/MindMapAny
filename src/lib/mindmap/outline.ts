@@ -357,7 +357,7 @@ export function applyHierarchyPlan(map: MindMap, rawPlan: string): HierarchyPlan
   const coverage = assigned.size / rootChildren.length;
   if (coverage < 0.7) return null;
   if (unassigned.length) {
-    if (groups.length < 8) groups.push({ title: '其他要点', parentNodeId: null, nodeIds: unassigned });
+    if (groups.length < 8) groups.push({ title: 'Other points', parentNodeId: null, nodeIds: unassigned });
     else groups[groups.length - 1].nodeIds.push(...unassigned);
   }
 

@@ -23,7 +23,7 @@ export async function extractWeb(rawUrl: string): Promise<ExtractedDoc> {
     if (!wechat) {
       throw new ExtractError(
         'fetch_failed',
-        '微信公众号拒绝了本次服务器访问，请稍后重试；仍失败时可复制文章正文后使用长文本生成',
+        'WeChat refused this server request. Try again shortly, or copy the article text and use the long-text input instead.',
       );
     }
     return {
@@ -37,15 +37,15 @@ export async function extractWeb(rawUrl: string): Promise<ExtractedDoc> {
 
   const article = new Readability(document as unknown as Document, { charThreshold: 100 }).parse();
   if (!article?.content) {
-    throw new ExtractError('empty', '未能提取正文，该页面可能需要登录、有反爬保护或依赖 JS 渲染');
+    throw new ExtractError('empty', 'No body text could be extracted. This page may require a login, use anti-bot protection, or render entirely in JavaScript.');
   }
 
   const blocks = htmlToBlocks(article.content);
   const chars = blocks.reduce((n, b) => n + b.text.length, 0);
   if (chars < MIN_ARTICLE_CHARS) {
-    throw new ExtractError('empty', '正文内容过少，可能是列表页或需要 JS 渲染的页面');
+    throw new ExtractError('empty', 'Too little body text was found — this may be a listing page, or one that renders in JavaScript.');
   }
-  if (article.excerpt && chars < 600) notes.push('提取到的正文较短，脑图可能比较简略');
+  if (article.excerpt && chars < 600) notes.push('The extracted article is short, so the map may be sparse');
 
   return {
     kind: 'web',

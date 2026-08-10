@@ -34,11 +34,11 @@ export function isYoutubeUrl(url: string): boolean {
 
 export async function extractYoutube(url: string, preferredLang = 'en'): Promise<ExtractedDoc> {
   const videoId = parseVideoId(url);
-  if (!videoId) throw new ExtractError('unsupported', '无法识别的 YouTube 链接');
+  if (!videoId) throw new ExtractError('unsupported', 'That YouTube link could not be recognised');
 
   const { cues, title, note } = await fetchTranscript(videoId, preferredLang);
   if (!cues.length) {
-    throw new ExtractError('no_transcript', '该视频没有可用字幕，当前版本暂不支持无字幕视频');
+    throw new ExtractError('no_transcript', 'This video has no captions available, and videos without captions are not supported yet');
   }
 
   return {
@@ -89,11 +89,11 @@ async function fetchTranscript(videoId: string, lang: string): Promise<Transcrip
   if (process.env.NODE_ENV === 'production') {
     throw new ExtractError(
       'provider_unconfigured',
-      'YouTube 字幕服务未配置（缺少 YOUTUBE_TRANSCRIPT_API_KEY）',
+      'The YouTube caption service is not configured (YOUTUBE_TRANSCRIPT_API_KEY is missing)',
     );
   }
   const result = await fetchDirect(videoId, lang);
-  return { ...result, note: '本地直连方式获取字幕，生产环境需配置字幕 API' };
+  return { ...result, note: 'Captions were fetched directly; production needs the caption API configured' };
 }
 
 /** Supadata：/v1/transcript 返回 { content: [{ text, offset(ms), duration }], lang } */
@@ -104,10 +104,10 @@ async function fetchViaSupadata(videoId: string, lang: string, key: string): Pro
 
   const res = await fetch(endpoint, { headers: { 'x-api-key': key } });
   if (res.status === 404 || res.status === 206) {
-    throw new ExtractError('no_transcript', '该视频没有可用字幕');
+    throw new ExtractError('no_transcript', 'This video has no captions available');
   }
   if (!res.ok) {
-    throw new ExtractError('fetch_failed', `字幕服务返回 ${res.status}`);
+    throw new ExtractError('fetch_failed', `The caption service returned ${res.status}`);
   }
 
   const data = (await res.json()) as {
@@ -116,7 +116,7 @@ async function fetchViaSupadata(videoId: string, lang: string, key: string): Pro
     lang?: string;
   };
   const cues = (data.content ?? []).map((c) => ({ text: c.text, startSec: c.offset / 1000 }));
-  const note = data.lang && !data.lang.startsWith(lang) ? `字幕语言为 ${data.lang}，将翻译输出` : undefined;
+  const note = data.lang && !data.lang.startsWith(lang) ? `Captions are in ${data.lang} and will be translated` : undefined;
   return { cues, title: data.title, ...(note ? { note } : {}) };
 }
 
@@ -125,16 +125,16 @@ async function fetchDirect(videoId: string, lang: string): Promise<TranscriptRes
   const res = await fetch(`https://www.youtube.com/watch?v=${videoId}`, {
     headers: { 'user-agent': 'Mozilla/5.0', 'accept-language': `${lang},en;q=0.9` },
   });
-  if (!res.ok) throw new ExtractError('fetch_failed', `获取视频页失败（${res.status}）`);
+  if (!res.ok) throw new ExtractError('fetch_failed', `Could not load the video page (${res.status})`);
   const html = await res.text();
 
   const title = html.match(/<meta name="title" content="([^"]*)"/)?.[1];
   const tracksRaw = html.match(/"captionTracks":(\[.*?\])/)?.[1];
-  if (!tracksRaw) throw new ExtractError('no_transcript', '该视频没有可用字幕');
+  if (!tracksRaw) throw new ExtractError('no_transcript', 'This video has no captions available');
 
   const tracks = JSON.parse(tracksRaw) as { baseUrl: string; languageCode: string }[];
   const track = tracks.find((t) => t.languageCode.startsWith(lang)) ?? tracks[0];
-  if (!track) throw new ExtractError('no_transcript', '该视频没有可用字幕');
+  if (!track) throw new ExtractError('no_transcript', 'This video has no captions available');
 
   const xml = await (await fetch(track.baseUrl)).text();
   const cues: TranscriptCue[] = [];

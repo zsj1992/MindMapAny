@@ -138,7 +138,7 @@ export const useEditor = create<EditorState>((set, get) => ({
     const newId = nanoid(8);
     set((s) => {
       if (!s.map) return {};
-      const node: MindMapNode = { id: newId, parentId: id, title: '新节点', order: nextOrder(s.map.nodes, id) };
+      const node: MindMapNode = { id: newId, parentId: id, title: 'New node', order: nextOrder(s.map.nodes, id) };
       const collapsed = new Set(s.collapsed);
       collapsed.delete(id); // 加了子节点还折叠着会让用户以为没生效
       return {
@@ -158,7 +158,7 @@ export const useEditor = create<EditorState>((set, get) => ({
     const target = state.map?.nodes.find((n) => n.id === id);
     if (!state.map || !target?.parentId) return null; // 根节点没有兄弟
     const newId = nanoid(8);
-    const node: MindMapNode = { id: newId, parentId: target.parentId, title: '新节点', order: target.order + 0.5 };
+    const node: MindMapNode = { id: newId, parentId: target.parentId, title: 'New node', order: target.order + 0.5 };
     const nodes = [...state.map.nodes, node]
       .sort((a, b) => a.order - b.order)
       .map((n) => (n.parentId === target.parentId ? { ...n } : n));

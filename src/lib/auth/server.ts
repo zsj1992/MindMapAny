@@ -15,7 +15,7 @@ import { getDb } from '@/lib/db/client';
  */
 export function getAuth() {
   const secret = process.env.BETTER_AUTH_SECRET;
-  if (!secret) throw new Error('缺少 BETTER_AUTH_SECRET');
+  if (!secret) throw new Error('BETTER_AUTH_SECRET is missing');
 
   return betterAuth({
     database: getDb(),

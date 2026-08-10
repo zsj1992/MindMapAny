@@ -19,7 +19,7 @@ export interface AppEnv {
 export function getDb(): D1Database {
   const { env } = getCloudflareContext();
   const db = (env as unknown as AppEnv).DB;
-  if (!db) throw new Error('D1 binding "DB" 不存在：检查 wrangler.jsonc 的 d1_databases 配置');
+  if (!db) throw new Error('D1 binding "DB" is missing: check the d1_databases config in wrangler.jsonc');
   return db;
 }
 

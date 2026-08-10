@@ -82,7 +82,7 @@ export async function generateMindMap(opts: GenerateOptions): Promise<GenerateRe
         const res = await generateText({
           model,
           system: buildSystemPrompt({ language, depth: 'standard', purpose }),
-          prompt: buildUserPrompt(group, `${doc.title}（第 ${i + 1}/${groups.length} 部分）`),
+          prompt: buildUserPrompt(group, `${doc.title} (part ${i + 1} of ${groups.length})`),
           maxOutputTokens: 3000,
           abortSignal: signal,
           ...(providerOptions ? { providerOptions } : {}),

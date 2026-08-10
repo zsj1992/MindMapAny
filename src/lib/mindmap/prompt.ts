@@ -9,55 +9,55 @@ export interface PromptChunk {
 }
 
 const PURPOSE_GUIDE: Record<Purpose, string> = {
-  study: '面向学习复习：突出概念定义、因果关系、易混点，叶子节点尽量是可被记忆的要点。',
-  structure: '面向文章结构分析：还原原文的章节骨架与论证脉络，保持作者原有的组织顺序。',
-  meeting: '面向会议整理：区分议题、结论、待办与负责人，决策和 action item 必须单独成节点。',
-  general: '面向通用理解：均衡覆盖全文主要信息，不偏向任何特定用途。',
+  study: 'Optimise for study and revision: foreground definitions, causal links and easily confused points, and make leaf nodes memorable takeaways.',
+  structure: 'Optimise for structural analysis: reconstruct the section skeleton and line of argument, keeping the order the author used.',
+  meeting: 'Optimise for meeting notes: separate topics, conclusions, action items and owners. Every decision and action item gets its own node.',
+  general: 'Optimise for general understanding: cover the main information evenly, without favouring any particular use.',
 };
 
 export function buildSystemPrompt(opts: { language: string; depth: Depth; purpose: Purpose }): string {
   const { maxLevel, minNodes, maxNodes } = DEPTH_BUDGET[opts.depth];
   return [
-    '你是一个把长内容转换成层级脑图的分析器。只输出 Markdown 缩进大纲，不输出任何解释、前言或代码块围栏。',
+    'You convert long content into a hierarchical mind map. Output an indented Markdown outline only — no explanation, no preamble, no code fences.',
     '',
-    '输出格式（严格遵守）：',
-    '# 根标题',
-    '- 一级主题（语义类别）',
-    '  - 二级标签：一句完整的说明 ^chunkId',
+    'Output format (follow exactly):',
+    '# Root title',
+    '- Top-level topic (a semantic category)',
+    '  - Label: one complete sentence of explanation ^chunkId',
     '',
-    '规则：',
-    `1. 【最高优先级】全部输出必须是 ${opts.language}。原文是任何其他语言（含繁体中文、英文、日文）都必须完整转换，`,
-    '   一个字都不能保留原文形态。宁可意译也不要照抄原文用词。',
-    `2. 层级最多 ${maxLevel} 层（根标题算第 1 层），总节点数控制在 ${minNodes}-${maxNodes} 个。`,
-    '3. 每层用 2 个空格缩进，只用 "-" 作为项目符号。',
-    '4. 【先分类，再填条款】先通读全部内容，归纳 4-8 个互不重复、基本覆盖全文的一级主题，再把具体事实放到对应主题下。',
-    '   一级主题必须处于相同抽象层次，例如“适用范围 / 申请流程 / 行为规范 / 费用与责任”，不能混入日期、金额或单条事实。',
-    '   内容足够形成 10 个以上节点时，禁止把具体事实直接挂在根标题下；每个一级主题原则上至少有 2 个子节点。',
-    '5. 【叶子节点写成「标签：说明」】标签是 2-8 字的名词短语，冒号后是一句完整、能独立读懂的说明。',
-    '   示例：好 → "噪音限制：23:00 至 08:00 为安静时段，考试期间 24 小时安静"',
-    '   示例：差 → "噪音限制" / "23:00" / "安静时段"（拆成三个碎节点，读者要自己拼）',
-    '6. 【宁可少而密，不要多而稀】能写进一句说明的内容不要拆成多个节点。',
-    '   非叶子节点只写标签，不写说明，因为它的信息由子节点承载。',
-    '7. 非叶子节点标题 2-10 字；叶子节点连标签带说明不超过 60 字。',
-    '8. 根标题不超过 20 字，是内容的名字而不是概括，不要写成完整句子。',
-    '9. 每个叶子节点必须以 ^chunkId 结尾。只能用下方给出的 chunkId，禁止编造。',
-    '10. 禁止输出页码、时间戳、章节号 —— 这些由系统根据 chunkId 自动还原。',
-    '11. 同一父节点下不要出现语义重复的兄弟节点；宁可合并，也不要凑数。',
-    '12. 忠于原文，不补充原文没有的信息，不做评价。',
+    'Rules:',
+    `1. [HIGHEST PRIORITY] Every word of the output must be in ${opts.language}. If the source is in any other language, translate it fully —`,
+    '   do not leave any of it in its original form. Paraphrase rather than copy the source wording.',
+    `2. At most ${maxLevel} levels (the root title counts as level 1), and ${minNodes}-${maxNodes} nodes in total.`,
+    '3. Indent each level by 2 spaces and use "-" as the only bullet character.',
+    '4. [CATEGORISE FIRST, THEN FILE THE FACTS] Read everything first, derive 4-8 non-overlapping top-level topics that between them cover the content, then place specific facts under the right topic.',
+    '   Top-level topics must sit at the same level of abstraction — for example "Scope / Application process / Conduct / Fees and liability" — and must never be a date, an amount or a single fact.',
+    '   When the content yields more than 10 nodes, never hang specific facts directly off the root title. As a rule each top-level topic should have at least 2 children.',
+    '5. [WRITE LEAF NODES AS "Label: explanation"] The label is a noun phrase of 1-4 words; after the colon comes one complete sentence that can be read on its own.',
+    '   Good: "Noise limits: quiet hours run from 23:00 to 08:00, and 24 hours a day during exam periods"',
+    '   Bad: "Noise limits" / "23:00" / "Quiet hours" (three fragments the reader has to reassemble)',
+    '6. [FEWER, DENSER NODES BEATS MORE, THINNER ONES] If something fits in one sentence of explanation, do not split it across nodes.',
+    '   Non-leaf nodes carry only a label and no explanation, because their children carry the information.',
+    '7. Non-leaf node titles run 1-5 words; a leaf node including its label stays under about 25 words.',
+    '8. The root title is at most 8 words. It names the content rather than summarising it, and is not a full sentence.',
+    '9. Every leaf node must end with ^chunkId. Use only the chunkIds supplied below; never invent one.',
+    '10. Never output page numbers, timestamps or section numbers — the system restores those from the chunkId.',
+    '11. No semantically duplicated siblings under the same parent. Merge rather than pad.',
+    '12. Stay faithful to the source. Add nothing it does not contain, and pass no judgement.',
     '',
-    '结构反例（禁止）：根标题下连续罗列十几条申请日期、价格、规则等具体事实。',
-    '结构正例：根标题下先分“申请与资格、住宿安排、费用支付、行为规范、退宿管理”等主题，再在主题下列事实。',
+    'Bad structure (forbidden): a dozen application dates, prices and rules listed straight under the root title.',
+    'Good structure: the root title splits into topics such as "Eligibility and application, Room allocation, Fees, Conduct, Moving out", and the facts sit under those.',
     '',
     PURPOSE_GUIDE[opts.purpose],
   ].join('\n');
 }
 
 export function buildUserPrompt(chunks: PromptChunk[], sourceTitle?: string): string {
-  const head = sourceTitle ? `内容标题：${sourceTitle}\n\n` : '';
+  const head = sourceTitle ? `Content title: ${sourceTitle}\n\n` : '';
   const body = chunks
     .map((c) => `<chunk id="${c.chunkId}"${c.hint ? ` at="${c.hint}"` : ''}>\n${c.text}\n</chunk>`)
     .join('\n\n');
-  return `${head}可用的 chunkId：${chunks.map((c) => c.chunkId).join(', ')}\n\n${body}\n\n现在输出脑图大纲。`;
+  return `${head}Available chunkIds: ${chunks.map((c) => c.chunkId).join(', ')}\n\n${body}\n\nNow output the mind map outline.`;
 }
 
 /**
@@ -67,18 +67,18 @@ export function buildUserPrompt(chunks: PromptChunk[], sourceTitle?: string): st
 export function buildReducePrompt(opts: { language: string; depth: Depth; purpose: Purpose }): string {
   const { maxLevel, minNodes, maxNodes } = DEPTH_BUDGET[opts.depth];
   return [
-    '下面是同一份内容不同片段各自生成的局部脑图大纲。把它们合并成一棵完整、层级一致、无重复的脑图。',
+    'Below are partial mind map outlines, each generated from a different section of the same content. Merge them into one complete map with a consistent hierarchy and no duplication.',
     '',
-    '要求：',
-    '- 合并语义重复的主题，保留信息更完整的表述。',
-    '- 【先分类，再填条款】根标题下归纳 4-8 个同一抽象层次的语义类别，具体事实必须放在类别之下。',
-    '- 禁止把十几条具体事实直接平铺在根标题下；每个一级主题原则上至少有 2 个子节点。',
-    '- 保持原文的整体推进顺序，不要按字母或重要性重排。',
-    `- 最终不超过 ${maxLevel} 层，总节点数 ${minNodes}-${maxNodes} 个。`,
-    '- 【硬性要求】每个叶子节点行必须以 ^chunkId 结尾，原样照抄，不要改动也不要省略。',
-    '  合并两条要点时，保留信息更完整那条的 ^chunkId。丢失 ^chunkId 的行视为无效输出。',
-    '- 叶子节点保持「标签：一句完整说明」的形式；碎片化的短节点要合并成完整句子。',
-    `- 【最高优先级】输出必须全部是 ${opts.language}，原文是繁体或外语都要完整转换。只输出 Markdown 大纲。`,
+    'Requirements:',
+    '- Merge semantically duplicated topics, keeping whichever wording carries more information.',
+    '- [CATEGORISE FIRST, THEN FILE THE FACTS] Derive 4-8 categories at the same level of abstraction under the root title, and place every specific fact beneath a category.',
+    '- Never lay a dozen specific facts flat under the root title. As a rule each top-level topic should have at least 2 children.',
+    '- Preserve the overall order of the source. Do not re-sort alphabetically or by importance.',
+    `- The result must stay within ${maxLevel} levels and ${minNodes}-${maxNodes} nodes.`,
+    '- [HARD REQUIREMENT] Every leaf node line must end with ^chunkId, copied verbatim — never altered, never dropped.',
+    '  When merging two points, keep the ^chunkId of the one carrying more information. A line that loses its ^chunkId is invalid output.',
+    '- Keep leaf nodes in the "Label: one complete sentence" form, merging fragmentary short nodes into full sentences.',
+    `- [HIGHEST PRIORITY] The entire output must be in ${opts.language}; translate the source fully whatever language it is in. Output the Markdown outline only.`,
     '',
     PURPOSE_GUIDE[opts.purpose],
   ].join('\n');
@@ -90,18 +90,18 @@ export function buildReducePrompt(opts: { language: string; depth: Depth; purpos
  */
 export function buildHierarchyPlanPrompt(opts: { language: string; purpose: Purpose }): string {
   return [
-    '你是脑图信息架构编辑。请把给出的一级节点分成语义清晰的主题组。只做分类，不改写节点。',
+    'You are an information architect for mind maps. Group the top-level nodes you are given into clear semantic groups. Classify only — do not rewrite the nodes.',
     '',
-    '硬性要求：',
-    '- 建立 4-8 个同一抽象层次、互不重复且基本覆盖全部节点的主题组。',
-    '- 如果现有节点本身就是合适的分类标题（例如“清洁卫生与设施使用”），必须用 parentNodeId 将它提升为父节点，不要另造近义组名。',
-    '- parentNodeId 对应分类节点，nodeIds 是它下面的具体条款；没有可复用分类节点时 parentNodeId 写 null。',
-    '- 每个输入 nodeId 必须在 parentNodeId 或 nodeIds 中出现且只能出现一次；禁止编造、修改或遗漏 nodeId。',
-    '- 每组原则上至少包含 2 个具体条款；复用现有分类节点时允许只有 1 个明确子条款。',
-    '- 组名是 2-10 字的名词短语，不能是日期、金额或单条事实。',
-    `- 组名必须使用 ${opts.language}。`,
-    '- 只输出一个 JSON 对象，禁止 Markdown、解释和代码块。',
-    '- 严格格式：{"groups":[{"title":"清洁卫生与设施使用","parentNodeId":"n2","nodeIds":["n3"]},{"title":"申请与资格","parentNodeId":null,"nodeIds":["n4","n5"]}]}',
+    'Hard requirements:',
+    '- Create 4-8 groups at the same level of abstraction, non-overlapping, between them covering essentially every node.',
+    '- Where an existing node is itself a suitable category heading (for example "Cleaning and facility use"), promote it with parentNodeId instead of inventing a near-synonym group name.',
+    '- parentNodeId is the category node; nodeIds are the specific items beneath it. Use null for parentNodeId when there is no existing node to reuse.',
+    '- Every input nodeId must appear exactly once, in either parentNodeId or nodeIds. Never invent, alter or omit a nodeId.',
+    '- As a rule each group holds at least 2 specific items; a group reusing an existing category node may hold just 1 clear child.',
+    '- Group names are noun phrases of 1-5 words, never a date, an amount or a single fact.',
+    `- Group names must be in ${opts.language}.`,
+    '- Output a single JSON object only — no Markdown, no explanation, no code fences.',
+    '- Exact shape: {"groups":[{"title":"Cleaning and facility use","parentNodeId":"n2","nodeIds":["n3"]},{"title":"Eligibility and application","parentNodeId":null,"nodeIds":["n4","n5"]}]}',
     '',
     PURPOSE_GUIDE[opts.purpose],
   ].join('\n');
@@ -111,11 +111,11 @@ export function buildHierarchyPlanUserPrompt(map: MindMap): string {
   const root = map.nodes.find((node) => node.parentId === null);
   const children = root ? map.nodes.filter((node) => node.parentId === root.id) : [];
   return [
-    `根标题：${map.title}`,
+    `Root title: ${map.title}`,
     '',
-    '待分类的一级节点：',
+    'Top-level nodes to classify:',
     ...children.map((node) => `[${node.id}] ${node.title}`),
     '',
-    '现在输出分类 JSON。',
+    'Now output the classification JSON.',
   ].join('\n');
 }
