@@ -1,14 +1,35 @@
 /**
- * 工作台的界面语言。只覆盖 /app —— 营销页和博客保持纯英文。
+ * 站点支持的界面语言。工作台按 cookie / Accept-Language 决定，
+ * 营销页按 URL 前缀决定（见 routes.ts）。
  *
- * 为什么只做工作台：营销页要做多语言就得配 /zh 子路径和 hreflang，
- * 还要再养一整套中文关键词和内容，否则两套页面互相抢排名。
- * 那是个独立的增长决策。工作台是登录后才可见的 noindex 区域，
- * 翻译它对 SEO 零影响，是纯收益。
+ * 各语言的翻译覆盖范围不同，由 routes.ts 里的 TRANSLATED 按语言分别声明 ——
+ * 不能假设「支持这门语言」就等于「每一页都有这门语言」。
  */
 
-export const LOCALES = ['en', 'zh-CN'] as const;
+export const LOCALES = ['en', 'zh-CN', 'ja', 'ko', 'es'] as const;
 export type Locale = (typeof LOCALES)[number];
+
+/**
+ * 语言名一律用该语言自己的写法（endonym）。
+ * 切换菜单要在任何当前语言下都认得出来 —— 一个只看得懂日文的用户，
+ * 在中文界面里找「日语」远不如找「日本語」来得快。
+ */
+export const LOCALE_NAMES: Record<Locale, string> = {
+  en: 'English',
+  'zh-CN': '简体中文',
+  ja: '日本語',
+  ko: '한국어',
+  es: 'Español',
+};
+
+/** URL 前缀。英文是默认语言，留在根路径上不加前缀。 */
+export const LOCALE_PREFIX: Record<Locale, string> = {
+  en: '',
+  'zh-CN': '/zh',
+  ja: '/ja',
+  ko: '/ko',
+  es: '/es',
+};
 
 export const DEFAULT_LOCALE: Locale = 'en';
 
@@ -48,8 +69,18 @@ function matchAcceptLanguage(header: string | null): Locale {
     .sort((a, b) => b.q - a.q);
 
   for (const { tag } of ranked) {
+    // 只做前缀匹配：zh-Hans-CN、zh-HK、zh 都归到简体中文；pt-BR 之类未支持的语言落到英文
     if (tag.startsWith('zh')) return 'zh-CN';
+    if (tag.startsWith('ja')) return 'ja';
+    if (tag.startsWith('ko')) return 'ko';
+    if (tag.startsWith('es')) return 'es';
     if (tag.startsWith('en')) return 'en';
   }
   return DEFAULT_LOCALE;
 }
+
+/**
+ * 工作台界面已经翻译的语言。营销页支持得更多，但在账号菜单里列出一门
+ * 选了却毫无变化的语言，比不列更让人困惑。补完翻译后再往这里加。
+ */
+export const WORKBENCH_LOCALES: Locale[] = ['en', 'zh-CN'];

@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { SITE_URL } from '@/lib/seo/content';
-import type { Locale } from './locales';
+import { LOCALE_PREFIX, LOCALES, type Locale } from './locales';
 
 /**
  * 营销站的多语言路由。
@@ -14,16 +14,8 @@ import type { Locale } from './locales';
  * 不读请求头，能留在边缘缓存里。
  */
 
-export const ZH_PREFIX = '/zh';
-
-/**
- * 有中文版本的路径。没列进来的（工作台、博客正文、法务页…）在中文界面里
- * 仍然链到英文原页 —— 宁可让用户看到一页英文，也不能给出一个 404。
- * 新增中文页时必须同步加到这里，否则页面存在却没人链得到。
- */
-const TRANSLATED = new Set([
-  '/',
-  '/pricing',
+const CORE_PAGES = ['/', '/pricing'];
+const TOOL_PAGES_PATHS = [
   '/tools',
   '/tools/pdf-to-mind-map',
   '/tools/docx-to-mind-map',
@@ -31,22 +23,48 @@ const TRANSLATED = new Set([
   '/tools/pptx-to-mind-map',
   '/tools/text-to-mind-map',
   '/tools/webpage-to-mind-map',
-]);
+];
 
-export function hasTranslation(path: string): boolean {
-  return TRANSLATED.has(path);
+/**
+ * 每种语言各自已翻译的页面，按语言分别声明 —— 各语言进度本来就不同。
+ *
+ * 没列进来的页面在该语言下仍然链到英文原页：宁可让用户看到一页英文，
+ * 也不能给出一个 404。新增译文页时必须同步加到这里，
+ * 否则页面存在却没有任何入口链得到，等于白做。
+ */
+const TRANSLATED: Record<Locale, Set<string>> = {
+  en: new Set([...CORE_PAGES, ...TOOL_PAGES_PATHS]),
+  'zh-CN': new Set([...CORE_PAGES, ...TOOL_PAGES_PATHS]),
+  ja: new Set(CORE_PAGES),
+  ko: new Set(CORE_PAGES),
+  es: new Set(CORE_PAGES),
+};
+
+export function hasTranslation(path: string, locale: Locale): boolean {
+  return TRANSLATED[locale]?.has(path) ?? false;
+}
+
+/** 某个页面有译文的所有语言，用于 hreflang 与语言切换 */
+export function localesWithTranslation(path: string): Locale[] {
+  return LOCALES.filter((locale) => hasTranslation(path, locale));
 }
 
 /** 把一条英文路径转成指定语言的路径。'/' 是特例，不能拼成 '/zh/'。 */
 export function localizedPath(path: string, locale: Locale): string {
-  if (locale === 'en' || !TRANSLATED.has(path)) return path;
-  return path === '/' ? ZH_PREFIX : `${ZH_PREFIX}${path}`;
+  if (locale === 'en' || !hasTranslation(path, locale)) return path;
+  const prefix = LOCALE_PREFIX[locale];
+  return path === '/' ? prefix : `${prefix}${path}`;
 }
 
-/** 从任意路径还原出对应的英文路径，用于语言切换和 hreflang 互指 */
+/** 从任意带前缀的路径还原出英文路径，用于语言切换和 hreflang 互指 */
 export function basePath(path: string): string {
-  if (path === ZH_PREFIX) return '/';
-  return path.startsWith(`${ZH_PREFIX}/`) ? path.slice(ZH_PREFIX.length) : path;
+  for (const locale of LOCALES) {
+    const prefix = LOCALE_PREFIX[locale];
+    if (!prefix) continue;
+    if (path === prefix) return '/';
+    if (path.startsWith(`${prefix}/`)) return path.slice(prefix.length);
+  }
+  return path;
 }
 
 /**
@@ -59,24 +77,25 @@ export function basePath(path: string): string {
  * @param path 英文路径，如 '/pricing'；首页传 '/'
  */
 export function alternatesFor(path: string, locale: Locale): Metadata['alternates'] {
-  const en = path;
-  // 没有中文版的页面不能声明 hreflang：指向一个英文页会被判成错误的语言标注，
-  // 比不写更糟。这类页面只留 canonical。
-  if (!hasTranslation(path)) return { canonical: en };
-  return {
-    canonical: localizedPath(path, locale),
-    languages: {
-      en,
-      'zh-CN': localizedPath(path, 'zh-CN'),
-      // x-default 给英文：命中不了任何语言时，英文是覆盖面最广的那一版
-      'x-default': en,
-    },
-  };
+  const available = localesWithTranslation(path);
+  // 只有英文一版时不声明 hreflang：把英文页标成别的语言的译文，比不标更糟
+  if (available.length < 2) return { canonical: path };
+  const languages: Record<string, string> = {};
+  for (const item of available) languages[item] = localizedPath(path, item);
+  // x-default 给英文：命中不了任何语言时，英文是覆盖面最广的那一版
+  languages['x-default'] = path;
+  return { canonical: localizedPath(path, locale), languages };
 }
 
 /** JSON-LD 和 OG 标签用的语言码，两处写法不同，集中在这里避免写反 */
-export const OG_LOCALE: Record<Locale, string> = { en: 'en_US', 'zh-CN': 'zh_CN' };
-export const HTML_LANG: Record<Locale, string> = { en: 'en', 'zh-CN': 'zh-CN' };
+export const OG_LOCALE: Record<Locale, string> = {
+  en: 'en_US',
+  'zh-CN': 'zh_CN',
+  ja: 'ja_JP',
+  ko: 'ko_KR',
+  es: 'es_ES',
+};
+export const HTML_LANG: Record<Locale, string> = { en: 'en', 'zh-CN': 'zh-CN', ja: 'ja', ko: 'ko', es: 'es' };
 
 export function absoluteUrl(path: string, locale: Locale): string {
   const localized = localizedPath(path, locale);

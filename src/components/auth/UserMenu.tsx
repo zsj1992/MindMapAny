@@ -6,7 +6,7 @@ import { useRouter } from 'next/navigation';
 import { signOut } from '@/lib/auth/client';
 import { PLAN_CREDITS, type Plan } from '@/lib/credits';
 import { useLocale, useSetLocale, useT } from '@/lib/i18n/context';
-import { LOCALES, type Locale } from '@/lib/i18n/locales';
+import { LOCALE_NAMES, WORKBENCH_LOCALES } from '@/lib/i18n/locales';
 import type { MessageKey } from '@/lib/i18n/messages';
 
 interface UserMenuProps {
@@ -23,8 +23,7 @@ const PLAN_KEY: Record<Plan, MessageKey> = {
   unlimited: 'plan.unlimited',
 };
 
-/** 语言名用该语言自己的写法，切换菜单在任何界面语言下都认得出来 */
-const LOCALE_NAMES: Record<Locale, string> = { en: 'English', 'zh-CN': '简体中文' };
+
 
 export function UserMenu({ name, email, plan, credits }: UserMenuProps) {
   const [open, setOpen] = useState(false);
@@ -129,7 +128,7 @@ export function UserMenu({ name, email, plan, credits }: UserMenuProps) {
               {t('account.interfaceLanguage')}
             </p>
             <div className="flex gap-1.5">
-              {LOCALES.map((item) => (
+              {WORKBENCH_LOCALES.map((item) => (
                 <button
                   key={item}
                   type="button"

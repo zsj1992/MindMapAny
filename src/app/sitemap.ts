@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 import { listPublicSlugs } from '@/lib/db/repositories/maps';
 import { BLOG_POSTS, TOOL_PAGES } from '@/lib/seo/content';
-import { hasTranslation, localizedPath } from '@/lib/i18n/routes';
+import { localesWithTranslation, localizedPath } from '@/lib/i18n/routes';
 
 const siteUrl = process.env.SITE_URL ?? 'https://mindmapany.com';
 
@@ -14,16 +14,11 @@ export const revalidate = 3600;
  * 结果是两版互相压制，比只有一版还糟。
  */
 function withAlternates(entry: MetadataRoute.Sitemap[number], path: string): MetadataRoute.Sitemap[number] {
-  if (!hasTranslation(path)) return entry;
-  return {
-    ...entry,
-    alternates: {
-      languages: {
-        en: `${siteUrl}${path === '/' ? '' : path}`,
-        'zh-CN': `${siteUrl}${localizedPath(path, 'zh-CN')}`,
-      },
-    },
-  };
+  const available = localesWithTranslation(path);
+  if (available.length < 2) return entry;
+  const languages: Record<string, string> = {};
+  for (const locale of available) languages[locale] = `${siteUrl}${localizedPath(path, locale)}`;
+  return { ...entry, alternates: { languages } };
 }
 
 /** 只收录公开、独立且有搜索价值的内容页；工作台统一 noindex。 */

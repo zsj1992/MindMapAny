@@ -251,7 +251,15 @@ const MESSAGES = {
   'research.placeholderTask1': { en: 'Analyse the scope and key concepts', 'zh-CN': '梳理范围与核心概念' },
   'research.placeholderTask2': { en: 'Identify the data and cases to verify', 'zh-CN': '确定需要核实的数据与案例' },
   'research.placeholderTask3': { en: 'Surface risks, limits and disagreements', 'zh-CN': '呈现风险、局限与分歧' },
-} as const satisfies Record<string, Record<Locale, string>>;
+} as const satisfies Record<string, LocalisedText>;
+
+/**
+ * 每条文案至少要有英文，其余语言可以缺。
+ *
+ * 营销页支持 5 种语言，工作台目前只译了中英 —— 强行要求每条都齐全，
+ * 只会逼出一堆把英文原文抄进 ja/ko/es 的假翻译，那比明确的回退更难发现问题。
+ */
+type LocalisedText = Partial<Record<Locale, string>> & { en: string };
 
 export type MessageKey = keyof typeof MESSAGES;
 
@@ -260,7 +268,7 @@ export type MessageKey = keyof typeof MESSAGES;
  * 缺 key 时返回 key 本身：界面上会显得很扎眼，比静默显示空字符串好排查。
  */
 export function translate(locale: Locale, key: MessageKey, vars?: Record<string, string | number>): string {
-  const entry = MESSAGES[key] as Record<Locale, string> | undefined;
+  const entry = MESSAGES[key] as LocalisedText | undefined;
   const template = entry?.[locale] ?? entry?.[DEFAULT_LOCALE] ?? key;
   if (!vars) return template;
   return template.replace(/\{(\w+)\}/g, (whole, name: string) =>
