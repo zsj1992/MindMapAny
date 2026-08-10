@@ -1,4 +1,5 @@
 import { generateText } from 'ai';
+import { languageName } from '@/lib/mindmap/prompt';
 import { resolveModelConfig } from '@/lib/ai/model';
 import type { Depth, MindMap } from '@/lib/mindmap/schema';
 import { generateMindMap } from '@/lib/mindmap/generate';
@@ -61,7 +62,7 @@ async function generateSourcedReport(opts: {
           `Research question: ${opts.query}`,
           'Research plan (use these, in order, as the main analysis sections of the report):',
           ...opts.plan.map((task, index) => `${index + 1}. ${task.title}`),
-          `Write a rigorous, self-contained Markdown research report in ${opts.language}.`,
+          `Write a rigorous, self-contained Markdown research report in ${languageName(opts.language)}.`,
           'You must search the web first. State facts only from what you retrieved; never invent figures, dates, people or conclusions.',
           'Cite a source on every factual paragraph using [1], [2] notation, and call out conflicts between sources explicitly.',
           'The structure must contain: a # report title, an executive summary, a ## key findings section, one ## analysis section for every item in the research plan, a ## conclusions and recommendations section, and a ## limitations and open questions section.',
@@ -224,7 +225,7 @@ async function generateResearchPlan(opts: {
     system: 'You plan research projects. Break a broad question into non-overlapping research tasks that can each be verified against web evidence.',
     prompt: [
       `Question: ${opts.query}`,
-      `Output language: ${opts.language}`,
+      `Output language: ${languageName(opts.language)}`,
       `Output ${opts.depth === 'detailed' ? '5' : '4'} lines of research tasks.`,
       'Each line must follow exactly the format "1. Task title". Between them the tasks must cover: the current state or taxonomy; empirical results or key data; adoption cases or differences; and risks and limitations. In detailed mode add trends or actionable recommendations.',
       'Do not output any preamble, explanation, Markdown headings or sub-lists.',

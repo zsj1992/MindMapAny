@@ -1,5 +1,35 @@
 import { DEPTH_BUDGET, type Depth, type MindMap, type Purpose } from './schema';
 
+/**
+ * 语言代码 → 语言全名。
+ *
+ * 提示词里直接塞 "en" 会得到「输出必须是 en」这种指令，模型对代码远不如对名字敏感 ——
+ * 实测中文原文 + language="en" 会整篇输出中文。换成 "English" 才稳。
+ * 未知代码原样返回，至少不比现在差。
+ */
+const LANGUAGE_NAMES: Record<string, string> = {
+  en: 'English',
+  'zh-CN': 'Simplified Chinese',
+  'zh-TW': 'Traditional Chinese',
+  ja: 'Japanese',
+  ko: 'Korean',
+  es: 'Spanish',
+  fr: 'French',
+  de: 'German',
+  pt: 'Portuguese',
+  ru: 'Russian',
+  it: 'Italian',
+  ar: 'Arabic',
+  hi: 'Hindi',
+  vi: 'Vietnamese',
+  th: 'Thai',
+  id: 'Indonesian',
+};
+
+export function languageName(code: string): string {
+  return LANGUAGE_NAMES[code] ?? LANGUAGE_NAMES[code.split('-')[0]] ?? code;
+}
+
 /** 送进模型的内容块。chunkId 在切块阶段生成，模型只负责回引它。 */
 export interface PromptChunk {
   chunkId: string;
@@ -26,7 +56,7 @@ export function buildSystemPrompt(opts: { language: string; depth: Depth; purpos
     '  - Label: one complete sentence of explanation ^chunkId',
     '',
     'Rules:',
-    `1. [HIGHEST PRIORITY] Every word of the output must be in ${opts.language}. If the source is in any other language, translate it fully —`,
+    `1. [HIGHEST PRIORITY] Every word of the output must be written in ${languageName(opts.language)}. If the source is in any other language, translate it fully —`,
     '   do not leave any of it in its original form. Paraphrase rather than copy the source wording.',
     `2. At most ${maxLevel} levels (the root title counts as level 1), and ${minNodes}-${maxNodes} nodes in total.`,
     '3. Indent each level by 2 spaces and use "-" as the only bullet character.',
@@ -52,12 +82,17 @@ export function buildSystemPrompt(opts: { language: string; depth: Depth; purpos
   ].join('\n');
 }
 
-export function buildUserPrompt(chunks: PromptChunk[], sourceTitle?: string): string {
+export function buildUserPrompt(chunks: PromptChunk[], sourceTitle?: string, language?: string): string {
   const head = sourceTitle ? `Content title: ${sourceTitle}\n\n` : '';
   const body = chunks
     .map((c) => `<chunk id="${c.chunkId}"${c.hint ? ` at="${c.hint}"` : ''}>\n${c.text}\n</chunk>`)
     .join('\n\n');
-  return `${head}Available chunkIds: ${chunks.map((c) => c.chunkId).join(', ')}\n\n${body}\n\nNow output the mind map outline.`;
+  // 语言要求重复放在正文之后：只写在 system 里时，中文原文的上下文会把它压过去 ——
+  // 实测叶子节点转成了英文，根标题和一级主题却仍是中文。
+  const tail = language
+    ? `Now output the mind map outline. Write the root title and every node in ${languageName(language)}, including the topics you invent — not only the leaves.`
+    : 'Now output the mind map outline.';
+  return `${head}Available chunkIds: ${chunks.map((c) => c.chunkId).join(', ')}\n\n${body}\n\n${tail}`;
 }
 
 /**
@@ -78,7 +113,7 @@ export function buildReducePrompt(opts: { language: string; depth: Depth; purpos
     '- [HARD REQUIREMENT] Every leaf node line must end with ^chunkId, copied verbatim — never altered, never dropped.',
     '  When merging two points, keep the ^chunkId of the one carrying more information. A line that loses its ^chunkId is invalid output.',
     '- Keep leaf nodes in the "Label: one complete sentence" form, merging fragmentary short nodes into full sentences.',
-    `- [HIGHEST PRIORITY] The entire output must be in ${opts.language}; translate the source fully whatever language it is in. Output the Markdown outline only.`,
+    `- [HIGHEST PRIORITY] The entire output must be written in ${languageName(opts.language)}; translate the source fully whatever language it is in. Output the Markdown outline only.`,
     '',
     PURPOSE_GUIDE[opts.purpose],
   ].join('\n');
@@ -99,7 +134,7 @@ export function buildHierarchyPlanPrompt(opts: { language: string; purpose: Purp
     '- Every input nodeId must appear exactly once, in either parentNodeId or nodeIds. Never invent, alter or omit a nodeId.',
     '- As a rule each group holds at least 2 specific items; a group reusing an existing category node may hold just 1 clear child.',
     '- Group names are noun phrases of 1-5 words, never a date, an amount or a single fact.',
-    `- Group names must be in ${opts.language}.`,
+    `- Group names must be written in ${languageName(opts.language)}.`,
     '- Output a single JSON object only — no Markdown, no explanation, no code fences.',
     '- Exact shape: {"groups":[{"title":"Cleaning and facility use","parentNodeId":"n2","nodeIds":["n3"]},{"title":"Eligibility and application","parentNodeId":null,"nodeIds":["n4","n5"]}]}',
     '',
@@ -107,7 +142,7 @@ export function buildHierarchyPlanPrompt(opts: { language: string; purpose: Purp
   ].join('\n');
 }
 
-export function buildHierarchyPlanUserPrompt(map: MindMap): string {
+export function buildHierarchyPlanUserPrompt(map: MindMap, language?: string): string {
   const root = map.nodes.find((node) => node.parentId === null);
   const children = root ? map.nodes.filter((node) => node.parentId === root.id) : [];
   return [
@@ -116,6 +151,8 @@ export function buildHierarchyPlanUserPrompt(map: MindMap): string {
     'Top-level nodes to classify:',
     ...children.map((node) => `[${node.id}] ${node.title}`),
     '',
-    'Now output the classification JSON.',
+    language
+      ? `Now output the classification JSON. Every group title must be written in ${languageName(language)}, whatever language the nodes above are in.`
+      : 'Now output the classification JSON.',
   ].join('\n');
 }

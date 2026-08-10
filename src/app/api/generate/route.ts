@@ -20,7 +20,7 @@ export const runtime = 'nodejs';
 const paramsSchema = z.object({
   text: z.string().optional(),
   url: z.string().optional(),
-  language: z.string().default('zh-CN'),
+  language: z.string().default('en'),
   depth: z.enum(DEPTHS).default('standard'),
   purpose: z.enum(PURPOSES).default('general'),
   tier: z.enum(['fast', 'quality']).default('fast'),

@@ -12,7 +12,7 @@ export const runtime = 'nodejs';
 const RESEARCH_CREDITS = 10;
 const bodySchema = z.object({
   query: z.string().trim().min(6).max(500),
-  language: z.enum(['zh-CN', 'zh-TW', 'en', 'ja', 'ko', 'es']).default('zh-CN'),
+  language: z.enum(['zh-CN', 'zh-TW', 'en', 'ja', 'ko', 'es']).default('en'),
   depth: z.enum(['standard', 'detailed']).default('detailed'),
 });
 

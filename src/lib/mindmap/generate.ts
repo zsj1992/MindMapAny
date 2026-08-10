@@ -62,7 +62,7 @@ export async function generateMindMap(opts: GenerateOptions): Promise<GenerateRe
     const res = await generateText({
       model,
       system,
-      prompt: buildUserPrompt(chunks, doc.title),
+      prompt: buildUserPrompt(chunks, doc.title, language),
       maxOutputTokens: maxOutputTokens(depth),
       abortSignal: signal,
       ...(providerOptions ? { providerOptions } : {}),
@@ -82,7 +82,7 @@ export async function generateMindMap(opts: GenerateOptions): Promise<GenerateRe
         const res = await generateText({
           model,
           system: buildSystemPrompt({ language, depth: 'standard', purpose }),
-          prompt: buildUserPrompt(group, `${doc.title} (part ${i + 1} of ${groups.length})`),
+          prompt: buildUserPrompt(group, `${doc.title} (part ${i + 1} of ${groups.length})`, language),
           maxOutputTokens: 3000,
           abortSignal: signal,
           ...(providerOptions ? { providerOptions } : {}),
@@ -126,7 +126,7 @@ export async function generateMindMap(opts: GenerateOptions): Promise<GenerateRe
       const planned = await generateText({
         model,
         system: buildHierarchyPlanPrompt({ language, purpose }),
-        prompt: buildHierarchyPlanUserPrompt(built.map),
+        prompt: buildHierarchyPlanUserPrompt(built.map, language),
         maxOutputTokens: 1600,
         abortSignal: signal,
         ...(providerOptions ? { providerOptions } : {}),
@@ -178,7 +178,7 @@ export function streamOutline(opts: GenerateOptions) {
     model: streamCfg.model,
     ...(streamCfg.providerOptions ? { providerOptions: streamCfg.providerOptions } : {}),
     system: buildSystemPrompt({ language, depth, purpose }),
-    prompt: buildUserPrompt(chunks, doc.title),
+    prompt: buildUserPrompt(chunks, doc.title, language),
     maxOutputTokens: maxOutputTokens(depth),
     abortSignal: signal,
   });
