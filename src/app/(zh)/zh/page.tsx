@@ -3,15 +3,15 @@ import { HomeContent } from '@/components/site/HomeContent';
 import { marketingCopy } from '@/lib/i18n/marketing';
 import { alternatesFor, OG_LOCALE } from '@/lib/i18n/routes';
 
-const copy = marketingCopy('en').home;
+const copy = marketingCopy('zh-CN').home;
 
 export const metadata: Metadata = {
   title: copy.metaTitle,
   description: copy.metaDescription,
-  alternates: alternatesFor('/', 'en'),
-  openGraph: { locale: OG_LOCALE.en },
+  alternates: alternatesFor('/', 'zh-CN'),
+  openGraph: { locale: OG_LOCALE['zh-CN'] },
 };
 
-export default function HomePage() {
-  return <HomeContent locale="en" />;
+export default function HomePageZh() {
+  return <HomeContent locale="zh-CN" />;
 }

@@ -13,18 +13,18 @@ export function generateStaticParams() {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const found = getToolPage((await params).slug);
   if (!found) return {};
-  const tool = localizedToolPage(found, 'en');
+  const tool = localizedToolPage(found, 'zh-CN');
   return {
     title: tool.seoTitle,
     description: tool.seoDescription,
     keywords: [tool.primaryKeyword, ...tool.relatedKeywords],
-    alternates: alternatesFor(`/tools/${tool.slug}`, 'en'),
-    openGraph: { title: tool.seoTitle, description: tool.seoDescription, url: `/tools/${tool.slug}`, locale: OG_LOCALE.en },
+    alternates: alternatesFor(`/tools/${tool.slug}`, 'zh-CN'),
+    openGraph: { title: tool.seoTitle, description: tool.seoDescription, url: `/zh/tools/${tool.slug}`, locale: OG_LOCALE['zh-CN'] },
   };
 }
 
-export default async function ToolLandingPage({ params }: Props) {
+export default async function ToolLandingPageZh({ params }: Props) {
   const found = getToolPage((await params).slug);
   if (!found) notFound();
-  return <ToolPageContent tool={localizedToolPage(found, 'en')} locale="en" />;
+  return <ToolPageContent tool={localizedToolPage(found, 'zh-CN')} locale="zh-CN" />;
 }

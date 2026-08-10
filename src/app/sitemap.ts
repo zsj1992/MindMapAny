@@ -1,27 +1,48 @@
 import type { MetadataRoute } from 'next';
 import { listPublicSlugs } from '@/lib/db/repositories/maps';
 import { BLOG_POSTS, TOOL_PAGES } from '@/lib/seo/content';
+import { hasTranslation, localizedPath } from '@/lib/i18n/routes';
 
 const siteUrl = process.env.SITE_URL ?? 'https://mindmapany.com';
 
 export const revalidate = 3600;
 
+/**
+ * 有中文版的页面，同一条 URL 上带 alternates.languages。
+ *
+ * 只写两条独立 URL 而不声明互为译文，搜索引擎会把中英当成重复内容 ——
+ * 结果是两版互相压制，比只有一版还糟。
+ */
+function withAlternates(entry: MetadataRoute.Sitemap[number], path: string): MetadataRoute.Sitemap[number] {
+  if (!hasTranslation(path)) return entry;
+  return {
+    ...entry,
+    alternates: {
+      languages: {
+        en: `${siteUrl}${path === '/' ? '' : path}`,
+        'zh-CN': `${siteUrl}${localizedPath(path, 'zh-CN')}`,
+      },
+    },
+  };
+}
+
 /** 只收录公开、独立且有搜索价值的内容页；工作台统一 noindex。 */
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base: MetadataRoute.Sitemap = [
-    { url: siteUrl, changeFrequency: 'weekly', priority: 1 },
-    { url: `${siteUrl}/pricing`, changeFrequency: 'monthly', priority: 0.7 },
+    withAlternates({ url: siteUrl, changeFrequency: 'weekly', priority: 1 }, '/'),
+    withAlternates({ url: `${siteUrl}/pricing`, changeFrequency: 'monthly', priority: 0.7 }, '/pricing'),
     { url: `${siteUrl}/support`, changeFrequency: 'monthly', priority: 0.55 },
     { url: `${siteUrl}/billing`, changeFrequency: 'monthly', priority: 0.45 },
     { url: `${siteUrl}/privacy`, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${siteUrl}/terms`, changeFrequency: 'yearly', priority: 0.3 },
     { url: `${siteUrl}/refund-policy`, changeFrequency: 'yearly', priority: 0.35 },
-    { url: `${siteUrl}/tools`, changeFrequency: 'weekly', priority: 0.9 },
-    ...TOOL_PAGES.map(({ slug }) => ({
-      url: `${siteUrl}/tools/${slug}`,
-      changeFrequency: 'monthly' as const,
-      priority: 0.85,
-    })),
+    withAlternates({ url: `${siteUrl}/tools`, changeFrequency: 'weekly', priority: 0.9 }, '/tools'),
+    ...TOOL_PAGES.map(({ slug }) =>
+      withAlternates(
+        { url: `${siteUrl}/tools/${slug}`, changeFrequency: 'monthly' as const, priority: 0.85 },
+        `/tools/${slug}`,
+      ),
+    ),
     { url: `${siteUrl}/blog`, changeFrequency: 'weekly', priority: 0.8 },
     ...BLOG_POSTS.map(({ slug, updatedAt }) => ({
       url: `${siteUrl}/blog/${slug}`,

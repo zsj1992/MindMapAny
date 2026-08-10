@@ -3,15 +3,15 @@ import { PricingContent } from '@/components/site/PricingContent';
 import { marketingCopy } from '@/lib/i18n/marketing';
 import { alternatesFor, OG_LOCALE } from '@/lib/i18n/routes';
 
-const copy = marketingCopy('en').pricing;
+const copy = marketingCopy('zh-CN').pricing;
 
 export const metadata: Metadata = {
   title: copy.metaTitle,
   description: copy.metaDescription,
-  alternates: alternatesFor('/pricing', 'en'),
-  openGraph: { locale: OG_LOCALE.en },
+  alternates: alternatesFor('/pricing', 'zh-CN'),
+  openGraph: { locale: OG_LOCALE['zh-CN'] },
 };
 
-export default function PricingPage() {
-  return <PricingContent locale="en" />;
+export default function PricingPageZh() {
+  return <PricingContent locale="zh-CN" />;
 }

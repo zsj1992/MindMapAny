@@ -3,6 +3,9 @@
 import Link from 'next/link';
 import { useEffect, useState, type ReactNode } from 'react';
 import { useHoverMenu } from '@/components/site/useHoverMenu';
+import { marketingCopy } from '@/lib/i18n/marketing';
+import { localizedPath } from '@/lib/i18n/routes';
+import type { Locale } from '@/lib/i18n/locales';
 
 /**
  * 站点页头导航。Tools 是一个悬停展开的大面板 —— 6 个工具页埋在 /tools 列表页里，
@@ -33,101 +36,74 @@ const DOC_ICON = icon(
   </>,
 );
 
-const GROUPS: { title: string; items: ToolLink[] }[] = [
-  {
-    title: 'Documents',
-    items: [
-      { href: '/tools/pdf-to-mind-map', label: 'PDF to mind map', icon: DOC_ICON },
-      {
-        href: '/tools/docx-to-mind-map',
-        label: 'Word to mind map',
-        icon: icon(
-          <>
-            <path strokeLinejoin="round" d="M14 3v5h5M19 8v11a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5z" />
-            <path strokeLinecap="round" d="M8 13h8M8 16h6" />
-          </>,
-        ),
-      },
-      {
-        href: '/tools/pptx-to-mind-map',
-        label: 'PowerPoint to mind map',
-        icon: icon(
-          <>
-            <rect x="4" y="3" width="16" height="13" rx="2" />
-            <path strokeLinecap="round" d="M8 20l4-4 4 4M8 8h8M8 11h5" />
-          </>,
-        ),
-      },
-      {
-        href: '/tools/epub-to-mind-map',
-        label: 'EPUB to mind map',
-        icon: icon(
-          <path strokeLinejoin="round" d="M4 5.5A2.5 2.5 0 016.5 3H11v16H6.5A2.5 2.5 0 004 21V5.5zM20 5.5A2.5 2.5 0 0017.5 3H13v16h4.5A2.5 2.5 0 0120 21V5.5z" />,
-        ),
-      },
-    ],
-  },
-  {
-    title: 'Text & web',
-    items: [
-      {
-        href: '/tools/text-to-mind-map',
-        label: 'Text to mind map',
-        icon: icon(<path strokeLinecap="round" d="M5 7h14M5 12h14M5 17h8" />),
-      },
-      {
-        href: '/tools/webpage-to-mind-map',
-        label: 'Web page to mind map',
-        icon: icon(
-          <>
-            <circle cx="12" cy="12" r="9" />
-            <path d="M3 12h18M12 3a15 15 0 010 18a15 15 0 010-18z" />
-          </>,
-        ),
-      },
-    ],
-  },
+const GROUP_HREFS = [
+  ['/tools/pdf-to-mind-map', '/tools/docx-to-mind-map', '/tools/pptx-to-mind-map', '/tools/epub-to-mind-map'],
+  ['/tools/text-to-mind-map', '/tools/webpage-to-mind-map'],
 ];
 
-const FEATURED = [
-  {
-    href: '/app/research',
-    label: 'Deep research',
-    hint: 'Multi-source report with citations',
-    icon: icon(
+const GROUP_ICONS = [
+  [
+    DOC_ICON,
+    icon(
       <>
-        <circle cx="10" cy="10" r="6" />
-        <path strokeLinecap="round" d="M14.5 14.5L20 20M10 7v6M7 10h6" />
+        <path strokeLinejoin="round" d="M14 3v5h5M19 8v11a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5z" />
+        <path strokeLinecap="round" d="M8 13h8M8 16h6" />
       </>,
     ),
-  },
-  {
-    href: '/tools',
-    label: 'All tools',
-    hint: 'Browse every input type',
-    icon: icon(
+    icon(
       <>
-        <rect x="3" y="3" width="7" height="7" rx="1.5" />
-        <rect x="14" y="3" width="7" height="7" rx="1.5" />
-        <rect x="3" y="14" width="7" height="7" rx="1.5" />
-        <rect x="14" y="14" width="7" height="7" rx="1.5" />
+        <rect x="4" y="3" width="16" height="13" rx="2" />
+        <path strokeLinecap="round" d="M8 20l4-4 4 4M8 8h8M8 11h5" />
       </>,
     ),
-  },
+    icon(
+      <path strokeLinejoin="round" d="M4 5.5A2.5 2.5 0 016.5 3H11v16H6.5A2.5 2.5 0 004 21V5.5zM20 5.5A2.5 2.5 0 0017.5 3H13v16h4.5A2.5 2.5 0 0120 21V5.5z" />,
+    ),
+  ],
+  [
+    icon(<path strokeLinecap="round" d="M5 7h14M5 12h14M5 17h8" />),
+    icon(
+      <>
+        <circle cx="12" cy="12" r="9" />
+        <path d="M3 12h18M12 3a15 15 0 010 18a15 15 0 010-18z" />
+      </>,
+    ),
+  ],
 ];
 
-export function HeaderNav() {
+/** toolLabels 是扁平的 6 条，这里给出每组的起始下标 */
+const GROUP_LABEL_OFFSET = [0, 4];
+
+const RESEARCH_ICON = icon(
+  <>
+    <circle cx="10" cy="10" r="6" />
+    <path strokeLinecap="round" d="M14.5 14.5L20 20M10 7v6M7 10h6" />
+  </>,
+);
+
+const ALL_TOOLS_ICON = icon(
+  <>
+    <rect x="3" y="3" width="7" height="7" rx="1.5" />
+    <rect x="14" y="3" width="7" height="7" rx="1.5" />
+    <rect x="3" y="14" width="7" height="7" rx="1.5" />
+    <rect x="14" y="14" width="7" height="7" rx="1.5" />
+  </>,
+);
+
+
+export function HeaderNav({ locale }: { locale: Locale }) {
+  const copy = marketingCopy(locale).nav;
   return (
     <nav className="hidden items-center gap-8 text-[13px] font-medium text-text-muted md:flex">
-      <ToolsMenu />
-      <Link href="/blog" className="transition-colors hover:text-text">
-        Blog
+      <ToolsMenu locale={locale} />
+      <Link href={localizedPath('/blog', locale)} className="transition-colors hover:text-text">
+        {copy.blog}
       </Link>
-      <Link href="/pricing" className="transition-colors hover:text-text">
-        Pricing
+      <Link href={localizedPath('/pricing', locale)} className="transition-colors hover:text-text">
+        {copy.pricing}
       </Link>
-      <Link href="/#faq" className="transition-colors hover:text-text">
-        FAQ
+      <Link href={localizedPath('/#faq', locale)} className="transition-colors hover:text-text">
+        {copy.faq}
       </Link>
     </nav>
   );
@@ -137,7 +113,8 @@ export function HeaderNav() {
 const PANEL_MAX = 704;
 const VIEWPORT_MARGIN = 16;
 
-function ToolsMenu() {
+function ToolsMenu({ locale }: { locale: Locale }) {
+  const copy = marketingCopy(locale).nav;
   const { open, setOpen, handlers, rootRef } = useHoverMenu();
   const [panelLeft, setPanelLeft] = useState(0);
   const [panelWidth, setPanelWidth] = useState(PANEL_MAX);
@@ -168,13 +145,13 @@ function ToolsMenu() {
   return (
     <div ref={rootRef} className="relative" {...handlers}>
       <Link
-        href="/tools"
+        href={localizedPath('/tools', locale)}
         aria-expanded={open}
         aria-haspopup="true"
         onClick={() => setOpen(false)}
         className={`flex items-center gap-1 transition-colors hover:text-text ${open ? 'text-text' : ''}`}
       >
-        Tools
+        {copy.tools}
         <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" className={`h-3.5 w-3.5 transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden="true">
           <path strokeLinecap="round" strokeLinejoin="round" d="m6.5 8 3.5 3.5L13.5 8" />
         </svg>
@@ -195,19 +172,19 @@ function ToolsMenu() {
             style={{ borderColor: 'var(--border-strong)' }}
           >
             <div className="grid grid-cols-2 gap-x-6 gap-y-5">
-              {GROUPS.map((group) => (
-                <section key={group.title}>
-                  <p className="mb-2 px-2 text-[10px] font-bold uppercase tracking-[0.1em] text-text-subtle">{group.title}</p>
+              {[copy.toolsGroups.documents, copy.toolsGroups.textWeb].map((groupTitle, groupIndex) => (
+                <section key={groupTitle}>
+                  <p className="mb-2 px-2 text-[10px] font-bold uppercase tracking-[0.1em] text-text-subtle">{groupTitle}</p>
                   <div className="space-y-0.5">
-                    {group.items.map((item) => (
+                    {GROUP_HREFS[groupIndex].map((href, itemIndex) => (
                       <Link
-                        key={item.href}
-                        href={item.href}
+                        key={href}
+                        href={localizedPath(href, locale)}
                         onClick={() => setOpen(false)}
                         className="flex items-center gap-2.5 rounded-lg px-2 py-2 text-[13px] text-text-muted transition-colors hover:bg-bg-subtle hover:text-text"
                       >
-                        {item.icon}
-                        {item.label}
+                        {GROUP_ICONS[groupIndex][itemIndex]}
+                        {copy.toolLabels[GROUP_LABEL_OFFSET[groupIndex] + itemIndex]}
                       </Link>
                     ))}
                   </div>
@@ -216,10 +193,13 @@ function ToolsMenu() {
             </div>
 
             <div className="mt-4 grid grid-cols-2 gap-2 border-t pt-4" style={{ borderColor: 'var(--border)' }}>
-              {FEATURED.map((item) => (
+              {[
+                { href: '/app/research', icon: RESEARCH_ICON, label: copy.deepResearch, hint: copy.deepResearchHint },
+                { href: '/tools', icon: ALL_TOOLS_ICON, label: copy.allTools, hint: copy.allToolsHint },
+              ].map((item) => (
                 <Link
                   key={item.href}
-                  href={item.href}
+                  href={localizedPath(item.href, locale)}
                   onClick={() => setOpen(false)}
                   className="flex items-center gap-2.5 rounded-xl border bg-bg-subtle px-3 py-2.5 transition-colors hover:border-brand-300 hover:bg-surface"
                   style={{ borderColor: 'var(--border)' }}

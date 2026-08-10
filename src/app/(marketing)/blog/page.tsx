@@ -27,7 +27,7 @@ export default function BlogPage() {
           {BLOG_POSTS.map((post, index) => <article key={post.slug} className={`rounded-2xl border bg-surface p-6 shadow-sm ${index === 0 ? 'md:col-span-2 md:grid md:grid-cols-[1fr_0.55fr] md:gap-10 md:p-8' : ''}`} style={{ borderColor: 'var(--border)' }}><div><div className="text-[11px] font-bold uppercase tracking-[0.14em] text-brand-600">{post.category}</div><h2 className="mt-3 text-2xl font-bold tracking-tight"><Link href={`/blog/${post.slug}`} className="hover:text-brand-600">{post.title}</Link></h2><p className="mt-3 text-sm leading-7 text-text-muted">{post.description}</p></div><div className={`${index === 0 ? 'mt-6 flex flex-col justify-end md:mt-0' : ''}`}><div className="mt-5 text-xs text-text-subtle">{post.publishedAt} · {post.readingMinutes} min read</div><Link href={`/blog/${post.slug}`} className="mt-5 inline-flex text-sm font-semibold text-brand-600">Read more →</Link></div></article>)}
         </section>
       </main>
-      <Footer />
+      <Footer locale="en" />
     </>
   );
 }

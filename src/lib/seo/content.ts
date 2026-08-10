@@ -1,3 +1,5 @@
+import type { Locale } from '@/lib/i18n/locales';
+import { TOOL_PAGES_ZH } from './content.zh';
 export const SITE_URL = process.env.SITE_URL ?? 'https://mindmapany.com';
 
 export interface ToolPage {
@@ -70,7 +72,7 @@ export const TOOL_PAGES: ToolPage[] = [
     ],
     useCases: ['Turn reading notes into a knowledge framework', 'Split meeting minutes into topics and action items', 'Organise product requirements and project plans', 'Get an overview of a long article fast'],
     faq: [
-      { question: 'How much text can I paste at once?', answer: 'Anonymous trials suit shorter pieces. Once you sign in, the limit depends on your plan and the generation depth you choose.' },
+      { question: 'How much text can I paste at once?', answer: 'The limit depends on your plan and the generation depth you choose — see the pricing page for the exact character allowance. Longer content costs more credits.' },
       { question: 'Does it handle text that mixes languages?', answer: 'Yes. You can specify the output language separately and the node language will be made consistent.' },
       { question: 'Can I add child nodes afterwards?', answer: 'Yes. Select a node and press Tab for a child node, or Enter for a sibling.' },
     ],
@@ -410,4 +412,13 @@ export function getToolPage(slug: string): ToolPage | undefined {
 
 export function getBlogPost(slug: string): BlogPost | undefined {
   return BLOG_POSTS.find((post) => post.slug === slug);
+}
+
+/**
+ * 按界面语言取工具页文案。没有译文时回退英文原文 ——
+ * 宁可显示一页英文，也不能显示空白标题。
+ */
+export function localizedToolPage(tool: ToolPage, locale: Locale): ToolPage {
+  const zh = locale === 'zh-CN' ? TOOL_PAGES_ZH[tool.slug] : undefined;
+  return zh ? { ...tool, ...zh } : tool;
 }

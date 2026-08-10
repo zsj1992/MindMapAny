@@ -2,6 +2,9 @@
 
 import Link from 'next/link';
 import { useSession } from '@/lib/auth/client';
+import { marketingCopy } from '@/lib/i18n/marketing';
+import { localizedPath } from '@/lib/i18n/routes';
+import type { Locale } from '@/lib/i18n/locales';
 
 /**
  * 营销站页头的登录态。
@@ -10,8 +13,9 @@ import { useSession } from '@/lib/auth/client';
  * 退化成每次请求都渲染 —— 而落地页是我们唯一的 SEO 资产，必须留在边缘缓存里。
  * 页头右上角这一小块延迟一帧出现，代价远小于整页不能静态化。
  */
-export function HeaderAuth() {
+export function HeaderAuth({ locale }: { locale: Locale }) {
   const { data: session, isPending } = useSession();
+  const copy = marketingCopy(locale).nav;
 
   if (isPending) {
     return <span className="h-9 w-20 animate-pulse rounded-xl bg-bg-muted sm:w-32" aria-hidden="true" />;
@@ -21,8 +25,8 @@ export function HeaderAuth() {
     return (
       <Link href="/app/new" className="btn btn-primary h-9 whitespace-nowrap px-3 text-xs sm:px-4 sm:text-sm">
         {/* 手机上「Open workbench」会折成两行把顶栏撑变形，窄屏只留核心词 */}
-        <span className="sm:hidden">Workbench</span>
-        <span className="hidden sm:inline">Open workbench</span>
+        <span className="sm:hidden">{copy.workbenchShort}</span>
+        <span className="hidden sm:inline">{copy.workbench}</span>
       </Link>
     );
   }
@@ -30,10 +34,10 @@ export function HeaderAuth() {
   return (
     <>
       <Link href="/login" className="btn btn-ghost h-9 whitespace-nowrap px-2 text-xs sm:px-3 sm:text-sm">
-        Sign in
+        {copy.signIn}
       </Link>
       <Link href="/app/new" className="btn btn-primary h-9 whitespace-nowrap px-3 text-xs sm:px-4 sm:text-sm">
-        Start free
+        {copy.startFree}
       </Link>
     </>
   );

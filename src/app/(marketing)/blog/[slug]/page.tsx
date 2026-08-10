@@ -49,7 +49,7 @@ export default async function BlogPostPage({ params }: Props) {
           </aside>
         </article>
       </main>
-      <Footer />
+      <Footer locale="en" />
     </>
   );
 }
