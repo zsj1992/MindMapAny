@@ -35,7 +35,10 @@ export function Toolbar({
   const dirty = useEditor((s) => s.dirty);
   const levelLimit = useEditor((s) => s.levelLimit);
   const collapseToLevel = useEditor((s) => s.collapseToLevel);
-  const { getNodes } = useReactFlow();
+  // getNodesBounds 必须取自 useReactFlow：它会带上 nodeLookup。
+  // 顶层导入的同名函数只能读 node.measured，而我们的节点每次都是 useMemo 新建的对象，
+  // 量出来的尺寸只写进 nodeLookup，从不回写到这些对象 —— 那条路径下每个节点宽高都是 0。
+  const { getNodes, getNodesBounds } = useReactFlow();
   const [exporting, setExporting] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
@@ -96,10 +99,10 @@ export function Toolbar({
             Format
           </button>
         )}
-        <ExportButton busy={exporting === 'png'} onClick={() => run('png', () => exportPng(getNodes(), safeName(map.title)))}>
+        <ExportButton busy={exporting === 'png'} onClick={() => run('png', () => exportPng(getNodesBounds(getNodes()), safeName(map.title)))}>
           PNG
         </ExportButton>
-        <ExportButton busy={exporting === 'svg'} onClick={() => run('svg', () => exportSvg(getNodes(), safeName(map.title)))}>
+        <ExportButton busy={exporting === 'svg'} onClick={() => run('svg', () => exportSvg(getNodesBounds(getNodes()), safeName(map.title)))}>
           SVG
         </ExportButton>
         <ExportButton busy={false} onClick={() => exportMarkdown(map)}>
