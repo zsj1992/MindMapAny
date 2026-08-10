@@ -216,6 +216,8 @@ function friendlyError(code: string | undefined, message: string | undefined, mo
       return `Password must be at least ${MIN_PASSWORD_LENGTH} characters.`;
     case 'INVALID_EMAIL':
       return 'Please enter a valid email address.';
+    case 'RATE_LIMITED':
+      return 'Too many attempts from this network. Please wait a while and try again.';
     case 'EMAIL_NOT_VERIFIED':
       return 'Please confirm your email first — check your inbox for the link we sent when you signed up.';
     default:
