@@ -13,6 +13,11 @@
       "GOOGLE_CLIENT_ID",
       "GOOGLE_CLIENT_SECRET"
     ]
+    // RESEND_API_KEY 故意不在这里。这个数组有两个作用，都会咬人：
+    //   1. 它是本地 dev 的注入白名单 —— 不列进来，.dev.vars 里的同名变量不会进 worker；
+    //   2. 它是部署闸门 —— 列进来但 Cloudflare 账号里没这个密钥，wrangler 直接拒绝部署。
+    // 发信是可降级能力（没配就不验证邮箱，站点照常可用），不该让它挡住部署。
+    // 本地要调发信时，临时把 "RESEND_API_KEY" 加进这个数组并写进 .dev.vars，调完删掉。
   },
   // nodejs_compat 必须开：Next 运行时和我们的 PDF 解析都依赖 Node API 垫片
   "compatibility_flags": ["nodejs_compat"],
@@ -25,7 +30,9 @@
     // 运行时站点地址。不要用 NEXT_PUBLIC_ 前缀 —— 那类变量在构建时就被内联，改不动。
     "SITE_URL": "https://mindmapany.com",
     "DEEPSEEK_MODEL_FAST": "deepseek-v4-flash",
-    "DEEPSEEK_MODEL_QUALITY": "deepseek-v4-pro"
+    "DEEPSEEK_MODEL_QUALITY": "deepseek-v4-pro",
+    // 发件地址不是密钥。域名必须先在 Resend 验证过，否则 Resend 会拒发。
+    "EMAIL_FROM": "MindMapAny <noreply@mindmapany.com>"
   },
   "d1_databases": [
     {

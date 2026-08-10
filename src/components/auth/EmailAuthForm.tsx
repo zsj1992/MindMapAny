@@ -1,32 +1,45 @@
 'use client';
 
 import { useState, type FormEvent } from 'react';
-import { signIn, signUp } from '@/lib/auth/client';
+import { authClient, signIn, signUp } from '@/lib/auth/client';
 
-type Mode = 'signin' | 'signup';
+type Mode = 'signin' | 'signup' | 'forgot';
 
 const MIN_PASSWORD_LENGTH = 8;
 
 /**
- * 邮箱 + 密码登录 / 注册。两种模式共用一个表单，只在注册时多一个姓名字段。
+ * 邮箱 + 密码：登录 / 注册 / 找回密码三态共用一个表单。
  *
- * 没有「忘记密码」入口：重置密码要发邮件，而这个项目还没有邮件服务。
- * 与其放一个点了没反应的链接，不如直接告诉用户可以用 Google 登录同一个邮箱。
+ * emailVerificationRequired 由服务端传下来，前端不自己猜：
+ * 是否需要去邮箱激活取决于 Resend 配没配好，这个只有服务端知道。
  */
-export function EmailAuthForm({ next }: { next: string }) {
+export function EmailAuthForm({ next, emailVerificationRequired }: { next: string; emailVerificationRequired: boolean }) {
   const [mode, setMode] = useState<Mode>('signin');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [notice, setNotice] = useState<string | null>(null);
 
   const submit = async (event: FormEvent) => {
     event.preventDefault();
     if (busy) return;
 
     const trimmedEmail = email.trim();
-    if (!trimmedEmail || !password) return;
+    if (!trimmedEmail) return;
+
+    if (mode === 'forgot') {
+      setBusy(true);
+      setError(null);
+      await authClient.requestPasswordReset({ email: trimmedEmail, redirectTo: '/reset-password' });
+      setBusy(false);
+      // 无论邮箱是否存在都给同一句话，否则这个接口就成了账号枚举器
+      setNotice('If an account exists for that address, a reset link is on its way. It expires in an hour.');
+      return;
+    }
+
+    if (!password) return;
     if (mode === 'signup' && password.length < MIN_PASSWORD_LENGTH) {
       setError(`Password must be at least ${MIN_PASSWORD_LENGTH} characters.`);
       return;
@@ -50,9 +63,36 @@ export function EmailAuthForm({ next }: { next: string }) {
       return;
     }
 
-    // autoSignIn 打开时注册成功即已登录，两种模式都直接进目标页
+    // 需要邮箱验证时注册不会自动登录，这时候跳转过去只会被弹回来
+    if (mode === 'signup' && emailVerificationRequired) {
+      setBusy(false);
+      setNotice(`Almost there — we sent a confirmation link to ${trimmedEmail}. Open it to activate your account, then sign in.`);
+      return;
+    }
+
     window.location.assign(next);
   };
+
+  if (notice) {
+    return (
+      <div className="mt-6">
+        <p className="rounded-lg bg-emerald-50 px-3 py-2.5 text-sm leading-6 text-emerald-800 dark:bg-emerald-950/40 dark:text-emerald-200">
+          {notice}
+        </p>
+        <button
+          type="button"
+          onClick={() => {
+            setNotice(null);
+            setMode('signin');
+            setPassword('');
+          }}
+          className="btn btn-secondary mt-4 h-11 w-full text-sm"
+        >
+          Back to sign in
+        </button>
+      </div>
+    );
+  }
 
   return (
     <form onSubmit={submit} className="mt-6 space-y-3">
@@ -77,15 +117,32 @@ export function EmailAuthForm({ next }: { next: string }) {
         required
       />
 
-      <Field
-        label="Password"
-        type="password"
-        value={password}
-        onChange={setPassword}
-        placeholder={mode === 'signup' ? `At least ${MIN_PASSWORD_LENGTH} characters` : '••••••••'}
-        autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
-        required
-      />
+      {mode !== 'forgot' && (
+        <Field
+          label="Password"
+          type="password"
+          value={password}
+          onChange={setPassword}
+          placeholder={mode === 'signup' ? `At least ${MIN_PASSWORD_LENGTH} characters` : '••••••••'}
+          autoComplete={mode === 'signup' ? 'new-password' : 'current-password'}
+          required
+        />
+      )}
+
+      {mode === 'signin' && (
+        <p className="text-right">
+          <button
+            type="button"
+            onClick={() => {
+              setMode('forgot');
+              setError(null);
+            }}
+            className="text-[11px] font-medium text-text-subtle underline-offset-2 hover:text-brand-600 hover:underline"
+          >
+            Forgot your password?
+          </button>
+        </p>
+      )}
 
       {error && (
         <p role="alert" className="rounded-lg bg-red-50 px-3 py-2 text-xs leading-5 text-red-700 dark:bg-red-950/40 dark:text-red-300">
@@ -94,7 +151,7 @@ export function EmailAuthForm({ next }: { next: string }) {
       )}
 
       <button type="submit" disabled={busy} className="btn btn-primary h-11 w-full text-sm">
-        {busy ? 'Working…' : mode === 'signin' ? 'Sign in' : 'Create account'}
+        {busy ? 'Working…' : mode === 'signin' ? 'Sign in' : mode === 'signup' ? 'Create account' : 'Send reset link'}
       </button>
 
       <p className="pt-1 text-center text-xs text-text-subtle">
@@ -159,6 +216,8 @@ function friendlyError(code: string | undefined, message: string | undefined, mo
       return `Password must be at least ${MIN_PASSWORD_LENGTH} characters.`;
     case 'INVALID_EMAIL':
       return 'Please enter a valid email address.';
+    case 'EMAIL_NOT_VERIFIED':
+      return 'Please confirm your email first — check your inbox for the link we sent when you signed up.';
     default:
       return message || (mode === 'signin' ? 'Could not sign you in. Please try again.' : 'Could not create the account. Please try again.');
   }

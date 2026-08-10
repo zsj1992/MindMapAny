@@ -6,6 +6,7 @@ import { OAuthButtons } from '@/components/auth/OAuthButtons';
 import { HeroMap } from '@/components/site/HeroMap';
 import { Logo } from '@/components/site/Logo';
 import { enabledProviders } from '@/lib/auth/server';
+import { emailConfigured } from '@/lib/email/send';
 import { getCurrentUser } from '@/lib/auth/session';
 
 export const dynamic = 'force-dynamic';
@@ -83,7 +84,7 @@ export default async function LoginPage({ searchParams }: PageProps<'/login'>) {
             </div>
           )}
 
-          <EmailAuthForm next={next} />
+          <EmailAuthForm next={next} emailVerificationRequired={emailConfigured()} />
 
           <p className="mt-6 text-center text-xs leading-relaxed text-text-subtle">
             By continuing you agree that we may process the content you submit in order to generate mind maps.

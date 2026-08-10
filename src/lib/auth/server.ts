@@ -1,5 +1,7 @@
 import { betterAuth } from 'better-auth';
 import { getDb } from '@/lib/db/client';
+import { emailConfigured, sendEmail } from '@/lib/email/send';
+import { resetPasswordEmail, verificationEmail } from '@/lib/email/templates';
 
 /**
  * Better Auth + D1。
@@ -25,19 +27,31 @@ export function getAuth() {
     // 结果就是线上 OAuth 的 redirect_uri 指向 localhost:3000。
     baseURL: process.env.SITE_URL ?? process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000',
     /**
-     * 邮箱 + 密码。选它而不是魔法链接，是因为魔法链接必须先接邮件服务，
-     * 而这条路零外部依赖，当天就能上。
+     * 邮箱 + 密码，验证邮件走 Resend。
      *
-     * 代价写在这里，不要忘：没有邮件服务就没有「忘记密码」自助重置，
-     * 也没有邮箱验证。所以 requireEmailVerification 保持关闭 —— 打开它会在
-     * 没有发信通道的情况下把所有新用户直接锁在门外。
-     * 接上邮件服务后要做的两件事：sendResetPassword、sendVerificationEmail。
+     * requireEmailVerification 跟着 emailConfigured() 走，不是写死 true：
+     * 密钥没配好 / Resend 域名没验过的时候，写死 true 会让每个新用户注册完就卡在
+     * 「去邮箱激活」，而那封邮件根本发不出去 —— 等于把注册入口整个焊死。
+     * 降级成不验证虽然不严谨，但至少产品还能用，而且日志里会有发信失败记录。
      */
     emailAndPassword: {
       enabled: true,
-      requireEmailVerification: false,
+      requireEmailVerification: emailConfigured(),
       minPasswordLength: 8,
-      autoSignIn: true,
+      // 需要验证时不能自动登录，否则「验证」这一步就形同虚设
+      autoSignIn: !emailConfigured(),
+      sendResetPassword: async ({ user, url }) => {
+        const mail = resetPasswordEmail(url);
+        await sendEmail({ to: user.email, ...mail });
+      },
+    },
+    emailVerification: {
+      sendOnSignUp: true,
+      autoSignInAfterVerification: true,
+      sendVerificationEmail: async ({ user, url }) => {
+        const mail = verificationEmail(url);
+        await sendEmail({ to: user.email, ...mail });
+      },
     },
     socialProviders: {
       ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
