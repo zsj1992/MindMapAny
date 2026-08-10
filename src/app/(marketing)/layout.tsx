@@ -2,6 +2,7 @@ import Link from 'next/link';
 import { Logo } from '@/components/site/Logo';
 import { ThemeToggle } from '@/components/site/ThemeToggle';
 import { HeaderAuth } from '@/components/auth/HeaderAuth';
+import { HeaderNav } from '@/components/site/HeaderNav';
 
 /** 对外站点的页头：导航 + 入口 CTA。登录后 CTA 直接指向工作台。 */
 export default function MarketingLayout({ children }: LayoutProps<'/'>) {
@@ -17,20 +18,7 @@ export default function MarketingLayout({ children }: LayoutProps<'/'>) {
             <Logo />
           </Link>
 
-          <nav className="hidden items-center gap-8 text-[13px] font-medium text-text-muted md:flex">
-            <Link href="/tools" className="transition-colors hover:text-text">
-              Tools
-            </Link>
-            <Link href="/blog" className="transition-colors hover:text-text">
-              Blog
-            </Link>
-            <Link href="/pricing" className="transition-colors hover:text-text">
-              Pricing
-            </Link>
-            <Link href="/#faq" className="transition-colors hover:text-text">
-              FAQ
-            </Link>
-          </nav>
+          <HeaderNav />
 
           <div className="ml-auto flex items-center gap-2">
             <ThemeToggle />

@@ -1,0 +1,240 @@
+'use client';
+
+import Link from 'next/link';
+import { useEffect, useState, type ReactNode } from 'react';
+import { useHoverMenu } from '@/components/site/useHoverMenu';
+
+/**
+ * 站点页头导航。Tools 是一个悬停展开的大面板 —— 6 个工具页埋在 /tools 列表页里，
+ * 从首页要两跳才到得了；摊在页头是竞品普遍做法，也确实少一跳。
+ *
+ * 三件事必须同时成立，少一件都会有一类用户点不开：
+ *   1. 鼠标悬停展开（桌面）
+ *   2. 键盘 focus 也展开（无障碍）
+ *   3. Tools 本身仍是能点的链接，指向 /tools（触屏没有 hover，靠这条兜底）
+ */
+
+interface ToolLink {
+  href: string;
+  label: string;
+  icon: ReactNode;
+}
+
+const icon = (path: ReactNode) => (
+  <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className="h-4 w-4 shrink-0 text-brand-500">
+    {path}
+  </svg>
+);
+
+const DOC_ICON = icon(
+  <>
+    <path strokeLinejoin="round" d="M14 3v5h5" />
+    <path strokeLinejoin="round" d="M19 8v11a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5z" />
+  </>,
+);
+
+const GROUPS: { title: string; items: ToolLink[] }[] = [
+  {
+    title: 'Documents',
+    items: [
+      { href: '/tools/pdf-to-mind-map', label: 'PDF to mind map', icon: DOC_ICON },
+      {
+        href: '/tools/docx-to-mind-map',
+        label: 'Word to mind map',
+        icon: icon(
+          <>
+            <path strokeLinejoin="round" d="M14 3v5h5M19 8v11a2 2 0 01-2 2H7a2 2 0 01-2-2V5a2 2 0 012-2h7l5 5z" />
+            <path strokeLinecap="round" d="M8 13h8M8 16h6" />
+          </>,
+        ),
+      },
+      {
+        href: '/tools/pptx-to-mind-map',
+        label: 'PowerPoint to mind map',
+        icon: icon(
+          <>
+            <rect x="4" y="3" width="16" height="13" rx="2" />
+            <path strokeLinecap="round" d="M8 20l4-4 4 4M8 8h8M8 11h5" />
+          </>,
+        ),
+      },
+      {
+        href: '/tools/epub-to-mind-map',
+        label: 'EPUB to mind map',
+        icon: icon(
+          <path strokeLinejoin="round" d="M4 5.5A2.5 2.5 0 016.5 3H11v16H6.5A2.5 2.5 0 004 21V5.5zM20 5.5A2.5 2.5 0 0017.5 3H13v16h4.5A2.5 2.5 0 0120 21V5.5z" />,
+        ),
+      },
+    ],
+  },
+  {
+    title: 'Text & web',
+    items: [
+      {
+        href: '/tools/text-to-mind-map',
+        label: 'Text to mind map',
+        icon: icon(<path strokeLinecap="round" d="M5 7h14M5 12h14M5 17h8" />),
+      },
+      {
+        href: '/tools/webpage-to-mind-map',
+        label: 'Web page to mind map',
+        icon: icon(
+          <>
+            <circle cx="12" cy="12" r="9" />
+            <path d="M3 12h18M12 3a15 15 0 010 18a15 15 0 010-18z" />
+          </>,
+        ),
+      },
+    ],
+  },
+];
+
+const FEATURED = [
+  {
+    href: '/app/research',
+    label: 'Deep research',
+    hint: 'Multi-source report with citations',
+    icon: icon(
+      <>
+        <circle cx="10" cy="10" r="6" />
+        <path strokeLinecap="round" d="M14.5 14.5L20 20M10 7v6M7 10h6" />
+      </>,
+    ),
+  },
+  {
+    href: '/tools',
+    label: 'All tools',
+    hint: 'Browse every input type',
+    icon: icon(
+      <>
+        <rect x="3" y="3" width="7" height="7" rx="1.5" />
+        <rect x="14" y="3" width="7" height="7" rx="1.5" />
+        <rect x="3" y="14" width="7" height="7" rx="1.5" />
+        <rect x="14" y="14" width="7" height="7" rx="1.5" />
+      </>,
+    ),
+  },
+];
+
+export function HeaderNav() {
+  return (
+    <nav className="hidden items-center gap-8 text-[13px] font-medium text-text-muted md:flex">
+      <ToolsMenu />
+      <Link href="/blog" className="transition-colors hover:text-text">
+        Blog
+      </Link>
+      <Link href="/pricing" className="transition-colors hover:text-text">
+        Pricing
+      </Link>
+      <Link href="/#faq" className="transition-colors hover:text-text">
+        FAQ
+      </Link>
+    </nav>
+  );
+}
+
+/** 面板最大宽度。JS 定位要用到它，所以不能只写在 class 里 */
+const PANEL_MAX = 704;
+const VIEWPORT_MARGIN = 16;
+
+function ToolsMenu() {
+  const { open, setOpen, handlers, rootRef } = useHoverMenu();
+  const [panelLeft, setPanelLeft] = useState(0);
+  const [panelWidth, setPanelWidth] = useState(PANEL_MAX);
+
+  /**
+   * 面板左边缘对齐触发器左边缘，宽度不够时再往左收，始终留 16px 边距。
+   *
+   * 为什么要用 JS 量而不是纯 CSS：面板宽 44rem，而 Tools 距左边只有 ~240px。
+   * 以触发器为中心会有一半掉到视口外（实测左侧整列被裁）；改成页头居中又会让
+   * 面板离触发器一百多像素，鼠标斜着移过去会穿过空白区把菜单关掉。
+   * 只有「左对齐触发器 + 溢出时夹紧」两条同时成立，才在各种宽度下都对。
+   */
+  useEffect(() => {
+    if (!open) return;
+    const place = () => {
+      const trigger = rootRef.current?.getBoundingClientRect();
+      if (!trigger) return;
+      const width = Math.min(PANEL_MAX, window.innerWidth - VIEWPORT_MARGIN * 2);
+      const maxLeft = window.innerWidth - width - VIEWPORT_MARGIN;
+      setPanelWidth(width);
+      setPanelLeft(Math.max(VIEWPORT_MARGIN, Math.min(trigger.left, maxLeft)));
+    };
+    place();
+    window.addEventListener('resize', place);
+    return () => window.removeEventListener('resize', place);
+  }, [open, rootRef]);
+
+  return (
+    <div ref={rootRef} className="relative" {...handlers}>
+      <Link
+        href="/tools"
+        aria-expanded={open}
+        aria-haspopup="true"
+        onClick={() => setOpen(false)}
+        className={`flex items-center gap-1 transition-colors hover:text-text ${open ? 'text-text' : ''}`}
+      >
+        Tools
+        <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" className={`h-3.5 w-3.5 transition-transform ${open ? 'rotate-180' : ''}`} aria-hidden="true">
+          <path strokeLinecap="round" strokeLinejoin="round" d="m6.5 8 3.5 3.5L13.5 8" />
+        </svg>
+      </Link>
+
+      {open && (
+        <div
+          /*
+           * pt 把面板与触发器之间 0.55rem 的空隙纳入面板自身的命中区域 ——
+           * 否则鼠标从 Tools 往下移会穿过一段「既不在触发器也不在面板」的死区，
+           * 菜单当场关掉。这是悬停菜单最常见的毛病，实测确实会触发。
+           */
+          className="fixed top-[4.25rem] z-50 pt-[0.55rem]"
+          style={{ left: panelLeft, width: panelWidth }}
+        >
+          <div
+            className="overflow-hidden rounded-2xl border bg-surface p-5 shadow-[0_24px_70px_rgb(18_48_78/0.18)]"
+            style={{ borderColor: 'var(--border-strong)' }}
+          >
+            <div className="grid grid-cols-2 gap-x-6 gap-y-5">
+              {GROUPS.map((group) => (
+                <section key={group.title}>
+                  <p className="mb-2 px-2 text-[10px] font-bold uppercase tracking-[0.1em] text-text-subtle">{group.title}</p>
+                  <div className="space-y-0.5">
+                    {group.items.map((item) => (
+                      <Link
+                        key={item.href}
+                        href={item.href}
+                        onClick={() => setOpen(false)}
+                        className="flex items-center gap-2.5 rounded-lg px-2 py-2 text-[13px] text-text-muted transition-colors hover:bg-bg-subtle hover:text-text"
+                      >
+                        {item.icon}
+                        {item.label}
+                      </Link>
+                    ))}
+                  </div>
+                </section>
+              ))}
+            </div>
+
+            <div className="mt-4 grid grid-cols-2 gap-2 border-t pt-4" style={{ borderColor: 'var(--border)' }}>
+              {FEATURED.map((item) => (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  onClick={() => setOpen(false)}
+                  className="flex items-center gap-2.5 rounded-xl border bg-bg-subtle px-3 py-2.5 transition-colors hover:border-brand-300 hover:bg-surface"
+                  style={{ borderColor: 'var(--border)' }}
+                >
+                  {item.icon}
+                  <span className="min-w-0">
+                    <span className="block truncate text-[13px] font-semibold text-text">{item.label}</span>
+                    <span className="block truncate text-[11px] text-text-subtle">{item.hint}</span>
+                  </span>
+                </Link>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </div>
+  );
+}
