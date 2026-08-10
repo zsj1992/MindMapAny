@@ -69,7 +69,6 @@ const FEATURE_ICONS = [
 ];
 
 const SOURCE_CHIPS = ['PDF', 'DOCX', 'EPUB', 'PPTX', 'TXT', 'Markdown', 'Web link'];
-const PIPELINE_STAGES = ['Extract', 'Chunk & anchor', 'Build hierarchy', 'Edit'];
 
 export function Features({ locale }: { locale: Locale }) {
   const copy = marketingCopy(locale).features;

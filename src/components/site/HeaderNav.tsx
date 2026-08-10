@@ -17,12 +17,6 @@ import type { Locale } from '@/lib/i18n/locales';
  *   3. Tools 本身仍是能点的链接，指向 /tools（触屏没有 hover，靠这条兜底）
  */
 
-interface ToolLink {
-  href: string;
-  label: string;
-  icon: ReactNode;
-}
-
 const icon = (path: ReactNode) => (
   <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" className="h-4 w-4 shrink-0 text-brand-500">
     {path}

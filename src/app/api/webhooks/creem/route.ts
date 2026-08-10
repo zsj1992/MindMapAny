@@ -43,24 +43,9 @@ export async function POST(req: Request) {
     const details = creemEventDetails(event.object, event.eventType);
     if (GRANT_EVENTS.has(event.eventType)) {
       const plan = details.productId ? planForProduct(details.productId) : null;
-      if (!plan) {
-        console.warn('[billing] webhook_ignored', {
-          eventId: event.id,
-          eventType: event.eventType,
-          reason: 'unknown_product',
-          productId: details.productId,
-        });
-        return NextResponse.json({ ok: true, ignored: 'unknown_product' });
-      }
+      if (!plan) return await unresolvedGrant(event.id, event.eventType, 'unknown_product', details);
       const granted = await grantSubscription({ ...details, plan, status: event.eventType });
-      if (!granted) {
-        console.warn('[billing] webhook_ignored', {
-          eventId: event.id,
-          eventType: event.eventType,
-          reason: 'profile_not_found',
-        });
-        return NextResponse.json({ ok: true, ignored: 'profile_not_found' });
-      }
+      if (!granted) return await unresolvedGrant(event.id, event.eventType, 'profile_not_found', details);
     } else if (REVOKE_EVENTS.has(event.eventType)) {
       const revoked = await revokeSubscription({ ...details, status: event.eventType });
       if (!revoked) {
@@ -79,4 +64,35 @@ export async function POST(req: Request) {
     console.error('[billing] webhook_failed', { eventId: event.id, eventType: event.eventType, error });
     return NextResponse.json({ error: 'processing_failed' }, { status: 500 });
   }
+}
+
+/**
+ * 收到了钱但没能把套餐发出去。
+ *
+ * 之前这里直接返回 200 并保留去重记录，后果是最坏的一种组合：Creem 认为投递成功
+ * 不再重试，而重试就算来了也会被去重挡掉 —— 这一笔永远补不回来，而且没有任何告警。
+ *
+ * 现在改成：释放去重记录并返回 500。Creem 会按自己的退避策略重试，
+ * 期间只要用户补上账号或客户资料补全，下一次重试就能落地。
+ * grantSubscription 是幂等的（套餐和积分是覆盖写），重复投递不会重复发放。
+ *
+ * 日志用 error 级别：这是真金白银没交付，不该混在 warn 里被忽略。
+ */
+async function unresolvedGrant(
+  eventId: string,
+  eventType: string,
+  reason: 'unknown_product' | 'profile_not_found',
+  details: Record<string, unknown>,
+) {
+  await releaseBillingEvent(eventId).catch(() => undefined);
+  console.error('[billing] grant_unresolved', {
+    eventId,
+    eventType,
+    reason,
+    userId: details.userId,
+    email: details.email,
+    productId: details.productId,
+    customerId: details.customerId,
+  });
+  return NextResponse.json({ error: reason }, { status: 500 });
 }

@@ -3,7 +3,6 @@
 import Link from 'next/link';
 import { useSession } from '@/lib/auth/client';
 import { marketingCopy } from '@/lib/i18n/marketing';
-import { localizedPath } from '@/lib/i18n/routes';
 import type { Locale } from '@/lib/i18n/locales';
 
 /**
