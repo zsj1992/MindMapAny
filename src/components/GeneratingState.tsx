@@ -1,6 +1,8 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import { useT } from '@/lib/i18n/context';
+import type { MessageKey } from '@/lib/i18n/messages';
 
 /**
  * 生成过程可能要一两分钟。空转的 spinner 会让人以为卡死，
@@ -8,16 +10,17 @@ import { useEffect, useState } from 'react';
  * 骗人的百分比比没有反馈更糟，这里只表达「还在动」。
  */
 
-const STAGES = [
-  { at: 0, label: 'Extracting content…' },
-  { at: 3500, label: 'Chunking and anchoring to the source…' },
-  { at: 9000, label: 'Building the hierarchy…' },
-  { at: 25000, label: 'Long content — summarising section by section…' },
-  { at: 55000, label: 'Merging duplicate topics…' },
+const STAGES: Array<{ at: number; key: MessageKey }> = [
+  { at: 0, key: 'gen.extracting' },
+  { at: 3500, key: 'gen.chunking' },
+  { at: 9000, key: 'gen.hierarchy' },
+  { at: 25000, key: 'gen.longContent' },
+  { at: 55000, key: 'gen.merging' },
 ];
 
 export function GeneratingState() {
   const [elapsed, setElapsed] = useState(0);
+  const t = useT();
 
   useEffect(() => {
     const started = Date.now();
@@ -39,8 +42,8 @@ export function GeneratingState() {
         </svg>
         </span>
         <div className="min-w-0 flex-1">
-          <p className="text-sm font-semibold">{stage.label}</p>
-          <p className="mt-0.5 text-xs tabular-nums text-text-subtle">{Math.round(elapsed / 1000)}s elapsed</p>
+          <p className="text-sm font-semibold">{t(stage.key)}</p>
+          <p className="mt-0.5 text-xs tabular-nums text-text-subtle">{t('gen.elapsed', { n: Math.round(elapsed / 1000) })}</p>
         </div>
       </div>
 

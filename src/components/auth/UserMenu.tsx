@@ -5,6 +5,9 @@ import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { signOut } from '@/lib/auth/client';
 import { PLAN_CREDITS, type Plan } from '@/lib/credits';
+import { useLocale, useSetLocale, useT } from '@/lib/i18n/context';
+import { LOCALES, type Locale } from '@/lib/i18n/locales';
+import type { MessageKey } from '@/lib/i18n/messages';
 
 interface UserMenuProps {
   name: string | null;
@@ -13,19 +16,25 @@ interface UserMenuProps {
   credits: number;
 }
 
-const PLAN_NAMES: Record<Plan, string> = {
-  free: 'Free',
-  basic: 'Basic',
-  pro: 'Pro',
-  unlimited: 'Unlimited',
+const PLAN_KEY: Record<Plan, MessageKey> = {
+  free: 'plan.free',
+  basic: 'plan.basic',
+  pro: 'plan.pro',
+  unlimited: 'plan.unlimited',
 };
+
+/** 语言名用该语言自己的写法，切换菜单在任何界面语言下都认得出来 */
+const LOCALE_NAMES: Record<Locale, string> = { en: 'English', 'zh-CN': '简体中文' };
 
 export function UserMenu({ name, email, plan, credits }: UserMenuProps) {
   const [open, setOpen] = useState(false);
   const [signingOut, setSigningOut] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
-  const displayName = name?.trim() || email?.split('@')[0] || 'MindMapAny user';
+  const t = useT();
+  const locale = useLocale();
+  const setLocale = useSetLocale();
+  const displayName = name?.trim() || email?.split('@')[0] || t('account.defaultName');
   const initial = displayName.slice(0, 1).toUpperCase();
   const creditLimit = PLAN_CREDITS[plan];
   const creditPercent = plan === 'unlimited' ? 100 : Math.min(100, Math.max(0, (credits / creditLimit) * 100));
@@ -56,7 +65,7 @@ export function UserMenu({ name, email, plan, credits }: UserMenuProps) {
     <div ref={rootRef} className="relative">
       <button
         type="button"
-        aria-label="Open account menu"
+        aria-label={t('account.openMenu')}
         aria-haspopup="menu"
         aria-expanded={open}
         onClick={() => setOpen((value) => !value)}
@@ -88,9 +97,9 @@ export function UserMenu({ name, email, plan, credits }: UserMenuProps) {
 
           <div className="mx-3 rounded-xl bg-bg-subtle p-3.5">
             <div className="flex items-center justify-between gap-3">
-              <span className="text-sm font-semibold text-brand-600">{PLAN_NAMES[plan]}</span>
+              <span className="text-sm font-semibold text-brand-600">{t(PLAN_KEY[plan])}</span>
               <span className="font-mono text-xs font-semibold tabular-nums text-text-muted">
-                {plan === 'unlimited' ? 'Unlimited credits' : `${credits} credits`}
+                {plan === 'unlimited' ? t('account.unlimitedCredits') : t('account.credits', { n: credits })}
               </span>
             </div>
             <div className="mt-3 h-1.5 overflow-hidden rounded-full bg-border-base">
@@ -101,16 +110,43 @@ export function UserMenu({ name, email, plan, credits }: UserMenuProps) {
           {plan !== 'unlimited' && (
             <div className="px-3 pb-2 pt-3">
               <Link href="/pricing" role="menuitem" onClick={() => setOpen(false)} className="btn btn-primary h-10 w-full text-xs">
-                Upgrade plan
+                {t('account.upgradePlan')}
               </Link>
             </div>
           )}
 
-          <nav className="p-2" aria-label="Account navigation">
-            <MenuLink href="/billing" label="Subscription" icon="card" onSelect={() => setOpen(false)} />
-            <MenuLink href="/support" label="Help & feedback" icon="help" onSelect={() => setOpen(false)} />
-            <MenuLink href="/#faq" label="FAQ" icon="question" onSelect={() => setOpen(false)} />
+          <nav className="p-2" aria-label={t('account.nav')}>
+            <MenuLink href="/billing" label={t('account.subscription')} icon="card" onSelect={() => setOpen(false)} />
+            <MenuLink href="/support" label={t('account.help')} icon="help" onSelect={() => setOpen(false)} />
+            <MenuLink href="/#faq" label={t('account.faq')} icon="question" onSelect={() => setOpen(false)} />
           </nav>
+
+          {/* 界面语言。放在账号菜单里而不是顶栏：这是「设一次就不再碰」的偏好，
+              占一个常驻按钮不值得，但埋进设置页又会找不到。 */}
+          <div className="border-t px-3 py-2.5" style={{ borderColor: 'var(--border)' }}>
+            <p className="mb-1.5 flex items-center gap-2 text-[11px] font-medium text-text-subtle">
+              <MenuIcon name="globe" />
+              {t('account.interfaceLanguage')}
+            </p>
+            <div className="flex gap-1.5">
+              {LOCALES.map((item) => (
+                <button
+                  key={item}
+                  type="button"
+                  role="menuitemradio"
+                  aria-checked={locale === item}
+                  onClick={() => setLocale(item)}
+                  className={`h-8 flex-1 rounded-lg border text-xs font-medium transition-colors ${
+                    locale === item
+                      ? 'border-brand-500 bg-brand-50 text-brand-700 dark:bg-brand-950/40 dark:text-brand-200'
+                      : 'border-border-base text-text-muted hover:bg-bg-subtle hover:text-text'
+                  }`}
+                >
+                  {LOCALE_NAMES[item]}
+                </button>
+              ))}
+            </div>
+          </div>
 
           <div className="border-t p-2" style={{ borderColor: 'var(--border)' }}>
             <button
@@ -121,7 +157,7 @@ export function UserMenu({ name, email, plan, credits }: UserMenuProps) {
               className="flex h-10 w-full items-center gap-3 rounded-lg px-3 text-left text-sm font-medium text-text-muted transition-colors hover:bg-bg-subtle hover:text-text disabled:cursor-wait disabled:opacity-60"
             >
               <MenuIcon name="logout" />
-              {signingOut ? 'Signing out…' : 'Sign out'}
+              {signingOut ? t('account.signingOut') : t('account.signOut')}
             </button>
           </div>
         </div>
@@ -139,7 +175,7 @@ function MenuLink({ href, label, icon, onSelect }: { href: string; label: string
   );
 }
 
-type IconName = 'card' | 'help' | 'question' | 'logout';
+type IconName = 'card' | 'help' | 'question' | 'logout' | 'globe';
 
 function MenuIcon({ name }: { name: IconName }) {
   const paths: Record<IconName, React.ReactNode> = {
@@ -147,6 +183,7 @@ function MenuIcon({ name }: { name: IconName }) {
     help: <><path d="M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20Z" /><path d="M9.5 9a2.6 2.6 0 1 1 4.2 2c-1 .7-1.7 1.1-1.7 2.5M12 17h.01" /></>,
     question: <><path d="M4 4.5A2.5 2.5 0 0 1 6.5 2h11A2.5 2.5 0 0 1 20 4.5v10a2.5 2.5 0 0 1-2.5 2.5H11l-4.5 4v-4A2.5 2.5 0 0 1 4 14.5v-10Z" /><path d="M9.5 8.5a2.6 2.6 0 1 1 4.2 2c-1 .7-1.7 1.1-1.7 2M12 15h.01" /></>,
     logout: <><path d="M10 5H5a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h5M14 8l4 4-4 4M8 12h10" /></>,
+    globe: <><circle cx="12" cy="12" r="9" /><path d="M3 12h18M12 3a15 15 0 0 1 0 18a15 15 0 0 1 0-18Z" /></>,
   };
   return <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.7" strokeLinecap="round" strokeLinejoin="round" className="h-[18px] w-[18px] shrink-0" aria-hidden="true">{paths[name]}</svg>;
 }

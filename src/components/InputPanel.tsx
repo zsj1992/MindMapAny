@@ -3,6 +3,8 @@
 import { useRef, useState, type DragEvent, type ReactNode } from 'react';
 import { estimateCredits, type Plan } from '@/lib/credits';
 import type { InputKind } from '@/lib/extract/types';
+import { useT } from '@/lib/i18n/context';
+import type { MessageKey } from '@/lib/i18n/messages';
 import { detectLanguage } from '@/lib/mindmap/detect-language';
 import { languageName } from '@/lib/mindmap/prompt';
 import { DEPTHS, PURPOSES, type Depth, type Purpose } from '@/lib/mindmap/schema';
@@ -26,12 +28,12 @@ const icon = (path: ReactNode) => (
 const TABS = [
   {
     id: 'text',
-    label: 'Paste text',
+    labelKey: 'input.tab.text',
     icon: icon(<path strokeLinecap="round" d="M5 6h14M5 11h14M5 16h9" />),
   },
   {
     id: 'url',
-    label: 'Web link',
+    labelKey: 'input.tab.url',
     icon: icon(
       <>
         <circle cx="12" cy="12" r="9" />
@@ -41,7 +43,7 @@ const TABS = [
   },
   {
     id: 'pdf',
-    label: 'Upload file',
+    labelKey: 'input.tab.file',
     icon: icon(
       <>
         <path strokeLinejoin="round" d="M14 3v5h5" />
@@ -52,16 +54,16 @@ const TABS = [
 ] as const;
 type Tab = (typeof TABS)[number]['id'];
 
-const DEPTH_LABEL: Record<Depth, string> = { concise: 'Concise', standard: 'Standard', detailed: 'Detailed' };
-const PURPOSE_LABEL: Record<Purpose, string> = {
-  study: 'Study notes',
-  structure: 'Article structure',
-  meeting: 'Meeting notes',
-  general: 'General',
+const DEPTH_KEY: Record<Depth, MessageKey> = { concise: 'depth.concise', standard: 'depth.standard', detailed: 'depth.detailed' };
+const PURPOSE_KEY: Record<Purpose, MessageKey> = {
+  study: 'purpose.study',
+  structure: 'purpose.structure',
+  meeting: 'purpose.meeting',
+  general: 'purpose.general',
 };
+// 语言名一律用该语言自己的写法（endonym），不随界面语言变 ——
+// 中文用户也认得 "日本語"，翻成「日语」反而多一层转换。
 const LANGUAGES = [
-  // 默认项。真正的判定在服务端做 —— 链接和文件的正文，浏览器这边根本看不到。
-  { value: 'auto', label: 'Auto (match source)' },
   { value: 'zh-CN', label: '简体中文' },
   { value: 'zh-TW', label: '繁體中文' },
   { value: 'en', label: 'English' },
@@ -111,6 +113,7 @@ export function InputPanel({
   const [depth, setDepth] = useState<Depth>('standard');
   const [purpose, setPurpose] = useState<Purpose>('general');
   const fileRef = useRef<HTMLInputElement>(null);
+  const t = useT();
 
   // PDF 示例是链接，当前版本不能直接当文件用，先不在 PDF 页展示
   const examples = ['pdf', 'docx', 'epub', 'pptx'].includes(mode) ? [] : (copy?.examples ?? []);
@@ -138,12 +141,12 @@ export function InputPanel({
   const freeRun = plan === 'unlimited';
   const cost = plan === null || freeRun ? 0 : estimateCredits({ kind, tier: 'fast', depth, chars: knownChars ?? 0 });
   const costLabel = freeRun
-    ? 'Unlimited plan — no credits are used'
+    ? t('input.costUnlimited')
     : plan === null
-      ? 'Sign in to generate'
+      ? t('input.costSignIn')
       : knownChars !== null
-      ? `Estimated cost: ${cost} ${cost === 1 ? 'credit' : 'credits'}`
-      : `From ${cost} ${cost === 1 ? 'credit' : 'credits'}, depending on length`;
+        ? t('input.costExact', { n: cost })
+        : t('input.costFrom', { n: cost });
 
   /**
    * 粘贴文本时把判定结果显示在选项上（"Auto · 简体中文"），让用户在点生成之前
@@ -151,13 +154,10 @@ export function InputPanel({
    * 只能等服务端提取完再判，所以保持中性文案，不许诺具体语言。
    */
   const detected = tab === 'text' && text.trim().length > 20 ? detectLanguage(text) : null;
-  const languageOptions = detected
-    ? LANGUAGES.map((opt) =>
-        opt.value === 'auto'
-          ? { ...opt, label: `Auto · ${LANGUAGES.find((l) => l.value === detected)?.label ?? languageName(detected)}` }
-          : opt,
-      )
-    : LANGUAGES;
+  const autoLabel = detected
+    ? t('input.languageAutoDetected', { name: LANGUAGES.find((l) => l.value === detected)?.label ?? languageName(detected) })
+    : t('input.languageAuto');
+  const languageOptions = [{ value: 'auto', label: autoLabel }, ...LANGUAGES];
 
   const submit = () => {
     if (!ready || busy) return;
@@ -195,19 +195,19 @@ export function InputPanel({
       {mode === 'all' && (
       <div className="border-b px-3" style={{ borderColor: 'var(--border)' }}>
         <div className="flex gap-4 sm:gap-8">
-          {TABS.map((t) => (
+          {TABS.map((item) => (
             <button
-              key={t.id}
+              key={item.id}
               type="button"
-              onClick={() => setTab(t.id)}
+              onClick={() => setTab(item.id)}
               className={`relative flex h-12 items-center justify-center gap-2 px-1 text-[13px] font-medium transition-colors after:absolute after:inset-x-0 after:bottom-0 after:h-0.5 after:origin-left after:transition-transform ${
-                tab === t.id
+                tab === item.id
                   ? 'font-semibold text-text after:scale-x-100 after:bg-brand-600'
                   : 'text-text-muted after:scale-x-0 hover:text-text'
               }`}
             >
-              {t.icon}
-              <span>{t.label}</span>
+              {item.icon}
+              <span>{t(item.labelKey)}</span>
             </button>
           ))}
         </div>
@@ -220,11 +220,11 @@ export function InputPanel({
             <textarea
               value={text}
               onChange={(e) => setText(e.target.value)}
-              placeholder="Paste an article, your notes, or any long text…"
+              placeholder={t('input.textPlaceholder')}
               className="field h-40 resize-none border-0 bg-bg-subtle p-4 text-sm leading-7 shadow-none sm:h-44"
             />
             <span className="pointer-events-none absolute bottom-3 right-3 text-xs tabular-nums text-text-subtle">
-              {text.length > 0 && `${text.length} characters`}
+              {text.length > 0 && t('input.characters', { n: text.length })}
             </span>
           </div>
         )}
@@ -235,11 +235,11 @@ export function InputPanel({
               value={url}
               onChange={(e) => setUrl(e.target.value)}
               onKeyDown={(e) => e.key === 'Enter' && submit()}
-              placeholder={mode === 'web' ? 'Paste a link to a web article…' : 'https://example.com/article'}
+              placeholder={mode === 'web' ? t('input.urlPlaceholder') : 'https://example.com/article'}
               className="field h-14 border-0 bg-bg-subtle px-4 text-sm shadow-none"
             />
             <p className="mt-2 truncate px-1 text-[11px] text-text-subtle">
-              {copy?.hint ?? 'Pages requiring a login, behind anti-bot protection, or rendered purely in JavaScript are not supported yet'}
+              {copy?.hint ?? t('input.urlHint')}
             </p>
           </div>
         )}
@@ -268,13 +268,13 @@ export function InputPanel({
               <>
                 <span className="font-medium text-text">{file.name}</span>
                 <span className="text-xs text-text-subtle">
-                  {(file.size / 1024 / 1024).toFixed(1)} MB · click to replace
+                  {(file.size / 1024 / 1024).toFixed(1)} MB · {t('input.clickToReplace')}
                 </span>
               </>
             ) : (
               <>
-                <span>Drop a file here, or click to choose</span>
-                <span className="text-xs text-text-subtle">{copy?.hint ?? 'PDF, DOCX, EPUB, PPTX, TXT, Markdown · 20MB max'}</span>
+                <span>{t('input.dropFile')}</span>
+                <span className="text-xs text-text-subtle">{copy?.hint ?? t('input.fileHint')}</span>
               </>
             )}
           </button>
@@ -292,7 +292,7 @@ export function InputPanel({
 
         {!busy && !text && !url && !file && examples.length > 0 && (
           <div className="mt-3">
-            <p className="mb-1.5 text-[11px] text-text-subtle">Try an example</p>
+            <p className="mb-1.5 text-[11px] text-text-subtle">{t('input.tryExample')}</p>
             <div className="grid gap-2 sm:grid-cols-2">
               {examples.map((ex) => (
                 <button
@@ -318,36 +318,36 @@ export function InputPanel({
       </div>
 
       <footer className="grid gap-3 border-t bg-bg-subtle/70 px-4 py-3.5 sm:grid-cols-[repeat(3,minmax(0,1fr))_auto] sm:items-end sm:px-5" style={{ borderColor: 'var(--border)' }}>
-        <Select label="Output language" value={language} onChange={setLanguage} options={languageOptions} />
+        <Select label={t('input.outputLanguage')} value={language} onChange={setLanguage} options={languageOptions} />
         <Select
-          label="Detail level"
+          label={t('input.detailLevel')}
           value={depth}
           onChange={(v) => setDepth(v as Depth)}
-          options={DEPTHS.map((d) => ({ value: d, label: DEPTH_LABEL[d] }))}
+          options={DEPTHS.map((d) => ({ value: d, label: t(DEPTH_KEY[d]) }))}
         />
         <Select
-          label="Organise for"
+          label={t('input.organiseFor')}
           value={purpose}
           onChange={(v) => setPurpose(v as Purpose)}
-          options={PURPOSES.map((p) => ({ value: p, label: PURPOSE_LABEL[p] }))}
+          options={PURPOSES.map((p) => ({ value: p, label: t(PURPOSE_KEY[p]) }))}
         />
         <div className="sm:text-right">
           <button type="button" onClick={submit} disabled={!ready || busy} className="btn btn-primary h-11 w-full px-6 text-sm sm:w-auto">
             {busy ? (
               <>
                 <Spinner />
-                Generating…
+                {t('input.generating')}
               </>
             ) : (
               <>
-                Generate mind map
+                {t('input.generate')}
                 <span aria-hidden="true">→</span>
               </>
             )}
           </button>
           <p className="mt-1.5 text-[11px] leading-4 text-text-subtle sm:whitespace-nowrap">
             {costLabel}
-            {!freeRun && <span className="hidden sm:inline"> · charged only if it succeeds</span>}
+            {!freeRun && <span className="hidden sm:inline">{t('input.chargedOnSuccess')}</span>}
           </p>
         </div>
       </footer>

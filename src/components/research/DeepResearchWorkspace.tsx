@@ -7,6 +7,7 @@ import { useRouter } from 'next/navigation';
 import { MindMapCanvas } from '@/components/canvas/MindMapCanvas';
 import { trackEvent } from '@/lib/analytics';
 import type { MindMap } from '@/lib/mindmap/schema';
+import { useT } from '@/lib/i18n/context';
 import { useEditor } from '@/store/editor';
 
 interface Source {
@@ -43,9 +44,9 @@ const EXAMPLES = [
   'What is driving the growth in global data centre electricity use, and what can be done about it?',
 ];
 
+// 语言名用各自的写法；'auto' 的文案跟随界面语言，在组件里拼
 const LANGUAGES = [
-  // 默认跟随提问语言，判定在服务端做，和脑图生成共用同一个 detect-language
-  ['auto', 'Auto (match question)'], ['zh-CN', '简体中文'], ['zh-TW', '繁體中文'], ['en', 'English'], ['ja', '日本語'], ['ko', '한국어'], ['es', 'Español'],
+  ['zh-CN', '简体中文'], ['zh-TW', '繁體中文'], ['en', 'English'], ['ja', '日本語'], ['ko', '한국어'], ['es', 'Español'],
 ] as const;
 
 export function DeepResearchWorkspace() {
@@ -60,10 +61,11 @@ export function DeepResearchWorkspace() {
   const [result, setResult] = useState<ResearchResponse | null>(null);
   const [view, setView] = useState<'report' | 'map'>('map');
   const [stage, setStage] = useState<ResearchStage>('planning');
-  const [stageMessage, setStageMessage] = useState('Preparing the research plan');
+  const [stageMessage, setStageMessage] = useState<string | null>(null);
   const [plan, setPlan] = useState<ResearchTask[]>([]);
   const [sourceCount, setSourceCount] = useState(0);
   const [activeTask, setActiveTask] = useState(0);
+  const t = useT();
 
   useEffect(() => {
     if (!busy || stage !== 'researching' || plan.length < 2) return;
@@ -81,7 +83,7 @@ export function DeepResearchWorkspace() {
     setSourceCount(0);
     setActiveTask(0);
     setStage('planning');
-    setStageMessage('Breaking your question into verifiable research tasks');
+    setStageMessage(t('research.breakingDown'));
     let completed = false;
 
     try {
@@ -92,7 +94,7 @@ export function DeepResearchWorkspace() {
       });
       if (!response.ok) {
         const body = (await response.json()) as { error?: { message?: string; code?: string } };
-        throw new ResearchRequestError(body.error?.message ?? 'Deep research failed. Please try again.', body.error?.code);
+        throw new ResearchRequestError(body.error?.message ?? t('research.failed'), body.error?.code);
       }
       if (!response.body) throw new Error('Research response could not be read');
 
@@ -127,7 +129,7 @@ export function DeepResearchWorkspace() {
             setView('map');
             completed = true;
           } else {
-            throw new ResearchRequestError(event.error.message ?? 'Deep research failed. Please try again.', event.error.code);
+            throw new ResearchRequestError(event.error.message ?? t('research.failed'), event.error.code);
           }
         }
         if (done) break;
@@ -139,7 +141,7 @@ export function DeepResearchWorkspace() {
         language,
         error_code: requestError instanceof ResearchRequestError ? requestError.code ?? 'request_failed' : 'network_error',
       });
-      setError(requestError instanceof Error ? requestError.message : 'Network error. Please try again.');
+      setError(requestError instanceof Error ? requestError.message : t('error.network'));
       setErrorCode(requestError instanceof ResearchRequestError ? requestError.code ?? null : null);
     } finally {
       setBusy(false);
@@ -163,16 +165,16 @@ export function DeepResearchWorkspace() {
               <div className="text-[10px] text-text-subtle">{result.plan.length} research tasks · {result.sources.length} web sources · {result.creditsCharged} credits used</div>
             </div>
             <div className="ml-auto flex rounded-lg bg-bg-subtle p-1 lg:hidden">
-              <ViewButton active={view === 'map'} onClick={() => setView('map')}>Mind map</ViewButton>
-              <ViewButton active={view === 'report'} onClick={() => setView('report')}>Report</ViewButton>
+              <ViewButton active={view === 'map'} onClick={() => setView('map')}>{t('research.viewMap')}</ViewButton>
+              <ViewButton active={view === 'report'} onClick={() => setView('report')}>{t('research.viewReport')}</ViewButton>
             </div>
             <button type="button" className="btn btn-secondary h-9 px-3 text-xs" onClick={reset}>New research</button>
           </div>
           <div className="grid min-h-0 flex-1 lg:grid-cols-[minmax(0,1.12fr)_minmax(390px,0.88fr)]">
-            <section className={`${view === 'map' ? 'block' : 'hidden'} min-h-0 border-r bg-bg lg:block`} aria-label="Research mind map">
+            <section className={`${view === 'map' ? 'block' : 'hidden'} min-h-0 border-r bg-bg lg:block`} aria-label={t('research.mapRegion')}>
               <MindMapCanvas />
             </section>
-            <section className={`${view === 'report' ? 'block' : 'hidden'} min-h-0 bg-surface lg:block`} aria-label="Research report">
+            <section className={`${view === 'report' ? 'block' : 'hidden'} min-h-0 bg-surface lg:block`} aria-label={t('research.reportRegion')}>
               <ResearchReport report={result.report} sources={result.sources} />
             </section>
           </div>
@@ -186,47 +188,48 @@ export function DeepResearchWorkspace() {
       {!busy && (
         <div className="mb-5 shrink-0 text-center">
           <span className="mb-2 inline-flex items-center gap-2 rounded-full border bg-surface px-3 py-1 text-[10px] font-semibold text-text-muted shadow-sm">
-            <span className="h-1.5 w-1.5 rounded-full bg-accent-500" /> Research plan · multi-source retrieval · report and map
+            <span className="h-1.5 w-1.5 rounded-full bg-accent-500" /> {t('research.tagline')}
           </span>
-          <h1 className="text-3xl font-bold tracking-[-0.04em] sm:text-4xl">Deep research</h1>
-          <p className="mx-auto mt-2 max-w-2xl text-sm leading-6 text-text-muted">We break your question into research tasks, retrieve evidence, then produce a verifiable report and a multi-level mind map.</p>
+          <h1 className="text-3xl font-bold tracking-[-0.04em] sm:text-4xl">{t('research.title')}</h1>
+          <p className="mx-auto mt-2 max-w-2xl text-sm leading-6 text-text-muted">{t('research.intro')}</p>
         </div>
       )}
 
       <div className={`app-panel rounded-2xl border bg-surface ${busy ? 'p-5 sm:p-7' : 'p-3 sm:p-4'}`}>
         {busy ? (
-          <ResearchProgressView query={query} stage={stage} message={stageMessage} plan={plan} activeTask={activeTask} sourceCount={sourceCount} />
+          <ResearchProgressView query={query} stage={stage} message={stageMessage ?? t('research.preparing')} plan={plan} activeTask={activeTask} sourceCount={sourceCount} />
         ) : (
           <>
-            <textarea value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Enter the question or topic you want researched in depth…" className="field h-28 resize-none border-0 bg-bg-subtle p-4 text-base leading-7 shadow-inner" autoFocus />
+            <textarea value={query} onChange={(event) => setQuery(event.target.value)} placeholder={t('research.queryPlaceholder')} className="field h-28 resize-none border-0 bg-bg-subtle p-4 text-base leading-7 shadow-inner" autoFocus />
             <div className="mt-3 grid gap-2 rounded-xl border bg-bg-subtle p-2.5 sm:grid-cols-[1fr_1fr_auto]">
-              <ResearchSelect label="Report language" value={language} onChange={setLanguage} options={LANGUAGES} />
-              <ResearchSelect label="Research depth" value={depth} onChange={(value) => setDepth(value as 'standard' | 'detailed')} options={[["standard", "Standard · 4 research tasks"], ["detailed", "Detailed · 5 research tasks"]]} />
-              <button type="button" onClick={submit} disabled={query.trim().length < 6} className="btn btn-primary h-10 self-end px-6">Start research <span aria-hidden="true">→</span></button>
+              <ResearchSelect label={t('research.reportLanguage')} value={language} onChange={setLanguage} options={[['auto', t('research.languageAuto')], ...LANGUAGES]} />
+              <ResearchSelect label={t('research.depth')} value={depth} onChange={(value) => setDepth(value as 'standard' | 'detailed')} options={[['standard', t('research.depthStandard')], ['detailed', t('research.depthDetailed')]]} />
+              <button type="button" onClick={submit} disabled={query.trim().length < 6} className="btn btn-primary h-10 self-end px-6">{t('research.start')} <span aria-hidden="true">→</span></button>
             </div>
-            {error && <div className="mt-3 flex items-center justify-between gap-3 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700 dark:bg-red-950/40 dark:text-red-300"><span>{error}</span>{errorCode === 'login_required' && <Link href="/login?next=/app/research" className="shrink-0 font-semibold underline underline-offset-2">Sign in</Link>}</div>}
+            {error && <div className="mt-3 flex items-center justify-between gap-3 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700 dark:bg-red-950/40 dark:text-red-300"><span>{error}</span>{errorCode === 'login_required' && <Link href="/login?next=/app/research" className="shrink-0 font-semibold underline underline-offset-2">{t('account.signIn')}</Link>}</div>}
           </>
         )}
       </div>
 
-      {!busy && <p className="mt-2 text-center text-[10px] text-text-subtle">Each research run costs 10 credits, charged only on success</p>}
-      {!busy && <div className="mt-4 shrink-0"><p className="mb-2 text-[11px] font-medium text-text-subtle">Example questions</p><div className="grid gap-2 sm:grid-cols-2">{EXAMPLES.map((example) => <button key={example} type="button" onClick={() => setQuery(example)} className="rounded-xl border bg-surface px-4 py-3 text-left text-xs leading-5 text-text-muted transition-colors hover:border-brand-300 hover:text-text">{example}</button>)}</div></div>}
+      {!busy && <p className="mt-2 text-center text-[10px] text-text-subtle">{t('research.cost')}</p>}
+      {!busy && <div className="mt-4 shrink-0"><p className="mb-2 text-[11px] font-medium text-text-subtle">{t('research.examples')}</p><div className="grid gap-2 sm:grid-cols-2">{EXAMPLES.map((example) => <button key={example} type="button" onClick={() => setQuery(example)} className="rounded-xl border bg-surface px-4 py-3 text-left text-xs leading-5 text-text-muted transition-colors hover:border-brand-300 hover:text-text">{example}</button>)}</div></div>}
     </div>
   );
 }
 
 function ResearchProgressView({ query, stage, message, plan, activeTask, sourceCount }: { query: string; stage: ResearchStage; message: string; plan: ResearchTask[]; activeTask: number; sourceCount: number }) {
-  const stages: Array<[ResearchStage, string]> = [['planning', 'Planning'], ['researching', 'Retrieving evidence'], ['mapping', 'Building the map']];
+  const t = useT();
+  const stages: Array<[ResearchStage, string]> = [['planning', t('research.stage.planning')], ['researching', t('research.stage.researching')], ['mapping', t('research.stage.mapping')]];
   const stageIndex = stages.findIndex(([key]) => key === stage);
   return (
     <div className="mx-auto flex min-h-[390px] max-w-3xl flex-col justify-center">
-      <div className="text-center"><p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-brand-600">Deep Research in progress</p><h2 className="mx-auto mt-3 max-w-2xl text-lg font-bold leading-7">{query}</h2></div>
+      <div className="text-center"><p className="text-[10px] font-semibold uppercase tracking-[0.18em] text-brand-600">{t('research.inProgress')}</p><h2 className="mx-auto mt-3 max-w-2xl text-lg font-bold leading-7">{query}</h2></div>
       <div className="mx-auto mt-6 flex items-center gap-2">{stages.map(([key, label], index) => <div key={key} className="flex items-center gap-2"><span className={`flex h-8 w-8 items-center justify-center rounded-full border text-xs font-bold ${index < stageIndex ? 'border-brand-600 bg-brand-600 text-white' : index === stageIndex ? 'border-brand-500 bg-brand-50 text-brand-700 dark:bg-brand-900/30' : 'border-border text-text-subtle'}`}>{index < stageIndex ? '✓' : index + 1}</span><span className={`hidden text-xs sm:inline ${index === stageIndex ? 'font-semibold text-text' : 'text-text-subtle'}`}>{label}</span>{index < stages.length - 1 && <span className="h-px w-6 bg-border sm:w-10" />}</div>)}</div>
-      <p className="mt-4 text-center text-xs text-text-muted">{message}{sourceCount ? ` · ${sourceCount} sources selected` : ''}</p>
+      <p className="mt-4 text-center text-xs text-text-muted">{message}{sourceCount ? t('research.sourcesSelected', { n: sourceCount }) : ''}</p>
       <div className="mt-5 rounded-2xl border bg-brand-50/60 p-4 dark:bg-brand-950/20">
-        <div className="mb-3 flex items-center justify-between"><span className="text-xs font-bold">Research tasks</span><span className="text-[10px] text-text-subtle">{plan.length ? `${plan.length} tasks` : 'Planning…'}</span></div>
+        <div className="mb-3 flex items-center justify-between"><span className="text-xs font-bold">{t('research.tasks')}</span><span className="text-[10px] text-text-subtle">{plan.length ? t('research.taskCount', { n: plan.length }) : t('research.planning')}</span></div>
         <div className="space-y-2.5">
-          {(plan.length ? plan : [{ id: 'placeholder-1', title: 'Analyse the scope and key concepts' }, { id: 'placeholder-2', title: 'Identify the data and cases to verify' }, { id: 'placeholder-3', title: 'Surface risks, limits and disagreements' }]).map((task, index) => {
+          {(plan.length ? plan : [{ id: 'placeholder-1', title: t('research.placeholderTask1') }, { id: 'placeholder-2', title: t('research.placeholderTask2') }, { id: 'placeholder-3', title: t('research.placeholderTask3') }]).map((task, index) => {
             const done = stage === 'mapping' || (stage === 'researching' && index < activeTask);
             const active = stage === 'researching' && index === activeTask;
             return <div key={task.id} className="flex items-start gap-3 text-xs leading-5"><span className={`mt-0.5 flex h-4 w-4 shrink-0 items-center justify-center rounded-full text-[9px] ${done ? 'bg-brand-600 text-white' : active ? 'border-2 border-brand-500 bg-surface' : 'border border-border bg-surface text-transparent'}`}>{done ? '✓' : '•'}</span><span className={active ? 'font-semibold text-text' : 'text-text-muted'}>{task.title}</span></div>;
@@ -246,12 +249,13 @@ function ResearchSelect({ label, value, onChange, options }: { label: string; va
 }
 
 function ResearchReport({ report, sources }: { report: string; sources: Source[] }) {
+  const t = useT();
   const blocks = report.split(/\n{2,}/).map((block) => block.trim()).filter(Boolean);
   return (
     <div className="h-full overflow-y-auto bg-surface">
       <article className="mx-auto max-w-3xl px-6 py-8 sm:px-8">
         {blocks.map((block, index) => <ReportBlock key={`${index}-${block.slice(0, 20)}`} block={block} sources={sources} />)}
-        <section className="mt-10 border-t pt-8"><h2 className="text-xl font-bold">Web sources</h2><ol className="mt-4 space-y-3">{sources.map((source) => <li key={source.id} id={`source-${source.id}`} className="rounded-xl border bg-bg-subtle p-4"><a href={source.url} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-brand-600 hover:text-brand-700">[{source.id}] {source.title} ↗</a>{source.description && <p className="mt-1 text-xs leading-5 text-text-muted">{source.description}</p>}<p className="mt-1 truncate text-[10px] text-text-subtle">{source.url}</p></li>)}</ol></section>
+        <section className="mt-10 border-t pt-8"><h2 className="text-xl font-bold">{t('research.sources')}</h2><ol className="mt-4 space-y-3">{sources.map((source) => <li key={source.id} id={`source-${source.id}`} className="rounded-xl border bg-bg-subtle p-4"><a href={source.url} target="_blank" rel="noopener noreferrer" className="text-sm font-semibold text-brand-600 hover:text-brand-700">[{source.id}] {source.title} ↗</a>{source.description && <p className="mt-1 text-xs leading-5 text-text-muted">{source.description}</p>}<p className="mt-1 truncate text-[10px] text-text-subtle">{source.url}</p></li>)}</ol></section>
       </article>
     </div>
   );

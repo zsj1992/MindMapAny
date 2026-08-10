@@ -5,6 +5,10 @@ import { Logo } from '@/components/site/Logo';
 import { ThemeToggle } from '@/components/site/ThemeToggle';
 import { UserMenu } from '@/components/auth/UserMenu';
 import { getCurrentProfile } from '@/lib/auth/session';
+import { LocaleProvider } from '@/lib/i18n/context';
+import type { Locale } from '@/lib/i18n/locales';
+import { appLocale } from '@/lib/i18n/server';
+import { translate } from '@/lib/i18n/messages';
 import type { Plan } from '@/lib/credits';
 
 export const dynamic = 'force-dynamic';
@@ -33,8 +37,15 @@ export default async function AppLayout({ children }: LayoutProps<'/app'>) {
   const user = session?.user ?? null;
   const profile = session?.profile ?? null;
 
+  // 界面语言在服务端定死后往下传：客户端再判会先闪一帧英文，还会 hydration 报错
+  const locale = await appLocale();
+  const t = (key: Parameters<typeof translate>[1]) => translate(locale, key);
+
   return (
-    <div className="flex h-screen flex-col bg-bg">
+    <LocaleProvider locale={locale}>
+    {/* lang 挂在这里而不是根 <html>：根布局是营销页共用的，
+        在那里读 cookie 会让整站变成动态渲染，静态预渲染和 CDN 缓存全部作废。 */}
+    <div lang={locale} className="flex h-screen flex-col bg-bg">
       <header
         className="flex h-16 shrink-0 items-center gap-3 border-b bg-surface px-3 sm:px-5"
         style={{ borderColor: 'var(--border)' }}
@@ -48,12 +59,12 @@ export default async function AppLayout({ children }: LayoutProps<'/app'>) {
           <span
             className="hidden items-center gap-2 rounded-lg border bg-bg-subtle px-3 py-2 text-xs font-medium tabular-nums text-text-muted sm:flex"
             style={{ borderColor: 'var(--border)' }}
-            title={profile ? 'Credits remaining' : 'Sign in to see your credits'}
+            title={profile ? t('account.creditsRemaining') : t('account.signInToSeeCredits')}
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-3.5 w-3.5 text-accent-500">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z" />
             </svg>
-            {profile ? formatCredits(profile) : '—'}
+            {profile ? formatCredits(profile, locale) : '—'}
           </span>
 
           <ThemeToggle />
@@ -67,7 +78,7 @@ export default async function AppLayout({ children }: LayoutProps<'/app'>) {
             />
           ) : (
             <Link href="/login?next=/app/new" className="btn btn-primary h-9 px-4 text-xs">
-              Sign in
+              {t('account.signIn')}
             </Link>
           )}
         </div>
@@ -78,10 +89,11 @@ export default async function AppLayout({ children }: LayoutProps<'/app'>) {
         <main className="surface-grid min-w-0 flex-1 overflow-y-auto bg-bg">{children}</main>
       </div>
     </div>
+    </LocaleProvider>
   );
 }
 
-function formatCredits(profile: { plan: Plan; credits: number }): string {
-  if (profile.plan === 'unlimited') return 'Unlimited';
+function formatCredits(profile: { plan: Plan; credits: number }, locale: Locale): string {
+  if (profile.plan === 'unlimited') return translate(locale, 'account.unlimited');
   return `${profile.credits}`;
 }

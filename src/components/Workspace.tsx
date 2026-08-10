@@ -11,6 +11,8 @@ import { FormatPanel } from '@/components/FormatPanel';
 import { Toolbar } from '@/components/Toolbar';
 import { trackEvent } from '@/lib/analytics';
 import type { MindMap } from '@/lib/mindmap/schema';
+import { useT } from '@/lib/i18n/context';
+import type { MessageKey } from '@/lib/i18n/messages';
 import { useEditor } from '@/store/editor';
 
 interface GenerateResponse {
@@ -48,6 +50,7 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
   const [formatOpen, setFormatOpen] = useState(false);
   const [sourceKind, setSourceKind] = useState<'text' | 'pdf' | 'web' | 'youtube'>('text');
   const shellRef = useRef<HTMLDivElement>(null);
+  const t = useT();
 
   useEffect(() => {
     if (initialMap) load(initialMap);
@@ -119,7 +122,7 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
         const body = (await res.json()) as Partial<GenerateResponse> & { error?: { message?: string; code?: string } };
         if (!res.ok) {
           trackEvent('mindmap_generation_failed', { input_type: inputType, error_code: body?.error?.code ?? 'request_failed' });
-          setError(body?.error?.message ?? 'Generation failed. Please try again.');
+          setError(localizedError(t, body?.error?.code, body?.error?.message));
           return;
         }
         const data = body as GenerateResponse;
@@ -139,12 +142,12 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
         setShareUrl(null);
       } catch {
         trackEvent('mindmap_generation_failed', { input_type: inputType, error_code: 'network_error' });
-        setError('Network error. Please try again.');
+        setError(t('error.network'));
       } finally {
         setBusy(false);
       }
     },
-    [load, router],
+    [load, router, t],
   );
 
   const save = useCallback(async (): Promise<string | null> => {
@@ -164,19 +167,19 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
           });
       const body = (await res.json()) as { id?: string; error?: { code?: string } };
       if (!res.ok) {
-        setError(body?.error?.code === 'login_required' ? 'Please sign in before saving' : 'Could not save');
+        setError(body?.error?.code === 'login_required' ? t('error.saveSignIn') : t('error.saveFailed'));
         return null;
       }
       if (body.id) setSavedId(body.id);
       markSaved();
       return body.id ?? savedId;
     } catch {
-      setError('Could not save. Check your connection and try again.');
+      setError(t('error.saveFailedNetwork'));
       return null;
     } finally {
       setSaving(false);
     }
-  }, [map, savedId, sourceKind, markSaved]);
+  }, [map, savedId, sourceKind, markSaved, t]);
 
   const share = useCallback(async () => {
     const id = savedId ?? (await save());
@@ -189,11 +192,11 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
       });
       const body = (await res.json()) as { shareSlug?: string };
       if (res.ok && body.shareSlug) setShareUrl(`${location.origin}/m/${body.shareSlug}`);
-      else setError('Could not create a share link');
+      else setError(t('error.shareFailed'));
     } catch {
-      setError('Sharing failed. Check your connection and try again.');
+      setError(t('error.shareFailedNetwork'));
     }
-  }, [savedId, save]);
+  }, [savedId, save, t]);
 
   if (!map) {
     return (
@@ -210,11 +213,11 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
               </h1>
               {subtitle && <p className="mt-5 max-w-md text-pretty text-sm leading-7 text-text-muted sm:text-[15px]">{subtitle}</p>}
 
-              <div className="mt-8 hidden space-y-4 lg:block" aria-label="How generation works">
+              <div className="mt-8 hidden space-y-4 lg:block" aria-label={t('workspace.howItWorks')}>
                 {[
-                  ['01', 'Add content', 'Text, a file or a link'],
-                  ['02', 'Find the structure', 'Topics and hierarchy extracted'],
-                  ['03', 'Edit and export', 'Sources kept, ready to export'],
+                  ['01', t('workspace.step1'), t('workspace.step1Hint')],
+                  ['02', t('workspace.step2'), t('workspace.step2Hint')],
+                  ['03', t('workspace.step3'), t('workspace.step3Hint')],
                 ].map(([step, label, detail], index) => (
                   <div key={step} className="group relative flex items-center gap-3.5">
                     {index < 2 && <span className="absolute left-[0.45rem] top-5 h-5 w-px bg-border-base" aria-hidden="true" />}
@@ -247,7 +250,7 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
           onSave={save}
           onShare={share}
           onReset={() => {
-            if (dirty && !confirm('This map has not been saved. Start a new one anyway?')) return;
+            if (dirty && !confirm(t('workspace.confirmNew'))) return;
             setFormatOpen(false);
             useEditor.setState({ map: null, dirty: false, selectedId: null, editingId: null });
           }}
@@ -280,4 +283,15 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
 
 function isYoutube(url: string): boolean {
   return /youtube\.com|youtu\.be/.test(url);
+}
+
+/**
+ * 服务端返回的报错是英文的。有错误码就按码取本地化文案，
+ * 没收录的码退回服务端原文 —— 显示一句英文，好过把具体原因换成笼统的「生成失败」。
+ */
+function localizedError(t: ReturnType<typeof useT>, code: string | undefined, message: string | undefined): string {
+  const key = `error.code.${code}` as MessageKey;
+  const localized = code ? t(key) : null;
+  if (localized && localized !== key) return localized;
+  return message ?? t('error.generic');
 }

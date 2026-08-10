@@ -1,6 +1,8 @@
 'use client';
 
 import { THEME_COLORS } from '@/lib/branchColors';
+import { useT } from '@/lib/i18n/context';
+import type { MessageKey } from '@/lib/i18n/messages';
 import type { ReactNode } from 'react';
 import {
   formatOf,
@@ -10,50 +12,51 @@ import {
 } from '@/lib/mindmap/schema';
 import { useEditor } from '@/store/editor';
 
-const LAYOUTS: { value: MapLayout; label: string }[] = [
-  { value: 'balanced', label: 'Balanced' },
-  { value: 'right', label: 'Rightward' },
-  { value: 'left', label: 'Leftward' },
+const LAYOUTS: { value: MapLayout; key: MessageKey }[] = [
+  { value: 'balanced', key: 'format.layout.balanced' },
+  { value: 'right', key: 'format.layout.right' },
+  { value: 'left', key: 'format.layout.left' },
 ];
 
-const THEMES: { value: MapTheme; label: string }[] = [
-  { value: 'indigo', label: 'Brand' },
-  { value: 'ocean', label: 'Ocean' },
-  { value: 'coral', label: 'Warm' },
-  { value: 'forest', label: 'Forest' },
-  { value: 'violet', label: 'Violet' },
-  { value: 'mono', label: 'Neutral' },
+const THEMES: { value: MapTheme; key: MessageKey }[] = [
+  { value: 'indigo', key: 'format.theme.indigo' },
+  { value: 'ocean', key: 'format.theme.ocean' },
+  { value: 'coral', key: 'format.theme.coral' },
+  { value: 'forest', key: 'format.theme.forest' },
+  { value: 'violet', key: 'format.theme.violet' },
+  { value: 'mono', key: 'format.theme.mono' },
 ];
 
-const FONTS: { value: MapFont; label: string }[] = [
-  { value: 'sans', label: 'Modern sans' },
-  { value: 'serif', label: 'Reading serif' },
-  { value: 'mono', label: 'Monospace' },
+const FONTS: { value: MapFont; key: MessageKey }[] = [
+  { value: 'sans', key: 'format.font.sans' },
+  { value: 'serif', key: 'format.font.serif' },
+  { value: 'mono', key: 'format.font.mono' },
 ];
 
 export function FormatPanel({ onClose }: { onClose: () => void }) {
   const map = useEditor((s) => s.map);
   const updateFormat = useEditor((s) => s.updateFormat);
+  const t = useT();
   if (!map) return null;
   const format = formatOf(map);
 
   return (
     <aside
-      aria-label="Mind map format"
+      aria-label={t('format.title')}
       className="absolute inset-y-3 right-3 z-20 flex w-[min(22rem,calc(100%-1.5rem))] flex-col overflow-hidden rounded-2xl border border-border-base bg-surface/95 shadow-2xl backdrop-blur-xl"
     >
       <div className="flex items-center justify-between border-b border-border-base px-5 py-4">
         <div>
-          <h2 className="text-sm font-semibold tracking-tight text-text">Map format</h2>
-          <p className="mt-0.5 text-[11px] text-text-subtle">Changes are saved with the map</p>
+          <h2 className="text-sm font-semibold tracking-tight text-text">{t('format.panelTitle')}</h2>
+          <p className="mt-0.5 text-[11px] text-text-subtle">{t('format.panelHint')}</p>
         </div>
-        <button type="button" onClick={onClose} className="btn btn-ghost h-8 w-8 p-0" aria-label="Close format panel">
+        <button type="button" onClick={onClose} className="btn btn-ghost h-8 w-8 p-0" aria-label={t('format.close')}>
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4"><path d="M6 6l12 12M18 6L6 18" /></svg>
         </button>
       </div>
 
       <div className="min-h-0 flex-1 overflow-y-auto px-5 py-5">
-        <Section title="Layout" subtitle="Change which way branches expand">
+        <Section title={t('format.layout')} subtitle={t('format.layoutHint')}>
           <div className="grid grid-cols-3 gap-2">
             {LAYOUTS.map((item) => (
               <button
@@ -68,13 +71,13 @@ export function FormatPanel({ onClose }: { onClose: () => void }) {
                 }`}
               >
                 <LayoutPreview layout={item.value} />
-                <span className="mt-2 block text-[10px] font-medium">{item.label}</span>
+                <span className="mt-2 block text-[10px] font-medium">{t(item.key)}</span>
               </button>
             ))}
           </div>
         </Section>
 
-        <Section title="Colour" subtitle="Top-level branches inherit the theme colour">
+        <Section title={t('format.colour')} subtitle={t('format.colourHint')}>
           <div className="grid grid-cols-3 gap-2">
             {THEMES.map((item) => {
               const palette = THEME_COLORS[item.value];
@@ -83,7 +86,7 @@ export function FormatPanel({ onClose }: { onClose: () => void }) {
                   key={item.value}
                   type="button"
                   onClick={() => updateFormat({ theme: item.value })}
-                  aria-label={item.label}
+                  aria-label={t(item.key)}
                   aria-pressed={format.theme === item.value}
                   className={`rounded-xl border p-2.5 transition-all ${
                     format.theme === item.value ? 'border-brand-500 bg-brand-50 shadow-sm dark:bg-brand-950/40' : 'border-border-base hover:border-border-strong'
@@ -92,39 +95,39 @@ export function FormatPanel({ onClose }: { onClose: () => void }) {
                   <span className="flex h-5 overflow-hidden rounded-md">
                     {palette.slice(0, 4).map((color) => <span key={color} className="flex-1" style={{ background: color }} />)}
                   </span>
-                  <span className="mt-1.5 block text-[10px] font-medium text-text-muted">{item.label}</span>
+                  <span className="mt-1.5 block text-[10px] font-medium text-text-muted">{t(item.key)}</span>
                 </button>
               );
             })}
           </div>
         </Section>
 
-        <Section title="Typography" subtitle="Applies to every node">
+        <Section title={t('format.typography')} subtitle={t('format.typographyHint')}>
           <label className="block text-[11px] font-medium text-text-muted">
-            Font
+            {t('format.font')}
             <select
               value={format.font}
               onChange={(e) => updateFormat({ font: e.target.value as MapFont })}
               className="mt-2 h-10 w-full rounded-lg border border-border-base bg-bg px-3 text-xs text-text outline-none focus:border-brand-500"
             >
-              {FONTS.map((font) => <option key={font.value} value={font.value}>{font.label}</option>)}
+              {FONTS.map((font) => <option key={font.value} value={font.value}>{t(font.key)}</option>)}
             </select>
           </label>
           <div className="mt-3 grid grid-cols-2 gap-3">
-            <SelectControl label="Size" value={format.fontSize} values={[12, 14, 16]} suffix=" px" onChange={(value) => updateFormat({ fontSize: value as 12 | 14 | 16 })} />
-            <SelectControl label="Weight" value={format.fontWeight} values={[400, 500, 600]} onChange={(value) => updateFormat({ fontWeight: value as 400 | 500 | 600 })} />
+            <SelectControl label={t('format.size')} value={format.fontSize} values={[12, 14, 16]} suffix=" px" onChange={(value) => updateFormat({ fontSize: value as 12 | 14 | 16 })} />
+            <SelectControl label={t('format.weight')} value={format.fontWeight} values={[400, 500, 600]} onChange={(value) => updateFormat({ fontWeight: value as 400 | 500 | 600 })} />
           </div>
           <div className="mt-3 grid grid-cols-3 gap-2">
-            <StyleButton label="Italic" active={format.italic} onClick={() => updateFormat({ italic: !format.italic })}><em>I</em></StyleButton>
-            <StyleButton label="Underline" active={format.underline} onClick={() => updateFormat({ underline: !format.underline })}><span className="underline">U</span></StyleButton>
-            <StyleButton label="Strikethrough" active={format.strikethrough} onClick={() => updateFormat({ strikethrough: !format.strikethrough })}><span className="line-through">S</span></StyleButton>
+            <StyleButton label={t('format.italic')} active={format.italic} onClick={() => updateFormat({ italic: !format.italic })}><em>I</em></StyleButton>
+            <StyleButton label={t('format.underline')} active={format.underline} onClick={() => updateFormat({ underline: !format.underline })}><span className="underline">U</span></StyleButton>
+            <StyleButton label={t('format.strikethrough')} active={format.strikethrough} onClick={() => updateFormat({ strikethrough: !format.strikethrough })}><span className="line-through">S</span></StyleButton>
           </div>
         </Section>
 
-        <Section title="Presentation" subtitle="Improve readability on complex maps" last>
-          <Toggle label="Auto-number branches" description="Shows 1, 1.1, 1.2 by level" checked={format.numbering} onChange={(numbering) => updateFormat({ numbering })} />
+        <Section title={t('format.presentation')} subtitle={t('format.presentationHint')} last>
+          <Toggle label={t('format.numbering')} description={t('format.numberingHint')} checked={format.numbering} onChange={(numbering) => updateFormat({ numbering })} />
           <div className="mt-3">
-            <Toggle label="Face topics inward" description="Right-aligns text on the left side for a clearer reading path" checked={format.alignTopics} onChange={(alignTopics) => updateFormat({ alignTopics })} />
+            <Toggle label={t('format.alignTopics')} description={t('format.alignTopicsHint')} checked={format.alignTopics} onChange={(alignTopics) => updateFormat({ alignTopics })} />
           </div>
         </Section>
       </div>

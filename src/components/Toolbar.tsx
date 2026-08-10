@@ -3,14 +3,11 @@
 import { useReactFlow } from '@xyflow/react';
 import { useState, type ReactNode } from 'react';
 import { exportMarkdown, exportPng, exportSvg, safeName } from '@/lib/export';
+import { useT } from '@/lib/i18n/context';
 import { useEditor } from '@/store/editor';
 
-const LEVELS = [
-  { level: 2, label: 'L2' },
-  { level: 3, label: 'L3' },
-  { level: 4, label: 'L4' },
-  { level: 99, label: 'All' },
-];
+// L2/L3/L4 是层级记号，不翻译；只有「全部」是词
+const LEVELS = [2, 3, 4, 99];
 
 export function Toolbar({
   onSave,
@@ -39,6 +36,7 @@ export function Toolbar({
   // 顶层导入的同名函数只能读 node.measured，而我们的节点每次都是 useMemo 新建的对象，
   // 量出来的尺寸只写进 nodeLookup，从不回写到这些对象 —— 那条路径下每个节点宽高都是 0。
   const { getNodes, getNodesBounds } = useReactFlow();
+  const t = useT();
   const [exporting, setExporting] = useState<string | null>(null);
   const [copied, setCopied] = useState(false);
 
@@ -65,24 +63,24 @@ export function Toolbar({
         {map.title}
       </h1>
       <span className="hidden rounded-md bg-bg-muted px-1.5 py-0.5 text-[11px] tabular-nums text-text-subtle sm:inline">
-        {map.nodes.length} nodes
+        {t('toolbar.nodes', { n: map.nodes.length })}
       </span>
 
       <div className="ml-1 hidden items-center gap-0.5 rounded-lg border bg-bg-subtle p-0.5 md:flex">
-        {LEVELS.map((l) => (
+        {LEVELS.map((level) => (
           <button
-            key={l.level}
+            key={level}
             type="button"
-            onClick={() => collapseToLevel(l.level)}
-            aria-pressed={levelLimit === l.level}
+            onClick={() => collapseToLevel(level)}
+            aria-pressed={levelLimit === level}
             className={`rounded-md px-2 py-1 text-[11px] font-medium transition-colors ${
-              levelLimit === l.level
+              levelLimit === level
                 ? 'bg-surface text-brand-700 shadow-sm dark:text-brand-300'
                 : 'text-text-muted hover:bg-surface hover:text-text hover:shadow-sm'
             }`}
-            title={l.level === 99 ? 'Expand everything' : `Expand to level ${l.level} only`}
+            title={level === 99 ? t('toolbar.expandAll') : t('toolbar.expandToLevel', { n: level })}
           >
-            {l.label}
+            {level === 99 ? t('toolbar.levelAll') : `L${level}`}
           </button>
         ))}
       </div>
@@ -96,7 +94,7 @@ export function Toolbar({
             className={`btn h-9 gap-1.5 px-3 text-xs ${formatOpen ? 'btn-primary' : 'btn-secondary'}`}
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4"><path d="M4 7h10M18 7h2M4 17h2M10 17h10M14 4v6M7 14v6" /></svg>
-            Format
+            {t('toolbar.format')}
           </button>
         )}
         <ExportButton busy={exporting === 'png'} onClick={() => run('png', () => exportPng(getNodesBounds(getNodes()), safeName(map.title)))}>
@@ -123,19 +121,19 @@ export function Toolbar({
             }}
             className="btn btn-secondary h-9 px-3 text-xs"
           >
-            {copied ? 'Copied' : shareUrl ? 'Copy link' : 'Share'}
+            {copied ? t('toolbar.copied') : shareUrl ? t('toolbar.copyLink') : t('toolbar.share')}
           </button>
         )}
 
         {!readOnly && onSave && (
           <button type="button" onClick={onSave} disabled={saving} className="btn btn-primary h-9 px-4 text-xs">
-            {saving ? 'Saving…' : dirty ? 'Save ·' : 'Save'}
+            {saving ? t('toolbar.saving') : dirty ? `${t('toolbar.save')} ·` : t('toolbar.save')}
           </button>
         )}
 
         {onReset && (
           <button type="button" onClick={onReset} className="btn btn-ghost h-9 px-2 text-xs">
-            New
+            {t('toolbar.new')}
           </button>
         )}
       </div>
@@ -144,9 +142,10 @@ export function Toolbar({
 }
 
 function ExportButton({ children, onClick, busy }: { children: ReactNode; onClick: () => void; busy: boolean }) {
+  const t = useT();
   return (
     <button type="button" onClick={onClick} disabled={busy} className="btn btn-secondary hidden h-9 px-2.5 text-xs sm:inline-flex">
-      {busy ? 'Exporting' : children}
+      {busy ? t('toolbar.exporting') : children}
     </button>
   );
 }

@@ -4,6 +4,8 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { create } from 'zustand';
+import { useT } from '@/lib/i18n/context';
+import type { MessageKey } from '@/lib/i18n/messages';
 import { useEditor } from '@/store/editor';
 
 /** 抽屉开关是跨组件状态：触发按钮在顶栏，抽屉本体在内容区 */
@@ -71,35 +73,37 @@ const ICONS = {
   ),
 };
 
+// 存文案 key 而不是文案本身：这两张表在模块顶层求值，那时还拿不到语言
 const PRIMARY = [
-  { href: '/app/new', label: 'Quick start', icon: ICONS.spark },
-  { href: '/app/research', label: 'Deep research', icon: ICONS.research, badge: 'New' },
-  { href: '/app/maps', label: 'My mind maps', icon: ICONS.maps },
-];
+  { href: '/app/new', key: 'nav.quickStart', icon: ICONS.spark },
+  { href: '/app/research', key: 'nav.deepResearch', icon: ICONS.research, badgeKey: 'nav.new' },
+  { href: '/app/maps', key: 'nav.myMaps', icon: ICONS.maps },
+] satisfies Array<{ href: string; key: MessageKey; icon: ReactNode; badgeKey?: MessageKey }>;
 
 const GROUPS = [
   {
-    label: 'Upload a file',
+    key: 'nav.uploadFile',
     items: [
-      { label: 'PDF', icon: ICONS.pdf, href: '/app/pdf' },
-      { label: 'Word document', icon: ICONS.document, href: '/app/docx' },
-      { label: 'EPUB ebook', icon: ICONS.ebook, href: '/app/epub' },
-      { label: 'PowerPoint deck', icon: ICONS.slides, href: '/app/pptx' },
+      { key: 'nav.pdf', icon: ICONS.pdf, href: '/app/pdf' },
+      { key: 'nav.docx', icon: ICONS.document, href: '/app/docx' },
+      { key: 'nav.epub', icon: ICONS.ebook, href: '/app/epub' },
+      { key: 'nav.pptx', icon: ICONS.slides, href: '/app/pptx' },
     ],
   },
   {
-    label: 'Paste content',
+    key: 'nav.pasteContent',
     items: [
-      { label: 'Long text', icon: ICONS.text, href: '/app/text' },
-      { label: 'Web article', icon: ICONS.web, href: '/app/web' },
+      { key: 'nav.longText', icon: ICONS.text, href: '/app/text' },
+      { key: 'nav.webArticle', icon: ICONS.web, href: '/app/web' },
     ],
   },
-] satisfies Array<{ label: string; items: Array<{ label: string; icon: ReactNode; href: string }> }>;
+] satisfies Array<{ key: MessageKey; items: Array<{ key: MessageKey; icon: ReactNode; href: string }> }>;
 
 export function SidebarTrigger() {
   const setOpen = useDrawer((s) => s.setOpen);
+  const t = useT();
   return (
-    <button type="button" onClick={() => setOpen(true)} aria-label="Open navigation" className="btn btn-ghost h-9 w-9 lg:hidden">
+    <button type="button" onClick={() => setOpen(true)} aria-label={t('nav.open')} className="btn btn-ghost h-9 w-9 lg:hidden">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-4 w-4">
         <path strokeLinecap="round" d="M4 7h16M4 12h16M4 17h16" />
       </svg>
@@ -111,12 +115,21 @@ export function AppSidebar() {
   const pathname = usePathname();
   const open = useDrawer((s) => s.open);
   const setOpen = useDrawer((s) => s.setOpen);
+  const t = useT();
 
   const nav = (
     <nav className="flex h-full flex-col overflow-y-auto px-3 py-4">
       <div className="space-y-0.5">
         {PRIMARY.map((item) => (
-          <NavLink key={item.href} {...item} active={pathname === item.href} onNavigate={() => setOpen(false)} />
+          <NavLink
+            key={item.href}
+            href={item.href}
+            label={t(item.key)}
+            icon={item.icon}
+            {...(item.badgeKey ? { badge: t(item.badgeKey) } : {})}
+            active={pathname === item.href}
+            onNavigate={() => setOpen(false)}
+          />
         ))}
       </div>
 
@@ -124,14 +137,14 @@ export function AppSidebar() {
 
       <div className="space-y-4 pb-4">
         {GROUPS.map((group) => (
-          <section key={group.label}>
-            <p className="px-3 pb-1.5 text-[10px] font-bold tracking-[0.04em] text-text-subtle">{group.label}</p>
+          <section key={group.key}>
+            <p className="px-3 pb-1.5 text-[10px] font-bold tracking-[0.04em] text-text-subtle">{t(group.key)}</p>
             <div className="space-y-0.5">
               {group.items.map((item) => (
                 <NavLink
-                  key={item.label}
+                  key={item.key}
                   href={item.href}
-                  label={item.label}
+                  label={t(item.key)}
                   icon={item.icon}
                   active={pathname === item.href}
                   onNavigate={() => setOpen(false)}
@@ -149,7 +162,7 @@ export function AppSidebar() {
     <>
       {open && (
         <div className="fixed inset-0 z-50 lg:hidden">
-          <button type="button" aria-label="Close navigation" className="absolute inset-0 bg-black/40" onClick={() => setOpen(false)} />
+          <button type="button" aria-label={t('nav.close')} className="absolute inset-0 bg-black/40" onClick={() => setOpen(false)} />
           <aside
             className="absolute left-0 top-0 h-full w-72 border-r bg-surface shadow-2xl"
             style={{ borderColor: 'var(--border)' }}
@@ -173,10 +186,10 @@ export function AppSidebar() {
  * 离开当前编辑器前清空画布。返回 false 表示用户在「未保存」确认框里点了取消，
  * 调用方要阻止这次导航。
  */
-function resetEditorBeforeLeaving(): boolean {
+function resetEditorBeforeLeaving(confirmMessage: string): boolean {
   const { map, dirty } = useEditor.getState();
   if (!map) return true;
-  if (dirty && !confirm('This map has not been saved. Leave anyway?')) return false;
+  if (dirty && !confirm(confirmMessage)) return false;
   useEditor.setState({ map: null, dirty: false, selectedId: null, editingId: null });
   return true;
 }
@@ -198,6 +211,7 @@ function NavLink({
   badge?: string;
   compact?: boolean;
 }) {
+  const confirmMessage = useT()('workspace.confirmLeave');
   return (
     <Link
       href={href}
@@ -205,7 +219,7 @@ function NavLink({
         // 侧栏跳的是同一个 Workspace 组件，同路由或同类型路由都不会重新挂载，
         // 编辑器 store 里还留着上一张图 —— 用户点「Quick start」却仍看到刚生成的
         // 脑图，会以为界面卡住了。这里主动清空，语义和工具栏的 New 按钮一致。
-        if (!resetEditorBeforeLeaving()) {
+        if (!resetEditorBeforeLeaving(confirmMessage)) {
           event.preventDefault();
           return;
         }

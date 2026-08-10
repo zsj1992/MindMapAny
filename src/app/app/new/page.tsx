@@ -1,6 +1,8 @@
 import type { Metadata } from 'next';
 import { Workspace } from '@/components/Workspace';
 import { requireUser } from '@/lib/auth/require-user';
+import { appLocale } from '@/lib/i18n/server';
+import { translate } from '@/lib/i18n/messages';
 
 export const metadata: Metadata = {
   title: 'Quick start',
@@ -9,11 +11,12 @@ export const metadata: Metadata = {
 
 export default async function NewMapPage() {
   const { plan } = await requireUser('/app/new');
+  const locale = await appLocale();
   return (
     <Workspace
       plan={plan}
-      title="Create a mind map"
-      subtitle="Paste text, upload a document, or drop in a web link."
+      title={translate(locale, 'workspace.createTitle')}
+      subtitle={translate(locale, 'workspace.createSubtitle')}
     />
   );
 }
