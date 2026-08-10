@@ -1,20 +1,7 @@
-import type { ToolPage } from './content';
+import type { ToolPageCopy } from './registry';
 
-/**
- * 工具页的中文版本。
- *
- * 单独一个文件，不塞进 content.ts：那个文件已经 400 多行，
- * 再并进一份等长的中文会变成谁都不愿意打开的东西。
- *
- * slug / appPath / relatedKeywords 不在这里 —— 路径不随语言变，
- * 关键词是中文页自己的一套，直接写在 keywords 字段里。
- */
-export type ToolPageZh = Pick<
-  ToolPage,
-  'eyebrow' | 'title' | 'description' | 'seoTitle' | 'seoDescription' | 'primaryKeyword' | 'relatedKeywords' | 'benefits' | 'steps' | 'useCases' | 'faq'
->;
-
-export const TOOL_PAGES_ZH: Record<string, ToolPageZh> = {
+/** 工具页的简体中文文案。关键词是中文页自己的一套，不是英文的直译。 */
+export const TOOLS_ZH_CN: Record<string, ToolPageCopy> = {
   'pdf-to-mind-map': {
     eyebrow: 'AI 文档结构化工具',
     title: 'PDF 转思维导图',

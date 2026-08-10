@@ -35,7 +35,7 @@ const TOOL_PAGES_PATHS = [
 const TRANSLATED: Record<Locale, Set<string>> = {
   en: new Set([...CORE_PAGES, ...TOOL_PAGES_PATHS]),
   'zh-CN': new Set([...CORE_PAGES, ...TOOL_PAGES_PATHS]),
-  ja: new Set(CORE_PAGES),
+  ja: new Set([...CORE_PAGES, ...TOOL_PAGES_PATHS]),
   ko: new Set(CORE_PAGES),
   es: new Set(CORE_PAGES),
   de: new Set(CORE_PAGES),

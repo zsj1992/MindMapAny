@@ -1,5 +1,5 @@
 import type { Locale } from '@/lib/i18n/locales';
-import { TOOL_PAGES_ZH } from './content.zh';
+import { TOOL_COPY } from './tools/registry';
 export const SITE_URL = process.env.SITE_URL ?? 'https://mindmapany.com';
 
 export interface ToolPage {
@@ -419,6 +419,6 @@ export function getBlogPost(slug: string): BlogPost | undefined {
  * 宁可显示一页英文，也不能显示空白标题。
  */
 export function localizedToolPage(tool: ToolPage, locale: Locale): ToolPage {
-  const zh = locale === 'zh-CN' ? TOOL_PAGES_ZH[tool.slug] : undefined;
-  return zh ? { ...tool, ...zh } : tool;
+  const copy = TOOL_COPY[locale]?.[tool.slug];
+  return copy ? { ...tool, ...copy } : tool;
 }
