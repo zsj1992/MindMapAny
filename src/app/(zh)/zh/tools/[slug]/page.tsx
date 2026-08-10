@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { ToolPageContent } from '@/components/site/ToolPageContent';
 import { getToolPage, localizedToolPage, TOOL_PAGES } from '@/lib/seo/content';
-import { alternatesFor, OG_LOCALE } from '@/lib/i18n/routes';
+import { alternatesFor, openGraphFor } from '@/lib/i18n/routes';
 
 type Props = { params: Promise<{ slug: string }> };
 
@@ -19,7 +19,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     description: tool.seoDescription,
     keywords: [tool.primaryKeyword, ...tool.relatedKeywords],
     alternates: alternatesFor(`/tools/${tool.slug}`, 'zh-CN'),
-    openGraph: { title: tool.seoTitle, description: tool.seoDescription, url: `/zh/tools/${tool.slug}`, locale: OG_LOCALE['zh-CN'] },
+    openGraph: openGraphFor('zh-CN', { title: tool.seoTitle, description: tool.seoDescription, url: `/zh/tools/${tool.slug}` }),
   };
 }
 

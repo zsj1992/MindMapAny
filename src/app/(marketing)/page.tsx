@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { HomeContent } from '@/components/site/HomeContent';
 import { marketingCopy } from '@/lib/i18n/marketing';
-import { alternatesFor, OG_LOCALE } from '@/lib/i18n/routes';
+import { alternatesFor, openGraphFor } from '@/lib/i18n/routes';
 
 const copy = marketingCopy('en').home;
 
@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   title: copy.metaTitle,
   description: copy.metaDescription,
   alternates: alternatesFor('/', 'en'),
-  openGraph: { locale: OG_LOCALE.en },
+  openGraph: openGraphFor('en'),
 };
 
 export default function HomePage() {

@@ -113,3 +113,21 @@ export function absoluteUrl(path: string, locale: Locale): string {
   const localized = localizedPath(path, locale);
   return localized === '/' ? SITE_URL : `${SITE_URL}${localized}`;
 }
+
+/**
+ * 页面级的 openGraph。必须走这个函数，不能在页面里直接写 `openGraph: { locale }`。
+ *
+ * Next 的 metadata 合并对 openGraph 是「整块替换」而不是深合并：子页面只要声明了
+ * openGraph，根布局里的 images / type / siteName 就全部消失。
+ * 之前每个营销页只写了 locale，结果全站的 og:image 都没了 —— 分享出去没有预览图，
+ * 而这件事在页面上完全看不出来，只有抓 HTML 才发现。
+ */
+export function openGraphFor(locale: Locale, extra?: { title?: string; description?: string; url?: string }) {
+  return {
+    type: 'website' as const,
+    siteName: 'MindMapAny',
+    locale: OG_LOCALE[locale],
+    images: [{ url: '/og.png', width: 1731, height: 909, alt: 'MindMapAny — turn complex content into a clear mind map' }],
+    ...extra,
+  };
+}
