@@ -3,15 +3,15 @@ import { BillingContent } from '@/components/site/BillingContent';
 import { marketingCopy } from '@/lib/i18n/marketing';
 import { alternatesFor, openGraphFor } from '@/lib/i18n/routes';
 
-const copy = marketingCopy('en').billing;
+const copy = marketingCopy('de').billing;
 
 export const metadata: Metadata = {
   title: copy.metaTitle,
   description: copy.metaDescription,
-  alternates: alternatesFor('/billing', 'en'),
-  openGraph: openGraphFor('en'),
+  alternates: alternatesFor('/billing', 'de'),
+  openGraph: openGraphFor('de'),
 };
 
-export default function Page() {
-  return <BillingContent locale="en" />;
+export default function PageDe() {
+  return <BillingContent locale="de" />;
 }

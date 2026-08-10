@@ -117,6 +117,31 @@ export interface MarketingCopy {
     breadcrumbTools: string;
     seePlans: string;
   };
+  support: {
+    metaTitle: string;
+    metaDescription: string;
+    eyebrow: string;
+    heading: string;
+    intro: string;
+    topics: { title: string; text: string; subject: string }[];
+    sendEmail: string;
+    manageHeading: string;
+    manageBody: string;
+    manageAction: string;
+  };
+  billing: {
+    metaTitle: string;
+    metaDescription: string;
+    eyebrow: string;
+    heading: string;
+    intro: string;
+    steps: string[];
+    openPortal: string;
+    contactBilling: string;
+    afterCancel: string;
+    refundLink: string;
+    refundTail: string;
+  };
   pricing: {
     metaTitle: string;
     metaDescription: string;
@@ -150,6 +175,40 @@ export interface MarketingCopy {
 }
 
 const en: MarketingCopy = {
+  support: {
+    metaTitle: 'Contact & support',
+    metaDescription: 'Contact MindMapAny for help with the product, your account, subscriptions, refunds and privacy.',
+    eyebrow: 'Human support',
+    heading: 'We are here to sort it out',
+    intro: 'Please write from your account email or the address you used at purchase. We usually reply within 3 business days.',
+    topics: [
+      { title: 'Product & account', text: 'Failed generations, credit issues, sign-in or data problems', subject: 'Product and account support' },
+      { title: 'Billing & subscriptions', text: 'Payments, invoices, cancellation, plan changes or refunds', subject: 'Billing and subscription support' },
+      { title: 'Privacy & security', text: 'Data access, export, deletion or security concerns', subject: 'Privacy and security support' },
+    ],
+    sendEmail: 'Send email',
+    manageHeading: 'Manage or cancel your subscription',
+    manageBody: 'Use your purchase email to open the secure Creem Customer Portal — no waiting on a human.',
+    manageAction: 'Go to subscription management',
+  },
+  billing: {
+    metaTitle: 'Subscription management',
+    metaDescription: 'Open the Creem Customer Portal to manage your MindMapAny subscription, payment method, invoices and cancellation.',
+    eyebrow: 'Secure self-service',
+    heading: 'Manage your subscription',
+    intro: 'The Creem Customer Portal lets you view orders and invoices, update your payment method, and cancel at any time. Use the email you entered when you purchased MindMapAny to get a secure sign-in link.',
+    steps: [
+      'Click the button below to open the Creem Customer Portal',
+      'Enter the email you used at purchase',
+      'Use the secure link in your inbox to manage or cancel the subscription',
+    ],
+    openPortal: 'Open Creem Customer Portal',
+    contactBilling: 'Contact billing support',
+    afterCancel: 'After cancelling you normally keep access until the end of the period you have already paid for. See our',
+    refundLink: 'Refund & Cancellation Policy',
+    refundTail: 'for refund terms.',
+  },
+
   toolPage: {
     startFree: 'Start free',
     goodFor: 'Good for',
@@ -457,6 +516,36 @@ const en: MarketingCopy = {
 };
 
 const zhCN: MarketingCopy = {
+  support: {
+    metaTitle: '联系与支持',
+    metaDescription: '就产品使用、账号、订阅、退款和隐私问题联系 MindMapAny 获取帮助。',
+    eyebrow: '人工支持',
+    heading: '我们来帮你解决',
+    intro: '请用你的账号邮箱，或购买时使用的邮箱来信。我们通常在 3 个工作日内回复。',
+    topics: [
+      { title: '产品与账号', text: '生成失败、积分异常、登录或数据问题', subject: '产品与账号支持' },
+      { title: '账单与订阅', text: '付款、发票、取消、套餐变更或退款', subject: '账单与订阅支持' },
+      { title: '隐私与安全', text: '数据访问、导出、删除或安全方面的疑虑', subject: '隐私与安全支持' },
+    ],
+    sendEmail: '发送邮件',
+    manageHeading: '管理或取消订阅',
+    manageBody: '用购买时的邮箱打开 Creem 客户门户，安全自助，不用等人工。',
+    manageAction: '前往订阅管理',
+  },
+  billing: {
+    metaTitle: '订阅管理',
+    metaDescription: '打开 Creem 客户门户，管理 MindMapAny 的订阅、支付方式、发票与取消。',
+    eyebrow: '安全自助',
+    heading: '管理你的订阅',
+    intro: 'Creem 客户门户可以查看订单和发票、更新支付方式，并随时取消。用你购买 MindMapAny 时填写的邮箱获取安全登录链接。',
+    steps: ['点击下方按钮打开 Creem 客户门户', '输入你购买时使用的邮箱', '用收件箱里的安全链接管理或取消订阅'],
+    openPortal: '打开 Creem 客户门户',
+    contactBilling: '联系账单支持',
+    afterCancel: '取消后，通常你仍可使用到已付费周期结束。退款条款见我们的',
+    refundLink: '退款与取消政策',
+    refundTail: '。',
+  },
+
   toolPage: {
     startFree: '免费开始',
     goodFor: '适合用来',
@@ -760,6 +849,36 @@ const zhCN: MarketingCopy = {
 
 
 const ja: MarketingCopy = {
+  support: {
+    metaTitle: 'お問い合わせとサポート',
+    metaDescription: '製品の使い方、アカウント、サブスクリプション、返金、プライバシーに関するお問い合わせは MindMapAny まで。',
+    eyebrow: '担当者がお答えします',
+    heading: '一緒に解決しましょう',
+    intro: 'アカウントのメールアドレス、またはご購入時のアドレスからご連絡ください。通常 3 営業日以内に返信します。',
+    topics: [
+      { title: '製品とアカウント', text: '生成の失敗、クレジットの不具合、ログインやデータの問題', subject: '製品とアカウントのサポート' },
+      { title: '請求とサブスクリプション', text: 'お支払い、請求書、解約、プラン変更、返金', subject: '請求とサブスクリプションのサポート' },
+      { title: 'プライバシーとセキュリティ', text: 'データの閲覧、書き出し、削除、セキュリティ上のご懸念', subject: 'プライバシーとセキュリティのサポート' },
+    ],
+    sendEmail: 'メールを送る',
+    manageHeading: 'サブスクリプションの管理・解約',
+    manageBody: 'ご購入時のメールアドレスで Creem カスタマーポータルを開けます。担当者を待つ必要はありません。',
+    manageAction: 'サブスクリプション管理へ',
+  },
+  billing: {
+    metaTitle: 'サブスクリプション管理',
+    metaDescription: 'Creem カスタマーポータルで MindMapAny のサブスクリプション、支払い方法、請求書、解約を管理できます。',
+    eyebrow: '安全なセルフサービス',
+    heading: 'サブスクリプションの管理',
+    intro: 'Creem カスタマーポータルでは、注文と請求書の確認、支払い方法の変更、いつでも解約ができます。MindMapAny のご購入時に入力したメールアドレスで安全なログインリンクを受け取ってください。',
+    steps: ['下のボタンから Creem カスタマーポータルを開きます', 'ご購入時に使用したメールアドレスを入力します', '受信したメールの安全なリンクから管理または解約します'],
+    openPortal: 'Creem カスタマーポータルを開く',
+    contactBilling: '請求サポートに問い合わせる',
+    afterCancel: '解約後も、通常はお支払い済みの期間が終わるまでご利用いただけます。返金の条件は',
+    refundLink: '返金・キャンセルポリシー',
+    refundTail: 'をご覧ください。',
+  },
+
   nav: {
     tools: 'ツール',
     blog: 'ブログ',
@@ -1064,6 +1183,36 @@ const ja: MarketingCopy = {
 };
 
 const ko: MarketingCopy = {
+  support: {
+    metaTitle: '문의와 지원',
+    metaDescription: '제품 사용, 계정, 구독, 환불, 개인정보에 관한 도움이 필요하시면 MindMapAny로 문의해 주세요.',
+    eyebrow: '사람이 답합니다',
+    heading: '함께 해결해 드리겠습니다',
+    intro: '계정 이메일 또는 구매하실 때 사용한 주소로 보내 주세요. 보통 영업일 기준 3일 안에 답장합니다.',
+    topics: [
+      { title: '제품과 계정', text: '생성 실패, 크레딧 문제, 로그인 또는 데이터 문제', subject: '제품 및 계정 지원' },
+      { title: '결제와 구독', text: '결제, 영수증, 해지, 요금제 변경, 환불', subject: '결제 및 구독 지원' },
+      { title: '개인정보와 보안', text: '데이터 열람, 내보내기, 삭제 또는 보안 관련 문의', subject: '개인정보 및 보안 지원' },
+    ],
+    sendEmail: '이메일 보내기',
+    manageHeading: '구독 관리 또는 해지',
+    manageBody: '구매하실 때 쓴 이메일로 Creem 고객 포털을 여세요. 상담원을 기다릴 필요가 없습니다.',
+    manageAction: '구독 관리로 이동',
+  },
+  billing: {
+    metaTitle: '구독 관리',
+    metaDescription: 'Creem 고객 포털에서 MindMapAny 구독과 결제 수단, 영수증, 해지를 관리하세요.',
+    eyebrow: '안전한 셀프 서비스',
+    heading: '구독 관리하기',
+    intro: 'Creem 고객 포털에서는 주문과 영수증을 확인하고 결제 수단을 바꾸며 언제든 해지할 수 있습니다. MindMapAny를 구매할 때 입력한 이메일로 안전한 로그인 링크를 받으세요.',
+    steps: ['아래 버튼을 눌러 Creem 고객 포털을 엽니다', '구매할 때 사용한 이메일을 입력합니다', '받은 편지함의 안전한 링크로 관리하거나 해지합니다'],
+    openPortal: 'Creem 고객 포털 열기',
+    contactBilling: '결제 지원 문의',
+    afterCancel: '해지한 뒤에도 보통 이미 결제한 기간이 끝날 때까지 이용할 수 있습니다. 환불 조건은',
+    refundLink: '환불 및 취소 정책',
+    refundTail: '을 참고하세요.',
+  },
+
   nav: {
     tools: '도구',
     blog: '블로그',
@@ -1366,6 +1515,36 @@ const ko: MarketingCopy = {
 };
 
 const es: MarketingCopy = {
+  support: {
+    metaTitle: 'Contacto y soporte',
+    metaDescription: 'Escribe a MindMapAny si necesitas ayuda con el producto, tu cuenta, las suscripciones, los reembolsos o la privacidad.',
+    eyebrow: 'Atención de personas',
+    heading: 'Estamos aquí para resolverlo',
+    intro: 'Escríbenos desde el correo de tu cuenta o desde el que usaste al comprar. Solemos responder en 3 días laborables.',
+    topics: [
+      { title: 'Producto y cuenta', text: 'Generaciones fallidas, problemas con los créditos, con el acceso o con tus datos', subject: 'Soporte de producto y cuenta' },
+      { title: 'Facturación y suscripciones', text: 'Pagos, facturas, cancelación, cambios de plan o reembolsos', subject: 'Soporte de facturación y suscripciones' },
+      { title: 'Privacidad y seguridad', text: 'Acceso, exportación o eliminación de datos y dudas de seguridad', subject: 'Soporte de privacidad y seguridad' },
+    ],
+    sendEmail: 'Enviar correo',
+    manageHeading: 'Gestiona o cancela tu suscripción',
+    manageBody: 'Usa el correo de tu compra para abrir el Portal de Clientes de Creem, sin esperar a nadie.',
+    manageAction: 'Ir a la gestión de la suscripción',
+  },
+  billing: {
+    metaTitle: 'Gestión de la suscripción',
+    metaDescription: 'Abre el Portal de Clientes de Creem para gestionar tu suscripción a MindMapAny, el método de pago, las facturas y la cancelación.',
+    eyebrow: 'Autogestión segura',
+    heading: 'Gestiona tu suscripción',
+    intro: 'El Portal de Clientes de Creem te permite consultar pedidos y facturas, cambiar el método de pago y cancelar cuando quieras. Usa el correo que indicaste al comprar MindMapAny para recibir un enlace de acceso seguro.',
+    steps: ['Pulsa el botón de abajo para abrir el Portal de Clientes de Creem', 'Introduce el correo que usaste al comprar', 'Usa el enlace seguro que recibas para gestionar o cancelar la suscripción'],
+    openPortal: 'Abrir el Portal de Clientes de Creem',
+    contactBilling: 'Contactar con soporte de facturación',
+    afterCancel: 'Tras cancelar, normalmente conservas el acceso hasta el final del periodo que ya has pagado. Consulta nuestra',
+    refundLink: 'Política de reembolso y cancelación',
+    refundTail: 'para conocer las condiciones.',
+  },
+
   nav: {
     tools: 'Herramientas',
     blog: 'Blog',
@@ -1673,6 +1852,36 @@ const es: MarketingCopy = {
 };
 
 const de: MarketingCopy = {
+  support: {
+    metaTitle: 'Kontakt und Support',
+    metaDescription: 'Wenden Sie sich an MindMapAny bei Fragen zum Produkt, zu Ihrem Konto, zu Abonnements, Rückerstattungen und Datenschutz.',
+    eyebrow: 'Persönlicher Support',
+    heading: 'Wir kümmern uns darum',
+    intro: 'Bitte schreiben Sie von der E-Mail-Adresse Ihres Kontos oder der beim Kauf verwendeten Adresse. Wir antworten meist innerhalb von 3 Werktagen.',
+    topics: [
+      { title: 'Produkt und Konto', text: 'Fehlgeschlagene Generierungen, Probleme mit Credits, Anmeldung oder Daten', subject: 'Support zu Produkt und Konto' },
+      { title: 'Abrechnung und Abonnements', text: 'Zahlungen, Rechnungen, Kündigung, Tarifwechsel oder Rückerstattungen', subject: 'Support zu Abrechnung und Abonnement' },
+      { title: 'Datenschutz und Sicherheit', text: 'Datenzugriff, Export, Löschung oder Sicherheitsfragen', subject: 'Support zu Datenschutz und Sicherheit' },
+    ],
+    sendEmail: 'E-Mail senden',
+    manageHeading: 'Abonnement verwalten oder kündigen',
+    manageBody: 'Öffnen Sie mit Ihrer Kauf-E-Mail das sichere Creem-Kundenportal — ohne auf jemanden zu warten.',
+    manageAction: 'Zur Abonnementverwaltung',
+  },
+  billing: {
+    metaTitle: 'Abonnementverwaltung',
+    metaDescription: 'Öffnen Sie das Creem-Kundenportal, um Ihr MindMapAny-Abonnement, die Zahlungsart, Rechnungen und die Kündigung zu verwalten.',
+    eyebrow: 'Sichere Selbstverwaltung',
+    heading: 'Ihr Abonnement verwalten',
+    intro: 'Im Creem-Kundenportal sehen Sie Bestellungen und Rechnungen, ändern die Zahlungsart und kündigen jederzeit. Verwenden Sie die beim Kauf von MindMapAny angegebene E-Mail-Adresse, um einen sicheren Anmeldelink zu erhalten.',
+    steps: ['Klicken Sie unten, um das Creem-Kundenportal zu öffnen', 'Geben Sie die beim Kauf verwendete E-Mail-Adresse ein', 'Verwalten oder kündigen Sie über den sicheren Link in Ihrem Postfach'],
+    openPortal: 'Creem-Kundenportal öffnen',
+    contactBilling: 'Support zur Abrechnung kontaktieren',
+    afterCancel: 'Nach der Kündigung behalten Sie den Zugang in der Regel bis zum Ende des bereits bezahlten Zeitraums. Die Bedingungen stehen in unserer',
+    refundLink: 'Rückerstattungs- und Kündigungsrichtlinie',
+    refundTail: '.',
+  },
+
   nav: {
     tools: 'Werkzeuge',
     blog: 'Blog',
@@ -1980,6 +2189,36 @@ const de: MarketingCopy = {
 };
 
 const fr: MarketingCopy = {
+  support: {
+    metaTitle: 'Contact et assistance',
+    metaDescription: "Contactez MindMapAny pour toute question sur le produit, votre compte, les abonnements, les remboursements et la confidentialité.",
+    eyebrow: 'Une réponse humaine',
+    heading: 'Nous sommes là pour régler cela',
+    intro: "Écrivez-nous depuis l'adresse de votre compte ou celle utilisée lors de l'achat. Nous répondons généralement sous 3 jours ouvrés.",
+    topics: [
+      { title: 'Produit et compte', text: "Générations en échec, problèmes de crédits, de connexion ou de données", subject: 'Assistance produit et compte' },
+      { title: 'Facturation et abonnements', text: 'Paiements, factures, résiliation, changement de formule ou remboursements', subject: 'Assistance facturation et abonnement' },
+      { title: 'Confidentialité et sécurité', text: "Accès, export ou suppression des données et questions de sécurité", subject: 'Assistance confidentialité et sécurité' },
+    ],
+    sendEmail: 'Envoyer un e-mail',
+    manageHeading: 'Gérer ou résilier votre abonnement',
+    manageBody: "Ouvrez le portail client Creem avec l'e-mail de votre achat, sans attendre personne.",
+    manageAction: "Aller à la gestion de l'abonnement",
+  },
+  billing: {
+    metaTitle: "Gestion de l'abonnement",
+    metaDescription: "Ouvrez le portail client Creem pour gérer votre abonnement MindMapAny, votre moyen de paiement, vos factures et la résiliation.",
+    eyebrow: 'Libre-service sécurisé',
+    heading: 'Gérer votre abonnement',
+    intro: "Le portail client Creem permet de consulter commandes et factures, de changer de moyen de paiement et de résilier à tout moment. Utilisez l'adresse e-mail indiquée lors de votre achat pour recevoir un lien de connexion sécurisé.",
+    steps: ['Cliquez sur le bouton ci-dessous pour ouvrir le portail client Creem', "Saisissez l'e-mail utilisé lors de l'achat", 'Utilisez le lien sécurisé reçu pour gérer ou résilier votre abonnement'],
+    openPortal: 'Ouvrir le portail client Creem',
+    contactBilling: "Contacter l'assistance facturation",
+    afterCancel: "Après résiliation, vous conservez normalement l'accès jusqu'à la fin de la période déjà payée. Les conditions figurent dans notre",
+    refundLink: 'Politique de remboursement et de résiliation',
+    refundTail: '.',
+  },
+
   nav: {
     tools: 'Outils',
     blog: 'Blog',

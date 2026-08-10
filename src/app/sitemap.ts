@@ -34,16 +34,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base: MetadataRoute.Sitemap = [
     ...localizedEntries('/', { changeFrequency: 'weekly', priority: 1 }),
     ...localizedEntries('/pricing', { changeFrequency: 'monthly', priority: 0.7 }),
-    { url: `${siteUrl}/support`, changeFrequency: 'monthly', priority: 0.55 },
-    { url: `${siteUrl}/billing`, changeFrequency: 'monthly', priority: 0.45 },
-    { url: `${siteUrl}/privacy`, changeFrequency: 'yearly', priority: 0.3 },
-    { url: `${siteUrl}/terms`, changeFrequency: 'yearly', priority: 0.3 },
-    { url: `${siteUrl}/refund-policy`, changeFrequency: 'yearly', priority: 0.35 },
+    // 全部走 localizedEntries：某页新增译文时，只要它进了 TRANSLATED，
+    // sitemap 会自动多出对应语言的条目。手写单条 URL 的写法必然漏掉这一步 ——
+    // support 和 billing 补完六种语言后，sitemap 就曾经一条没变。
+    ...localizedEntries('/support', { changeFrequency: 'monthly', priority: 0.55 }),
+    ...localizedEntries('/billing', { changeFrequency: 'monthly', priority: 0.45 }),
+    ...localizedEntries('/privacy', { changeFrequency: 'yearly', priority: 0.3 }),
+    ...localizedEntries('/terms', { changeFrequency: 'yearly', priority: 0.3 }),
+    ...localizedEntries('/refund-policy', { changeFrequency: 'yearly', priority: 0.35 }),
+    ...localizedEntries('/blog', { changeFrequency: 'weekly', priority: 0.8 }),
     ...localizedEntries('/tools', { changeFrequency: 'weekly', priority: 0.9 }),
     ...TOOL_PAGES.flatMap(({ slug }) =>
       localizedEntries(`/tools/${slug}`, { changeFrequency: 'monthly' as const, priority: 0.85 }),
     ),
-    { url: `${siteUrl}/blog`, changeFrequency: 'weekly', priority: 0.8 },
     ...BLOG_POSTS.map(({ slug, updatedAt }) => ({
       url: `${siteUrl}/blog/${slug}`,
       lastModified: new Date(updatedAt),

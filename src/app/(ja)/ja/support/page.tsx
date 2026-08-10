@@ -3,15 +3,15 @@ import { SupportContent } from '@/components/site/SupportContent';
 import { marketingCopy } from '@/lib/i18n/marketing';
 import { alternatesFor, openGraphFor } from '@/lib/i18n/routes';
 
-const copy = marketingCopy('en').support;
+const copy = marketingCopy('ja').support;
 
 export const metadata: Metadata = {
   title: copy.metaTitle,
   description: copy.metaDescription,
-  alternates: alternatesFor('/support', 'en'),
-  openGraph: openGraphFor('en'),
+  alternates: alternatesFor('/support', 'ja'),
+  openGraph: openGraphFor('ja'),
 };
 
-export default function Page() {
-  return <SupportContent locale="en" />;
+export default function PageJa() {
+  return <SupportContent locale="ja" />;
 }

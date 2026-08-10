@@ -14,7 +14,7 @@ import { LOCALE_PREFIX, LOCALES, type Locale } from './locales';
  * 不读请求头，能留在边缘缓存里。
  */
 
-const CORE_PAGES = ['/', '/pricing'];
+const CORE_PAGES = ['/', '/pricing', '/support', '/billing'];
 const TOOL_PAGES_PATHS = [
   '/tools',
   '/tools/pdf-to-mind-map',
