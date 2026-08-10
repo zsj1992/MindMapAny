@@ -4,8 +4,12 @@ import { safeFetchHtml } from './ssrf';
 import { ExtractError, type Block, type ExtractedDoc } from './types';
 
 /**
- * 网页正文提取。MVP 只处理服务端渲染的 HTML —— 纯 JS 渲染的页面直接明确报错，
- * 不上无头浏览器（冷启动、成本、被封三重代价，第二阶段再说）。
+ * 网页正文提取。不上无头浏览器（冷启动、成本、被封三重代价）。
+ *
+ * 但「JS 渲染」不等于「拿不到正文」：大量框架和 CMS 会在首屏 HTML 的 <script> 里
+ * 注入一份服务端数据，正文 HTML 就在里面（Nuxt 的 __NUXT__、Next 的 __NEXT_DATA__、
+ * 各种 window.__INITIAL_STATE__，以及国内政务/CMS 常见的 var xxx = {...}）。
+ * 所以 Readability 拿不到东西时，再去 script 里挖一遍，能救回相当一部分页面。
  */
 
 const MIN_ARTICLE_CHARS = 200;
@@ -36,24 +40,92 @@ export async function extractWeb(rawUrl: string): Promise<ExtractedDoc> {
   }
 
   const article = new Readability(document as unknown as Document, { charThreshold: 100 }).parse();
-  if (!article?.content) {
-    throw new ExtractError('empty', 'No body text could be extracted. This page may require a login, use anti-bot protection, or render entirely in JavaScript.');
+  let blocks = article?.content ? htmlToBlocks(article.content) : [];
+  let chars = blocks.reduce((n, b) => n + b.text.length, 0);
+
+  // Readability 只看 DOM，看不见 script 里的数据。不够就去挖。
+  if (chars < MIN_ARTICLE_CHARS) {
+    const embedded = extractEmbeddedArticle(html);
+    if (embedded) {
+      const embeddedChars = embedded.reduce((n, b) => n + b.text.length, 0);
+      if (embeddedChars > chars) {
+        blocks = embedded;
+        chars = embeddedChars;
+      }
+    }
   }
 
-  const blocks = htmlToBlocks(article.content);
-  const chars = blocks.reduce((n, b) => n + b.text.length, 0);
+  if (!blocks.length) {
+    throw new ExtractError('empty', 'No body text could be extracted. This page may require a login, use anti-bot protection, or render entirely in JavaScript.');
+  }
   if (chars < MIN_ARTICLE_CHARS) {
     throw new ExtractError('empty', 'Too little body text was found — this may be a listing page, or one that renders in JavaScript.');
   }
-  if (article.excerpt && chars < 600) notes.push('The extracted article is short, so the map may be sparse');
+  if (article?.excerpt && chars < 600) notes.push('The extracted article is short, so the map may be sparse');
 
   return {
     kind: 'web',
-    title: (article.title || rawTitle || url).slice(0, 120),
+    title: (article?.title || rawTitle || url).slice(0, 120),
     blocks,
     url,
     notes,
   };
+}
+
+/**
+ * 从 <script> 里挖服务端注入的正文。
+ *
+ * 只在常规提取失败时兜底 —— script 里同时躺着导航、配置、埋点这些噪音，
+ * 常规路径能拿到正文时不该冒这个险。
+ *
+ * 做法是找「解码后含有块级 HTML 标签」的最大片段：正文一定带 <p>/<div>，
+ * 而导航菜单、配置对象通常是纯 JSON 字符串，天然被这一条筛掉。
+ */
+export function extractEmbeddedArticle(html: string): Block[] | null {
+  let best: Block[] = [];
+  let bestChars = 0;
+
+  for (const match of html.matchAll(/<script\b[^>]*>([\s\S]*?)<\/script>/gi)) {
+    const raw = match[1];
+    if (!raw || raw.length < 500) continue;
+
+    const decoded = decodeScriptPayload(raw);
+    // 没有块级标签的片段不可能是正文，直接跳过，省掉一次昂贵的解析
+    if (!/<(p|div|section|article|h[1-6])[\s>]/i.test(decoded)) continue;
+
+    for (const fragment of htmlFragments(decoded)) {
+      const parsed = htmlToBlocks(fragment);
+      const chars = parsed.reduce((n, b) => n + b.text.length, 0);
+      if (chars > bestChars) {
+        best = parsed;
+        bestChars = chars;
+      }
+    }
+  }
+
+  return bestChars >= MIN_ARTICLE_CHARS ? best : null;
+}
+
+/** JSON 字面量里的中文是 \uXXXX，斜杠和引号也被转义过，先还原成正常 HTML */
+function decodeScriptPayload(raw: string): string {
+  return raw
+    .replace(/\\u([0-9a-fA-F]{4})/g, (_, code: string) => String.fromCharCode(Number.parseInt(code, 16)))
+    .replace(/\\\//g, '/')
+    .replace(/\\"/g, '"')
+    .replace(/\\n/g, '\n');
+}
+
+/**
+ * 从解码后的脚本里切出 HTML 片段。
+ * 取第一个块级标签到最后一个闭合标签之间的整段 —— 正文通常是连续的一大块，
+ * 逐标签匹配反而会把一篇文章拆成几十个碎片。
+ */
+function htmlFragments(decoded: string): string[] {
+  const start = decoded.search(/<(p|div|section|article|h[1-6])[\s>]/i);
+  if (start < 0) return [];
+  const end = decoded.lastIndexOf('</');
+  if (end <= start) return [];
+  return [decoded.slice(start, end + 200)];
 }
 
 function isWechatArticleUrl(rawUrl: string): boolean {

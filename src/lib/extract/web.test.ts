@@ -1,7 +1,7 @@
 import assert from 'node:assert/strict';
 import { parseHTML } from 'linkedom';
 import { requestHeaders } from './ssrf';
-import { extractWechatArticle, htmlToBlocks } from './web';
+import { extractEmbeddedArticle, extractWechatArticle, htmlToBlocks } from './web';
 
 const legacyEditorArticle = `
   <article>
@@ -52,3 +52,44 @@ assert.equal(wechatHeaders.referer, 'https://mp.weixin.qq.com/');
 assert.match(requestHeaders(new URL('https://example.com/article'))['user-agent'], /MapAnyBot/);
 
 console.log('✓ web extractor: WeChat article content passed');
+
+/**
+ * 服务端把正文注入 <script>、DOM 里只有模板骨架的页面（政务站和国内 CMS 很常见）。
+ * 真实案例：cqrspx.cn —— Readability 只拿得到 960 字符的壳，正文全在 script 的 JSON 里。
+ *
+ * 转义用代码生成而不是手写：\uXXXX 经过源码字面量再到运行时要数三层反斜杠，
+ * 手写极易多写一层，测的就不是真实形态了。
+ */
+const jsonEscape = (value: string): string =>
+  value.replace(/[\u0080-\uffff]/g, (ch) => `\\u${ch.charCodeAt(0).toString(16).padStart(4, '0')}`).replace(/\//g, '\\/');
+
+// 正文必须超过 MIN_ARTICLE_CHARS(200)，否则测的是长度门槛而不是提取能力
+const articleHtml =
+  '<p>一、培训范围</p><p>根据数字化管理师、大数据工程技术人员、人工智能工程技术人员职业技术标准开展师资培训，按职业技能标准开展师资培训。</p>' +
+  '<p>二、培训对象</p><p>我市企事业单位、高校、企业、民办培训机构以及行业协会从事数字技术技能领域相关工作且符合申报条件的专业技术人员。</p>' +
+  '<p>三、申报条件</p><p>从事数字技术领域相关工作，业绩突出，能够胜任相应等级培训教学工作，应具有对应或相近专业中级及以上职称。</p>' +
+  '<p>四、培训费用</p><p>本次师资培训7天，培训费用为2800元/人，食宿交通费用自理，培训期间的食宿交通自理。</p>';
+
+// 导航配置：同样带转义中文，但没有块级标签，不能被误当成正文
+const navJson = jsonEscape(JSON.stringify({ nav: Array.from({ length: 40 }, (_, i) => ({ id: i, name: '首页导航项目' })) }));
+
+const scriptEmbeddedPage = [
+  '<!doctype html><html><body>',
+  "<div id=\"app\">{{appName}}<span>{{data['1'].value}}</span></div>",
+  `<script>var cfg = ${navJson};</script>`,
+  `<script>RichTextUitl.loadDetailPageProfile();var detail = {"content":"${jsonEscape(articleHtml)}"};</script>`,
+  '</body></html>',
+].join('\n');
+
+const embedded = extractEmbeddedArticle(scriptEmbeddedPage);
+assert.ok(embedded, 'expected to recover the article embedded in a script tag');
+const embeddedText = embedded.map((block) => block.text).join('\n');
+assert.match(embeddedText, /培训范围/);
+assert.match(embeddedText, /培训费用/);
+assert.match(embeddedText, /2800/);
+assert.doesNotMatch(embeddedText, /首页导航/, 'config JSON without block tags must not be mistaken for the article');
+
+// 常规 HTML 页面不该走这条兜底
+assert.equal(extractEmbeddedArticle(legacyEditorArticle), null, 'plain HTML must not be treated as script-embedded');
+
+console.log('✓ web extractor: script-embedded article content passed');
