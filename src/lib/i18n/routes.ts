@@ -15,6 +15,8 @@ import { LOCALE_PREFIX, LOCALES, type Locale } from './locales';
  */
 
 const CORE_PAGES = ['/', '/pricing', '/support', '/billing'];
+/** 法务页按语言单独声明：译文齐全的语言才列出，其余整页回退英文 */
+const LEGAL_PAGES = ['/terms', '/privacy', '/refund-policy'];
 const TOOL_PAGES_PATHS = [
   '/tools',
   '/tools/pdf-to-mind-map',
@@ -32,9 +34,18 @@ const TOOL_PAGES_PATHS = [
  * 也不能给出一个 404。新增译文页时必须同步加到这里，
  * 否则页面存在却没有任何入口链得到，等于白做。
  */
+/**
+ * 英文是源语言，按定义拥有全部页面 —— 由其余集合求并集得出，不手写。
+ *
+ * 手写过一次就出过事：法务页加进了中文集合却忘了加进英文集合，
+ * 于是 '/terms' 只剩一种语言，中文版既不进 sitemap 也拿不到 hreflang 互指。
+ * 页面上线了、能打开，搜索引擎却永远不知道它存在。
+ */
+const ALL_PAGES = [...CORE_PAGES, ...TOOL_PAGES_PATHS, ...LEGAL_PAGES];
+
 const TRANSLATED: Record<Locale, Set<string>> = {
-  en: new Set([...CORE_PAGES, ...TOOL_PAGES_PATHS]),
-  'zh-CN': new Set([...CORE_PAGES, ...TOOL_PAGES_PATHS]),
+  en: new Set(ALL_PAGES),
+  'zh-CN': new Set([...CORE_PAGES, ...TOOL_PAGES_PATHS, ...LEGAL_PAGES]),
   ja: new Set([...CORE_PAGES, ...TOOL_PAGES_PATHS]),
   ko: new Set([...CORE_PAGES, ...TOOL_PAGES_PATHS]),
   es: new Set([...CORE_PAGES, ...TOOL_PAGES_PATHS]),

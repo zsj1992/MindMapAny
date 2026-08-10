@@ -5,6 +5,7 @@ import { LOCALES, resolveLocale, WORKBENCH_LOCALES } from './locales';
 // 站点支持的语言数应随新增语言增长；写死数字会在加语言时变成假警报，只锁下界
 const MIN_LOCALES = 7;
 import { marketingCopy } from './marketing';
+import { hasTranslation } from './routes';
 import { translate, type MessageKey } from './messages';
 
 // ── Accept-Language 解析 ──
@@ -70,3 +71,20 @@ assert.equal(translate('zh-CN', 'toolbar.nodes', { n: 42 }), '42 个节点');
 assert.match(translate('en', 'toolbar.nodes'), /\{n\}/);
 
 console.log('✓ i18n: locale negotiation and dictionary completeness passed');
+
+// 英文必须覆盖其他语言拥有的每一个页面。少一条，那个页面就只剩一种语言，
+// 于是既不进 sitemap 也拿不到 hreflang —— 上线了却没人找得到。
+const EVERY_PATH = [
+  '/', '/pricing', '/support', '/billing',
+  '/tools', '/tools/pdf-to-mind-map', '/tools/docx-to-mind-map', '/tools/epub-to-mind-map',
+  '/tools/pptx-to-mind-map', '/tools/text-to-mind-map', '/tools/webpage-to-mind-map',
+  '/terms', '/privacy', '/refund-policy',
+];
+for (const path of EVERY_PATH) {
+  for (const locale of LOCALES) {
+    if (locale === 'en' || !hasTranslation(path, locale)) continue;
+    assert.ok(hasTranslation(path, 'en'), `${path} 有 ${locale} 译文，但英文侧没有登记`);
+  }
+}
+
+console.log('✓ i18n: English covers every translated path');

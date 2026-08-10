@@ -3,15 +3,15 @@ import { LegalContent } from '@/components/site/LegalContent';
 import { legalCopy } from '@/lib/i18n/legal';
 import { alternatesFor, openGraphFor } from '@/lib/i18n/routes';
 
-const copy = legalCopy('en').terms;
+const copy = legalCopy('zh-CN').terms;
 
 export const metadata: Metadata = {
   title: copy.metaTitle,
   description: copy.metaDescription,
-  alternates: alternatesFor('/terms', 'en'),
-  openGraph: openGraphFor('en'),
+  alternates: alternatesFor('/terms', 'zh-CN'),
+  openGraph: openGraphFor('zh-CN'),
 };
 
-export default function Page() {
-  return <LegalContent locale="en" doc="terms" />;
+export default function PageZh() {
+  return <LegalContent locale="zh-CN" doc="terms" />;
 }
