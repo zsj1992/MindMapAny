@@ -1,7 +1,7 @@
 'use client';
 
 import { ReactFlowProvider } from '@xyflow/react';
-import { useRouter } from 'next/navigation';
+import { usePathname, useRouter } from 'next/navigation';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import { MindMapCanvas } from '@/components/canvas/MindMapCanvas';
 import type { Plan } from '@/lib/credits';
@@ -52,6 +52,22 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
   useEffect(() => {
     if (initialMap) load(initialMap);
   }, [initialMap, load]);
+
+  /**
+   * 兜底：路由变了但组件没重新挂载时，把画布退回输入态。
+   *
+   * 侧栏导航已经在 NavLink 里主动清空了（那里还能弹未保存确认），
+   * 这里覆盖的是浏览器前进/后退这类拿不到点击事件的入口。
+   * 只在「输入页」生效 —— /app/map/[id] 带着 initialMap，清了就白开了。
+   */
+  const pathname = usePathname();
+  const mountedPath = useRef(pathname);
+  useEffect(() => {
+    if (initialMap) return;
+    if (pathname === mountedPath.current) return;
+    mountedPath.current = pathname;
+    useEditor.setState({ map: null, dirty: false, selectedId: null, editingId: null });
+  }, [pathname, initialMap]);
 
   // 生成完成后编辑器接管整屏。落地页很长，不滚过去的话工具栏会留在视口外，
   // 用户会以为只是原地多了一张图。

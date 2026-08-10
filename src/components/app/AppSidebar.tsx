@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import type { ReactNode } from 'react';
 import { create } from 'zustand';
+import { useEditor } from '@/store/editor';
 
 /** 抽屉开关是跨组件状态：触发按钮在顶栏，抽屉本体在内容区 */
 const useDrawer = create<{ open: boolean; setOpen: (v: boolean) => void }>((set) => ({
@@ -168,6 +169,18 @@ export function AppSidebar() {
   );
 }
 
+/**
+ * 离开当前编辑器前清空画布。返回 false 表示用户在「未保存」确认框里点了取消，
+ * 调用方要阻止这次导航。
+ */
+function resetEditorBeforeLeaving(): boolean {
+  const { map, dirty } = useEditor.getState();
+  if (!map) return true;
+  if (dirty && !confirm('This map has not been saved. Leave anyway?')) return false;
+  useEditor.setState({ map: null, dirty: false, selectedId: null, editingId: null });
+  return true;
+}
+
 function NavLink({
   href,
   label,
@@ -188,7 +201,16 @@ function NavLink({
   return (
     <Link
       href={href}
-      onClick={onNavigate}
+      onClick={(event) => {
+        // 侧栏跳的是同一个 Workspace 组件，同路由或同类型路由都不会重新挂载，
+        // 编辑器 store 里还留着上一张图 —— 用户点「Quick start」却仍看到刚生成的
+        // 脑图，会以为界面卡住了。这里主动清空，语义和工具栏的 New 按钮一致。
+        if (!resetEditorBeforeLeaving()) {
+          event.preventDefault();
+          return;
+        }
+        onNavigate();
+      }}
       className={`relative flex items-center gap-3 rounded-lg px-3 ${compact ? 'py-2 text-[12px]' : 'py-2.5 text-[13px]'} font-medium transition-all duration-200 active:scale-[0.99] ${
         active ? 'bg-bg-muted font-semibold text-text' : 'text-text-muted hover:bg-bg-subtle hover:text-text'
       }`}
