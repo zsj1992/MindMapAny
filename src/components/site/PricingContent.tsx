@@ -57,14 +57,14 @@ export function PricingContent({ locale }: { locale: Locale }) {
     <main>
       <section className="hero-glow relative overflow-hidden border-b" style={{ borderColor: 'var(--border)' }}>
         <div className="grid-lines pointer-events-none absolute inset-0 opacity-35" aria-hidden="true" />
-        <div className="relative mx-auto max-w-4xl px-5 py-16 text-center sm:py-20">
+        <div className="relative mx-auto max-w-4xl px-5 pb-8 pt-10 text-center sm:pb-10 sm:pt-12">
           <span className="eyebrow">{copy.eyebrow}</span>
-          <h1 className="mt-5 text-4xl font-bold tracking-[-0.04em] sm:text-5xl">{copy.heading}</h1>
-          <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-text-muted">{copy.intro}</p>
+          <h1 className="mt-4 text-4xl font-bold tracking-[-0.04em] sm:text-5xl">{copy.heading}</h1>
+          <p className="mx-auto mt-4 max-w-2xl text-[15px] leading-7 text-text-muted">{copy.intro}</p>
 
           {/* 外面这层 block 容器不能省：切换器和下面的徽章都是 inline-flex，
               同级放置会并排流到一行上去，看起来像两个不相干的东西挤在一起。 */}
-          <div className="mt-8">
+          <div className="mt-7">
           <div
             role="radiogroup"
             aria-label={copy.eyebrow}
@@ -93,7 +93,7 @@ export function PricingContent({ locale }: { locale: Locale }) {
           </div>
           </div>
 
-          <div className="mt-5">
+          <div className="mt-4">
             <p className="inline-flex items-center gap-2 rounded-full border bg-surface px-4 py-2 text-xs font-semibold text-text-muted shadow-sm">
               <span className="h-2 w-2 rounded-full bg-accent-500" />
               {copy.badge}
@@ -102,7 +102,7 @@ export function PricingContent({ locale }: { locale: Locale }) {
         </div>
       </section>
 
-      <section className="mx-auto max-w-7xl px-5 py-14 sm:py-20 lg:px-8">
+      <section className="mx-auto max-w-7xl px-5 pb-16 pt-8 sm:pb-20 lg:px-8">
         <div className="grid items-stretch gap-4 md:grid-cols-2 xl:grid-cols-4">
           {ORDER.map((planId) => {
             const plan = copy.plans[planId];
@@ -120,7 +120,7 @@ export function PricingContent({ locale }: { locale: Locale }) {
             return (
               <article
                 key={planId}
-                className={`relative flex flex-col rounded-2xl border bg-surface p-6 shadow-sm ${
+                className={`relative flex flex-col rounded-2xl border bg-surface p-5 shadow-sm sm:p-6 ${
                   featured ? 'border-brand-500 shadow-xl shadow-brand-900/10 ring-1 ring-brand-500' : ''
                 }`}
               >
@@ -136,9 +136,9 @@ export function PricingContent({ locale }: { locale: Locale }) {
                 </div>
                 <h2 className="mt-2 text-2xl font-bold tracking-tight">{plan.name}</h2>
                 {/* 固定三行高度：四张卡的说明长短不一，不锁高度价格行就会各自错位 */}
-                <p className="mt-3 min-h-[4.5rem] text-sm leading-6 text-text-muted">{plan.description}</p>
+                <p className="mt-2 min-h-[4rem] text-sm leading-[1.45] text-text-muted">{plan.description}</p>
 
-                <div className="mt-6 border-y py-5" style={{ borderColor: 'var(--border)' }}>
+                <div className="mt-4 border-y py-4" style={{ borderColor: 'var(--border)' }}>
                   <div className="flex items-baseline gap-1.5">
                     <span className="text-4xl font-bold tracking-[-0.04em]">{headline}</span>
                     {paid && <span className="text-sm font-medium text-text-muted">{copy.perMonth}</span>}
@@ -146,7 +146,7 @@ export function PricingContent({ locale }: { locale: Locale }) {
                   <div className={`mt-1.5 text-xs leading-5 ${period === 'annual' && paid ? 'font-medium text-accent-600' : 'text-text-muted'}`}>
                     {note}
                   </div>
-                  <div className="mt-4 flex items-end gap-2">
+                  <div className="mt-3 flex items-end gap-2">
                     <span className="text-2xl font-bold tracking-[-0.03em]">
                       {Number.isFinite(PLAN_CREDITS[planId]) ? PLAN_CREDITS[planId].toLocaleString() : '∞'}
                     </span>
@@ -154,9 +154,9 @@ export function PricingContent({ locale }: { locale: Locale }) {
                   </div>
                 </div>
 
-                <ul className="mt-6 flex-1 space-y-3">
+                <ul className="mt-4 flex-1 space-y-2">
                   {[...coreLimits(planId), ...plan.extras].map((item) => (
-                    <li key={item} className="flex items-start gap-2.5 text-sm leading-6 text-text-muted">
+                    <li key={item} className="flex items-start gap-2.5 text-[13px] leading-[1.5] text-text-muted">
                       <span className="mt-0.5 font-bold text-accent-500">✓</span>
                       {item}
                     </li>
@@ -164,11 +164,11 @@ export function PricingContent({ locale }: { locale: Locale }) {
                 </ul>
 
                 {paid ? (
-                  <a href={`/api/checkout?plan=${planId}&period=${period}`} className={`btn mt-7 h-11 w-full ${featured ? 'btn-primary' : 'btn-secondary'}`}>
+                  <a href={`/api/checkout?plan=${planId}&period=${period}`} className={`btn mt-5 h-11 w-full ${featured ? 'btn-primary' : 'btn-secondary'}`}>
                     {plan.action} <span aria-hidden="true">→</span>
                   </a>
                 ) : (
-                  <Link href="/app/new" className="btn btn-secondary mt-7 h-11 w-full">
+                  <Link href="/app/new" className="btn btn-secondary mt-5 h-11 w-full">
                     {plan.action} <span aria-hidden="true">→</span>
                   </Link>
                 )}
