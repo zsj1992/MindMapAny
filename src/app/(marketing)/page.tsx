@@ -153,7 +153,7 @@ export default function HomePage() {
             <div className="relative max-w-2xl">
               <p className="text-[10px] font-semibold tracking-[0.16em] text-cyan-300">READY WHEN YOU ARE</p>
               <h2 className="mt-4 text-balance text-3xl font-semibold leading-tight tracking-[-0.04em] sm:text-4xl">Stop starting long documents on page one.</h2>
-              <p className="mt-4 max-w-xl text-sm leading-7 text-blue-100/70">Upload your content, see the whole structure first, then decide which sections are worth reading closely. No signup required to start.</p>
+              <p className="mt-4 max-w-xl text-sm leading-7 text-blue-100/70">Upload your content, see the whole structure first, then decide which sections are worth reading closely. Create a free account and 30 credits are waiting.</p>
             </div>
             <Link href="/app/new" className="btn relative mt-8 h-12 bg-white px-6 text-[14px] text-[#102f53] shadow-lg transition-transform hover:-translate-y-0.5 hover:bg-blue-50 lg:mt-0">
               Create your first map <span aria-hidden="true">↗</span>

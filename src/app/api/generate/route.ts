@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { ANON_TRIAL_LIMITS, checkGate, estimateCredits } from '@/lib/credits';
+import { checkGate, estimateCredits } from '@/lib/credits';
 import { extractDocument, isSupportedDocument } from '@/lib/extract/document';
 import { extractPdf } from '@/lib/extract/pdf';
 import { ExtractError, totalChars, type ExtractedDoc, type InputKind } from '@/lib/extract/types';
@@ -35,26 +35,20 @@ export async function POST(req: Request) {
 
   try {
     const { params, file, filename, mimeType } = await readRequest(req);
+    // 生成必须登录。页面层的重定向挡不住直接打接口，真正的闸门在这里。
     const session = await getCurrentProfile();
     const user = session?.user ?? null;
     const profile = session?.profile ?? null;
-    jobUserId = user?.id ?? null;
+    if (!user) return fail(401, 'login_required', 'Please sign in to generate a mind map');
+    jobUserId = user.id;
 
     const burst = await rateLimitRequest(req, {
-      scope: user ? 'generate:user:minute' : 'generate:anon:minute',
-      ...(user ? { subject: user.id } : {}),
-      limit: user ? 10 : 2,
+      scope: 'generate:user:minute',
+      subject: user.id,
+      limit: 10,
       windowSeconds: 60,
     });
     if (!burst.allowed) return rateLimited(burst.resetAt);
-    if (!user) {
-      const trial = await rateLimitRequest(req, {
-        scope: 'generate:anon:day',
-        limit: 3,
-        windowSeconds: 86_400,
-      });
-      if (!trial.allowed) return rateLimited(trial.resetAt, "You've used today's free trial runs. Sign in to continue.");
-    }
 
     // ── 提取 ──
     if (file) {
@@ -97,14 +91,7 @@ export async function POST(req: Request) {
     // ── 配额校验 ──
     const tier = params.tier as ModelTier;
 
-    if (!user) {
-      if (!ANON_TRIAL_LIMITS.kinds.includes(kind)) {
-        return fail(401, 'login_required', 'This input type requires you to sign in');
-      }
-      if (chars > ANON_TRIAL_LIMITS.maxChars) {
-        return fail(401, 'login_required', 'Trial runs only handle shorter content. Sign in to process longer documents.');
-      }
-    } else if (profile) {
+    if (profile) {
       const gate = checkGate({
         plan: profile.plan,
         credits: profile.credits,
@@ -116,11 +103,11 @@ export async function POST(req: Request) {
       if (!gate.ok) return fail(402, gate.code ?? 'forbidden', gate.reason ?? 'Quota exceeded');
     }
 
-    const effectiveTier: ModelTier = user ? tier : ANON_TRIAL_LIMITS.tier;
-    const cost = user && profile?.plan !== 'unlimited'
+    const effectiveTier: ModelTier = tier;
+    const cost = profile?.plan !== 'unlimited'
       ? estimateCredits({ kind, tier: effectiveTier, depth: params.depth as Depth, chars })
       : 0;
-    if (user && profile && profile.plan !== 'unlimited' && cost > 0) {
+    if (profile && profile.plan !== 'unlimited' && cost > 0) {
       if (!(await reserveCredits(user.id, cost))) {
         return fail(402, 'insufficient_credits', `Not enough credits — this run needs ${cost}`);
       }

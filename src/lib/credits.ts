@@ -83,8 +83,3 @@ export function kindLabel(kind: InputKind): string {
   return { text: 'text', pdf: 'PDF', web: 'web page', youtube: 'YouTube' }[kind];
 }
 
-/**
- * 未登录用户的免费试用：按 IP + 指纹给一次机会，只走最便宜的路径。
- * 真正的防滥用要靠内容哈希缓存 + 速率限制，这里只是第一道门。
- */
-export const ANON_TRIAL_LIMITS = { kinds: ['text', 'web'] as InputKind[], tier: 'fast' as ModelTier, maxChars: 8_000 };

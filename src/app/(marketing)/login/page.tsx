@@ -87,13 +87,10 @@ export default async function LoginPage({ searchParams }: PageProps<'/login'>) {
           <EmailAuthForm next={next} emailVerificationRequired={emailConfigured()} />
 
           <p className="mt-6 text-center text-xs leading-relaxed text-text-subtle">
-            By continuing you agree that we may process the content you submit in order to generate mind maps.
-            <br />
-            Rather not sign in?
-            <Link href="/app/new" className="text-brand-600 underline-offset-2 hover:underline dark:text-brand-400">
-              Try it directly
-            </Link>
-            {' '}(text and web pages work, but nothing is saved)
+            By continuing you agree that we may process the content you submit in order to generate mind maps, and to our{' '}
+            <Link href="/terms" className="text-brand-600 underline-offset-2 hover:underline dark:text-brand-400">Terms</Link>
+            {' '}and{' '}
+            <Link href="/privacy" className="text-brand-600 underline-offset-2 hover:underline dark:text-brand-400">Privacy Policy</Link>.
           </p>
         </div>
       </div>

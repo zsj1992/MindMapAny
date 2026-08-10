@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { Workspace } from '@/components/Workspace';
-import { getCurrentProfile } from '@/lib/auth/session';
+import { requireUser } from '@/lib/auth/require-user';
 import { SOURCE_COPY, SOURCE_SLUGS, type SourceCopy } from '@/lib/sources';
 
 /**
@@ -34,11 +34,11 @@ export default async function SourcePage({ params }: Props) {
   const { kind } = await params;
   const copy = resolve(kind);
   if (!copy) notFound();
-  const session = await getCurrentProfile();
+  const { plan } = await requireUser(`/app/${copy.slug}`);
 
   return (
     <Workspace
-      plan={session?.profile?.plan ?? null}
+      plan={plan}
       mode={copy.slug}
       title={copy.title}
       subtitle={copy.subtitle}

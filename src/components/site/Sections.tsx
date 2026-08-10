@@ -296,7 +296,7 @@ const FAQS = [
   },
   {
     q: 'Do I have to sign up to try it?',
-    a: 'No. You can generate a map straight away without an account, using a daily trial allowance, for text and web page inputs. Signing in is what lets you save maps, create share links, use longer documents and keep a credit balance.',
+    a: 'Yes — generating a map requires an account. Signing up is free, takes seconds with Google or an email address, and grants 30 credits straight away. Viewing a map someone shared with you needs no account at all.',
   },
   {
     q: 'How do credits work?',

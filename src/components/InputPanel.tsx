@@ -130,13 +130,14 @@ export function InputPanel({
   const knownChars = tab === 'text'
     ? text.split(/\n{2,}/).reduce((n, block) => n + block.trim().length, 0)
     : null;
-  const freeRun = plan === null || plan === 'unlimited';
-  const cost = freeRun ? 0 : estimateCredits({ kind, tier: 'fast', depth, chars: knownChars ?? 0 });
+  // plan 为 null 只可能出现在登录态刚失效的瞬间；/app 需要登录，正常路径拿得到套餐
+  const freeRun = plan === 'unlimited';
+  const cost = plan === null || freeRun ? 0 : estimateCredits({ kind, tier: 'fast', depth, chars: knownChars ?? 0 });
   const costLabel = freeRun
-    ? plan === 'unlimited'
-      ? 'Unlimited plan — no credits are used'
-      : 'Free trial run — no credits are used'
-    : knownChars !== null
+    ? 'Unlimited plan — no credits are used'
+    : plan === null
+      ? 'Sign in to generate'
+      : knownChars !== null
       ? `Estimated cost: ${cost} ${cost === 1 ? 'credit' : 'credits'}`
       : `From ${cost} ${cost === 1 ? 'credit' : 'credits'}, depending on length`;
 

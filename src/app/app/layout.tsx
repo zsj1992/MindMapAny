@@ -16,8 +16,17 @@ export const metadata: Metadata = {
 /**
  * 工作台外壳：左侧栏 + 顶栏（额度 / 升级 / 账号）。
  *
- * 与 Mapify 的一处有意不同：未登录也能进工作台，用试用额度直接生成。
- * 强制登录才让用，会把「打开就能试」这个最大的转化优势扔掉。
+ * 整个 /app 需要登录。之前允许匿名试用，改掉的原因是免费额度被脚本刷的成本
+ * 全部落在自己的模型账单上，而匿名请求没有可追责的主体，只能靠 IP 限流兜。
+ * 代价是「打开就能试」的转化优势没了 —— 这是明确取舍，不是疏漏。
+ *
+ * 登录守卫不放在这里，放在各页面的 requireUser：layout 先于页面执行，
+ * 一旦在这里 redirect，页面就没机会把「登录后回哪一页」带上，
+ * 所有入口都会被拍平成 /app/new。
+ *
+ * 所以 layout 只负责容忍未登录状态地渲染外壳 —— 正常情况下页面已经先跳走了，
+ * 这个分支只在新页面忘了调 requireUser 时才会露出来，
+ * 那种情况下所有 API 依然会 401，不是安全漏洞。
  */
 export default async function AppLayout({ children }: LayoutProps<'/app'>) {
   const session = await getCurrentProfile();
@@ -39,12 +48,12 @@ export default async function AppLayout({ children }: LayoutProps<'/app'>) {
           <span
             className="hidden items-center gap-2 rounded-lg border bg-bg-subtle px-3 py-2 text-xs font-medium tabular-nums text-text-muted sm:flex"
             style={{ borderColor: 'var(--border)' }}
-            title={profile ? 'Credits remaining' : 'Not signed in — using trial allowance'}
+            title={profile ? 'Credits remaining' : 'Sign in to see your credits'}
           >
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-3.5 w-3.5 text-accent-500">
               <path strokeLinecap="round" strokeLinejoin="round" d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z" />
             </svg>
-            {profile ? formatCredits(profile) : 'Trial'}
+            {profile ? formatCredits(profile) : '—'}
           </span>
 
           <ThemeToggle />
@@ -57,12 +66,9 @@ export default async function AppLayout({ children }: LayoutProps<'/app'>) {
               credits={profile?.credits ?? 0}
             />
           ) : (
-            <>
-              <Link href="/support" className="btn btn-ghost hidden h-9 px-2 text-xs sm:inline-flex">Support</Link>
-              <Link href="/login?next=/app/new" className="btn btn-primary h-9 px-4 text-xs">
-                Sign in
-              </Link>
-            </>
+            <Link href="/login?next=/app/new" className="btn btn-primary h-9 px-4 text-xs">
+              Sign in
+            </Link>
           )}
         </div>
       </header>

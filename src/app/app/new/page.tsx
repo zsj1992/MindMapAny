@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { Workspace } from '@/components/Workspace';
-import { getCurrentProfile } from '@/lib/auth/session';
+import { requireUser } from '@/lib/auth/require-user';
 
 export const metadata: Metadata = {
   title: 'Quick start',
@@ -8,10 +8,10 @@ export const metadata: Metadata = {
 };
 
 export default async function NewMapPage() {
-  const session = await getCurrentProfile();
+  const { plan } = await requireUser('/app/new');
   return (
     <Workspace
-      plan={session?.profile?.plan ?? null}
+      plan={plan}
       title="Create a mind map"
       subtitle="Paste text, upload a document, or drop in a web link."
     />
