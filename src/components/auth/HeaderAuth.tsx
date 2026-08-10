@@ -14,23 +14,25 @@ export function HeaderAuth() {
   const { data: session, isPending } = useSession();
 
   if (isPending) {
-    return <span className="h-9 w-24 animate-pulse rounded-xl bg-bg-muted" aria-hidden="true" />;
+    return <span className="h-9 w-20 animate-pulse rounded-xl bg-bg-muted sm:w-32" aria-hidden="true" />;
   }
 
   if (session?.user) {
     return (
-      <Link href="/app/new" className="btn btn-primary h-9 px-4">
-        Open workbench
+      <Link href="/app/new" className="btn btn-primary h-9 whitespace-nowrap px-3 text-xs sm:px-4 sm:text-sm">
+        {/* 手机上「Open workbench」会折成两行把顶栏撑变形，窄屏只留核心词 */}
+        <span className="sm:hidden">Workbench</span>
+        <span className="hidden sm:inline">Open workbench</span>
       </Link>
     );
   }
 
   return (
     <>
-      <Link href="/login" className="btn btn-ghost h-9 px-3">
+      <Link href="/login" className="btn btn-ghost h-9 whitespace-nowrap px-2 text-xs sm:px-3 sm:text-sm">
         Sign in
       </Link>
-      <Link href="/app/new" className="btn btn-primary h-9 px-4">
+      <Link href="/app/new" className="btn btn-primary h-9 whitespace-nowrap px-3 text-xs sm:px-4 sm:text-sm">
         Start free
       </Link>
     </>

@@ -12,7 +12,7 @@ export default function MarketingLayout({ children }: LayoutProps<'/'>) {
         className="sticky top-0 z-40 border-b bg-surface/85 backdrop-blur-xl"
         style={{ borderColor: 'var(--border)' }}
       >
-        <div className="mx-auto flex h-[4.25rem] max-w-[86rem] items-center gap-10 px-5 lg:px-10">
+        <div className="mx-auto flex h-[4.25rem] max-w-[86rem] items-center gap-4 px-4 sm:px-5 md:gap-10 lg:px-10">
           <Link href="/" className="shrink-0">
             <Logo />
           </Link>
