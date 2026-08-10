@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
+import { EmailAuthForm } from '@/components/auth/EmailAuthForm';
 import { OAuthButtons } from '@/components/auth/OAuthButtons';
 import { HeroMap } from '@/components/site/HeroMap';
 import { Logo } from '@/components/site/Logo';
@@ -72,13 +73,17 @@ export default async function LoginPage({ searchParams }: PageProps<'/login'>) {
           <h2 className="mt-4 text-xl font-semibold tracking-tight lg:mt-0">Get started</h2>
           <p className="mt-1.5 text-sm text-text-muted">Pick a sign-in method — it takes seconds.</p>
 
-          {providers.length === 0 ? (
-            <p className="mt-6 rounded-xl bg-amber-50 px-4 py-3 text-sm text-amber-800 dark:bg-amber-950/30 dark:text-amber-200">
-              Sign-in is not configured: GOOGLE_CLIENT_ID / GITHUB_CLIENT_ID and related environment variables must be set.
-            </p>
-          ) : (
-            <OAuthButtons providers={providers} next={next} />
+          {providers.length > 0 && <OAuthButtons providers={providers} next={next} />}
+
+          {providers.length > 0 && (
+            <div className="mt-7 flex items-center gap-3" aria-hidden="true">
+              <span className="h-px flex-1" style={{ backgroundColor: 'var(--border)' }} />
+              <span className="text-[11px] font-medium text-text-subtle">or with email</span>
+              <span className="h-px flex-1" style={{ backgroundColor: 'var(--border)' }} />
+            </div>
           )}
+
+          <EmailAuthForm next={next} />
 
           <p className="mt-6 text-center text-xs leading-relaxed text-text-subtle">
             By continuing you agree that we may process the content you submit in order to generate mind maps.

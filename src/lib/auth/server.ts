@@ -24,8 +24,21 @@ export function getAuth() {
     // 构建机上读到的是 .env.local 里的 localhost，wrangler 的 vars 覆盖不掉，
     // 结果就是线上 OAuth 的 redirect_uri 指向 localhost:3000。
     baseURL: process.env.SITE_URL ?? process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000',
-    // MVP 只做 OAuth：魔法链接要额外接邮件服务，先不引入第四个外部依赖
-    emailAndPassword: { enabled: false },
+    /**
+     * 邮箱 + 密码。选它而不是魔法链接，是因为魔法链接必须先接邮件服务，
+     * 而这条路零外部依赖，当天就能上。
+     *
+     * 代价写在这里，不要忘：没有邮件服务就没有「忘记密码」自助重置，
+     * 也没有邮箱验证。所以 requireEmailVerification 保持关闭 —— 打开它会在
+     * 没有发信通道的情况下把所有新用户直接锁在门外。
+     * 接上邮件服务后要做的两件事：sendResetPassword、sendVerificationEmail。
+     */
+    emailAndPassword: {
+      enabled: true,
+      requireEmailVerification: false,
+      minPasswordLength: 8,
+      autoSignIn: true,
+    },
     socialProviders: {
       ...(process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET
         ? {
