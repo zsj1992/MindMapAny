@@ -1,6 +1,10 @@
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
-import { LOCALES, resolveLocale } from './locales';
+import { LOCALES, resolveLocale, WORKBENCH_LOCALES } from './locales';
+
+// 站点支持的语言数应随新增语言增长；写死数字会在加语言时变成假警报，只锁下界
+const MIN_LOCALES = 7;
+import { marketingCopy } from './marketing';
 import { translate, type MessageKey } from './messages';
 
 // ── Accept-Language 解析 ──
@@ -9,7 +13,14 @@ assert.equal(resolveLocale(undefined, 'zh-CN,zh;q=0.9,en;q=0.8'), 'zh-CN');
 assert.equal(resolveLocale(undefined, 'zh-Hans-CN,zh-Hans;q=0.9'), 'zh-CN', 'zh-Hans 也要归到简体中文');
 assert.equal(resolveLocale(undefined, 'zh-TW,zh;q=0.9'), 'zh-CN', '目前只有一套中文，繁体用户也先看中文界面');
 assert.equal(resolveLocale(undefined, 'en-US,en;q=0.9'), 'en');
-assert.equal(resolveLocale(undefined, 'fr-FR,fr;q=0.9'), 'en', '不支持的语言回退英文');
+assert.equal(resolveLocale(undefined, 'ja-JP,ja;q=0.9'), 'ja');
+assert.equal(resolveLocale(undefined, 'ko-KR,ko;q=0.9'), 'ko');
+assert.equal(resolveLocale(undefined, 'es-MX,es;q=0.9'), 'es', '地区变体归到主语言');
+assert.equal(resolveLocale(undefined, 'de-AT,de;q=0.9'), 'de');
+assert.equal(resolveLocale(undefined, 'fr-CA,fr;q=0.9'), 'fr');
+// 未支持的语言回退英文。这里必须用一门确实没做的语言 —— 早先这条写的是 fr-FR，
+// 加上法语之后它开始「失败」，而代码是对的，失败的是断言本身。
+assert.equal(resolveLocale(undefined, 'it-IT,it;q=0.9'), 'en', '不支持的语言回退英文');
 assert.equal(resolveLocale(undefined, null), 'en');
 assert.equal(resolveLocale(undefined, ''), 'en');
 
@@ -28,8 +39,17 @@ const source = readFileSync(new URL('./messages.ts', import.meta.url), 'utf8');
 const keys = [...source.matchAll(/^ {2}'([\w.]+)': \{/gm)].map((m) => m[1] as MessageKey);
 assert.ok(keys.length > 100, `expected the dictionary to be populated, found ${keys.length}`);
 
+// 只对工作台真正翻译过的语言要求完整。其余语言按设计回退英文，
+// 用 LOCALES 遍历会因为回退而恒真，测了等于没测。
+assert.ok(WORKBENCH_LOCALES.length >= 2, 'expected at least two workbench locales');
+assert.ok(LOCALES.length >= MIN_LOCALES, `expected at least ${MIN_LOCALES} site locales, found ${LOCALES.length}`);
+// 每种语言都必须有营销文案，否则 /de 这类路由会渲染出英文却声明 lang="de"
+for (const locale of LOCALES) {
+  assert.ok(marketingCopy(locale).home.metaTitle.trim().length > 0, `${locale} is missing marketing copy`);
+}
+
 for (const key of keys) {
-  for (const locale of LOCALES) {
+  for (const locale of WORKBENCH_LOCALES) {
     const value = translate(locale, key);
     assert.notEqual(value, key, `${key} is missing a ${locale} translation`);
     assert.ok(value.trim().length > 0, `${key} is empty in ${locale}`);

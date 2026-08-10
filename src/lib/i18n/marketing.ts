@@ -1682,7 +1682,627 @@ const es: MarketingCopy = {
   },
 };
 
-const COPY: Record<Locale, MarketingCopy> = { en, 'zh-CN': zhCN, ja, ko, es };
+const de: MarketingCopy = {
+  nav: {
+    tools: 'Werkzeuge',
+    blog: 'Blog',
+    pricing: 'Preise',
+    faq: 'Häufige Fragen',
+    signIn: 'Anmelden',
+    startFree: 'Kostenlos starten',
+    workbench: 'Arbeitsbereich öffnen',
+    workbenchShort: 'Arbeitsbereich',
+    toolsGroups: { documents: 'Dokumente', textWeb: 'Text und Web' },
+    deepResearch: 'Tiefenrecherche',
+    deepResearchHint: 'Bericht mit Quellenangaben aus mehreren Quellen',
+    allTools: 'Alle Werkzeuge',
+    allToolsHint: 'Alle Eingabeformate ansehen',
+    toolLabels: [
+      'PDF zur Mindmap',
+      'Word zur Mindmap',
+      'PowerPoint zur Mindmap',
+      'EPUB zur Mindmap',
+      'Text zur Mindmap',
+      'Webseite zur Mindmap',
+    ],
+    switchTo: 'Deutsch',
+  },
+  footer: {
+    tagline: 'Verwandelt komplexe Inhalte in klare, bearbeitbare und nachprüfbare Wissensstrukturen.',
+    columns: [
+      { title: 'Produkt', labels: ['Werkzeuge', 'Preise', 'Meine Mindmaps', 'Häufige Fragen'] },
+      {
+        title: 'Werkzeuge und Ressourcen',
+        labels: [
+          'PDF zur Mindmap',
+          'Word zur Mindmap',
+          'EPUB zur Mindmap',
+          'PowerPoint zur Mindmap',
+          'Text zur Mindmap',
+          'Webseite zur Mindmap',
+          'Blog',
+        ],
+      },
+      {
+        title: 'Support und Rechtliches',
+        labels: ['Support kontaktieren', 'Abo verwalten', 'Datenschutzerklärung', 'Nutzungsbedingungen', 'Rückerstattung und Kündigung'],
+      },
+    ],
+    legal: 'Zahlungen werden von Creem als Merchant of Record abgewickelt',
+  },
+  home: {
+    metaTitle: 'MindMapAny — Aus beliebigen Inhalten eine klare, nachprüfbare Mindmap',
+    metaDescription:
+      'Text einfügen oder ein PDF, Word-Dokument, EPUB, PPTX oder einen Webartikel hochladen — in Sekunden entsteht eine bearbeitbare Mindmap, deren Knoten sich bis zur Quelle zurückverfolgen lassen.',
+    eyebrow: 'MINDMAPANY / INHALTE STRUKTURIEREN',
+    headingLead: 'Lange Inhalte beginnen mit',
+    headingHighlight: 'Struktur',
+    lede:
+      'Verwandeln Sie Fachartikel, Berichte, Word-Dateien, E-Books und Webseiten in Mindmaps mit echter Hierarchie. Keine gekürzte Zusammenfassung, sondern eine Karte des Inhalts, die Sie bearbeiten und am Original überprüfen können.',
+    ctaPrimary: 'Kostenlos eine Mindmap erstellen',
+    ctaSecondary: 'Warum eine Zusammenfassung nicht reicht',
+    worksWith: 'FUNKTIONIERT DIREKT MIT',
+    inputLabels: ['Langer Text', 'PDF', 'Word', 'EPUB', 'PPTX', 'Webartikel'],
+    sourceDocLabel: 'Ausgangsdokument',
+    sourceDocPages: 'PDF mit 48 Seiten',
+    panelTitle: 'KI-Forschungsbericht / Methoden und Ergebnisse',
+    panelNodes: '42 Knoten',
+    panelTrace: 'Jeder Knoten führt zurück zur Quelle',
+    panelFooter: ['Knoten bearbeitbar', 'Seitenangaben', 'PNG / SVG / MD'],
+    stats: [
+      ['7', 'Eingabeformate'],
+      ['30+', 'Ausgabesprachen'],
+      ['110', 'Knoten pro Mindmap (max.)'],
+      ['Nachprüfbar', 'Seiten- und Abschnittsanker'],
+    ],
+    ctaEyebrow: 'BEREIT, WENN SIE ES SIND',
+    ctaHeading: 'Hören Sie auf, lange Dokumente auf Seite eins zu beginnen.',
+    ctaBody:
+      'Laden Sie Ihren Inhalt hoch, verschaffen Sie sich zuerst einen Überblick über die Struktur und entscheiden Sie dann, welche Abschnitte eine genaue Lektüre verdienen. Für ein kostenloses Konto liegen 30 Credits bereit.',
+    ctaButton: 'Erste Mindmap erstellen',
+  },
+  features: {
+    eyebrow: 'FUNKTIONEN',
+    lede: 'Gemacht für alle, die lange Inhalte sorgfältig lesen, prüfen und ordnen müssen.',
+    headingA: 'Eine Zusammenfassung sagt Ihnen, was gesagt wurde.',
+    headingB: 'Die Struktur sagt Ihnen, warum.',
+    items: [
+      {
+        title: 'Viele Eingaben, ein Verfahren',
+        body: 'Text einfügen, ein PDF / DOCX / EPUB / PPTX hochladen oder einen Link angeben. Die Extraktion unterscheidet sich je Format; die Klarheit der entstehenden Struktur nicht.',
+        detail: '7 Quellen',
+      },
+      {
+        title: 'Jeder Knoten ist rückverfolgbar',
+        body: 'Knoten aus einem PDF tragen Seitenzahlen, Knoten aus einem PPTX die Foliennummer. Die Position wird beim Zerlegen des Textes festgehalten und nicht nachträglich vom Modell erfunden.',
+        detail: 'Deterministische Belege',
+      },
+      {
+        title: 'Stabile Hierarchie statt flacher Liste',
+        body: 'Lange Dokumente werden abschnittsweise zusammengefasst und dann zusammengeführt; doppelte Themen fallen zusammen, verwaiste Knoten entfallen. Drei Detailstufen entsprechen unterschiedlichen Grenzen für Ebenen und Knoten.',
+        detail: 'Bis zu 5 Ebenen',
+      },
+      {
+        title: 'Nach der Erstellung bearbeitbar',
+        body: 'Doppelklick zum Umbenennen, Tab für einen Unterknoten, Enter für einen Nachbarknoten, Leertaste zum Einklappen. Kein statisches Bild, das man nur ansehen kann.',
+        detail: 'Bearbeiten per Tastatur',
+      },
+      {
+        title: 'Exportieren und teilen',
+        body: 'Mit einem Klick als PNG, SVG oder Markdown exportieren. Mit einem öffentlichen Link können andere die Mindmap ohne Registrierung ansehen.',
+        detail: '3 Exportformate',
+      },
+      {
+        title: 'Über 30 Ausgabesprachen',
+        body: 'Lesen Sie einen Fachartikel in einer Sprache und erhalten Sie die Mindmap in einer anderen. Ausgangs- und Ausgabesprache sind unabhängig voneinander.',
+        detail: 'Sprachübergreifend',
+      },
+    ],
+    pipelineLabel: 'EIN VERFAHREN',
+    pipelineStages: ['Extrahieren', 'Zerlegen und verankern', 'Hierarchie aufbauen', 'Bearbeiten'],
+    pipelineNote:
+      'Nur der erste Schritt hängt vom Format ab. Alles danach ist identisch — deshalb kommen eine Präsentation und ein Fachartikel gleich gut strukturiert heraus.',
+  },
+  inputTypes: {
+    eyebrow: 'NACH EINGABEFORMAT',
+    lede: 'Jedes Format wird anders extrahiert, und jedes verankert seine Knoten an etwas anderem.',
+    heading: 'Womit fangen Sie an?',
+    items: [
+      {
+        name: 'PDF',
+        anchor: 'Seitenzahlen',
+        body: 'Fachartikel, Berichte und Whitepaper. Jeder Knoten behält die Seite, aus der er stammt — eine Zahl zu prüfen heißt eine Seite zu öffnen statt die Datei erneut zu lesen. Nur textbasierte PDFs; Scans brauchen zuerst OCR.',
+        linkLabel: 'PDF zur Mindmap',
+      },
+      {
+        name: 'Word',
+        anchor: 'Dokumentreihenfolge',
+        body: 'Spezifikationen, Entwürfe und lange Berichte. Absätze des Fließtexts und Tabelleninhalte werden der Reihe nach gelesen. Ein DOCX hat keine festen Seiten, solange Word es nicht setzt — Knoten verankern sich deshalb an der Position im Dokument.',
+        linkLabel: 'Word zur Mindmap',
+      },
+      {
+        name: 'EPUB',
+        anchor: 'Kapiteltitel',
+        body: 'Ganze Bücher, gelesen in der vom Verlag festgelegten Reihenfolge. Knoten führen ihr Kapitel mit — der verlässliche Anker bei E-Books, denn Seitenzahlen verschieben sich mit der Schriftgröße. DRM-geschützte Dateien lassen sich nicht öffnen.',
+        linkLabel: 'EPUB zur Mindmap',
+      },
+      {
+        name: 'PowerPoint',
+        anchor: 'Foliennummern',
+        body: 'Vorträge, Schulungsunterlagen und Angebote. Der Folientext wird in der Reihenfolge der Präsentation gelesen, jeder Knoten trägt seine Folie. Notizen und Bilder werden nicht gelesen — Präsentationen, die das Wesentliche in den Notizen verstecken, ergeben eine dünne Mindmap.',
+        linkLabel: 'PowerPoint zur Mindmap',
+      },
+      {
+        name: 'Langer Text',
+        anchor: 'Einfügen und los',
+        body: 'Protokolle, Transkripte, Recherchenotizen — alles, was sich markieren und kopieren lässt. Der schnellste Weg zu sehen, ob viel unstrukturierter Text wirklich eine schlüssige Argumentation trägt.',
+        linkLabel: 'Text zur Mindmap',
+      },
+      {
+        name: 'Webseiten',
+        anchor: 'Abschnittsanker',
+        body: 'Artikel, Dokumentationen und Lexikoneinträge. Wir holen den Fließtext heraus und lassen Navigation und Werbung weg. Seiten hinter einer Anmeldung, mit Bot-Schutz oder rein clientseitig gerendert lassen sich nicht lesen.',
+        linkLabel: 'Webseite zur Mindmap',
+      },
+    ],
+  },
+  howItWorks: {
+    eyebrow: 'SO FUNKTIONIERT ES',
+    heading: 'Dieselbe Lektüre. Bessere Reihenfolge.',
+    steps: [
+      { title: 'Inhalt hinzufügen', body: 'Text, ein Dokument, ein E-Book oder ein Link. Wählen Sie Ausgabesprache, Detailtiefe und Zweck.' },
+      { title: 'Ein paar Sekunden warten', body: 'Wir extrahieren den Fließtext, zerlegen ihn und verankern jedes Stück an seiner Position; anschließend baut das Modell die Hierarchie.' },
+      { title: 'Bearbeiten und mitnehmen', body: 'Direkt auf der Arbeitsfläche bearbeiten, als PNG / SVG / Markdown exportieren oder einen öffentlichen Link erzeugen.' },
+    ],
+  },
+  faq: {
+    eyebrow: 'HÄUFIGE FRAGEN',
+    headingA: 'Ein paar Dinge,',
+    headingB: 'bevor Sie loslegen.',
+    lede: 'Noch eine Frage offen? Schreiben Sie an support@mindmapany.com — wir antworten meist innerhalb von 3 Werktagen.',
+    items: [
+      {
+        q: 'Welche Eingabeformate werden unterstützt?',
+        a: 'Eingefügter Text, PDF, DOCX, EPUB, PPTX, TXT, Markdown und öffentliche Weblinks. Maximal 20 MB je Datei. Gescannte PDFs, Audio, Video und alte DOC-Dateien werden noch nicht unterstützt.',
+      },
+      {
+        q: 'Stimmen die Seitenzahlen an den Knoten?',
+        a: 'Ja. Jedes Textstück wird beim Zerlegen an seine Seitenzahl oder Abschnittsposition gebunden. Das Modell verweist nur auf Kennungen von Textstücken; die Position wird nachgeschlagen und niemals vom Modell erzeugt.',
+      },
+      {
+        q: 'Warum lassen sich manche Webseiten nicht lesen?',
+        a: 'Seiten, die eine Anmeldung verlangen, hinter Bot-Schutz liegen oder vollständig per JavaScript gerendert werden, lassen sich in der aktuellen Version nicht auslesen. Gewöhnliche Artikelseiten, Dokumentationen und Blogs funktionieren in der Regel.',
+      },
+      {
+        q: 'Wem gehören die erstellten Mindmaps?',
+        a: 'Ihnen. Sie können sie jederzeit exportieren oder löschen. Freigabelinks sind standardmäßig deaktiviert — niemand sonst hat Zugriff, bis Sie die öffentliche Freigabe selbst einschalten.',
+      },
+      {
+        q: 'Wie viel ist im kostenlosen Tarif möglich?',
+        a: 'Mit der Registrierung erhalten Sie 30 Credits — genug, um Text- und Webseiteneingaben ausgiebig zu testen. Lange Dokumente und das hochwertige Modell werden von Ihrem Tarif und Guthaben abgezogen.',
+      },
+      {
+        q: 'Muss ich mich registrieren, um es auszuprobieren?',
+        a: 'Ja — für das Erstellen einer Mindmap ist ein Konto nötig. Die Registrierung ist kostenlos, dauert mit Google oder einer E-Mail-Adresse nur Sekunden und bringt sofort 30 Credits. Für das Ansehen einer geteilten Mindmap brauchen Sie kein Konto.',
+      },
+      {
+        q: 'Wie funktionieren Credits?',
+        a: 'Credits werden je Erstellung berechnet; die Höhe hängt von Eingabeformat, Modellstufe und Länge des Inhalts ab — ein kurzer Artikel kostet einen Bruchteil eines 200-seitigen Berichts. Ihr Guthaben sehen Sie im Arbeitsbereich; scheitert eine Erstellung, werden die Credits zurückgebucht.',
+      },
+      {
+        q: 'Kann ich die Mindmap danach bearbeiten oder ist sie ein festes Bild?',
+        a: 'Sie können sie bearbeiten. Doppelklick auf einen Knoten zum Umbenennen, Tab fügt einen Unterknoten hinzu, Enter einen Nachbarknoten, Leertaste klappt einen Zweig ein, Entf löscht ihn. Layout, Farbschema, Typografie und Zweignummerierung sind einstellbar und werden mit der Mindmap gespeichert.',
+      },
+      {
+        q: 'Was kann ich exportieren, und kann ich ohne Konto teilen?',
+        a: 'Mindmaps lassen sich als PNG, SVG und Markdown exportieren. Zusätzlich können Sie einen öffentlichen Link aktivieren, über den jede Person eine reine Leseansicht ohne Registrierung öffnen kann. Das Teilen ist standardmäßig aus und jederzeit wieder abschaltbar.',
+      },
+    ],
+  },
+  toolsIndex: {
+    metaTitle: 'KI-Werkzeuge für Mindmaps',
+    metaDescription:
+      'Mit KI aus PDFs, Word-Dateien, E-Books, Webartikeln und langen Texten bearbeitbare, nachprüfbare mehrstufige Mindmaps erstellen.',
+    eyebrow: 'Werkzeug nach Inhaltstyp wählen',
+    heading: 'KI-Werkzeuge für Mindmaps',
+    lede: 'Jeder Inhaltstyp hat sein eigenes Extraktionsverfahren, und alle münden in dieselbe bearbeitbare, einklappbare und mit der Quelle verknüpfte Struktur.',
+    viewDetails: 'Details zum Werkzeug',
+  },
+  toolPage: {
+    startFree: 'Kostenlos starten',
+    goodFor: 'Gut geeignet für',
+    benefitsHeading: 'Keine Zusammenfassung — eine Struktur, mit der Sie weiterarbeiten',
+    stepsHeading: 'Drei Schritte',
+    faqHeading: 'Häufige Fragen',
+    ctaHeading: 'Machen Sie aus Ihrem Inhalt eine klare Mindmap',
+    ctaBody: 'Nichts zu installieren — einfach den Browser öffnen und ausprobieren.',
+    relatedHeading: 'Passende Leitfäden',
+    breadcrumbHome: 'Startseite',
+    breadcrumbTools: 'Werkzeuge',
+    seePlans: 'Tarife und Grenzen ansehen',
+  },
+  pricing: {
+    metaTitle: 'Preise und Tarife',
+    metaDescription:
+      'Vergleichen Sie Credits, Modelle und Dokumentgrenzen der Tarife Kostenlos, Basis, Pro und Unbegrenzt von MindMapAny.',
+    eyebrow: 'Einfach und transparent — höherstufen, wenn Sie es brauchen',
+    heading: 'Kostenlos starten',
+    intro:
+      'Alle Preise in US-Dollar. Monatlich zahlen bleibt flexibel, jährlich zahlen spart 40%. Steuern werden vor dem Bezahlen klar ausgewiesen.',
+    badge: '30 Gratis-Credits bei der Registrierung — testen Sie jedes Eingabeformat',
+    mostPopular: 'AM BELIEBTESTEN',
+    subscribeYearly: 'Jährlich abonnieren',
+    subscribeMonthly: 'Monatlich abonnieren',
+    limitFastOnly: 'Schnelles Modell',
+    limitBoth: 'Schnelles und hochwertiges Modell',
+    limitChars: 'Bis zu {n} Zeichen',
+    limitPdfPages: 'PDFs bis {n} Seiten',
+    teamHeading: 'Mehr für ein Team oder eine Einrichtung?',
+    teamBody:
+      'Sprechen Sie uns zu gemeinsamen Credits, Beschaffung und dediziertem Support an. Wir antworten meist innerhalb von 3 Werktagen.',
+    teamAction: 'Support kontaktieren',
+    footnoteEmail:
+      'Bitte mit derselben E-Mail-Adresse bezahlen wie bei Ihrem MindMapAny-Konto, damit der Tarif nach der Zahlung automatisch aktiv wird.',
+    footnoteRenewal:
+      'Abonnements verlängern sich automatisch für den gewählten Abrechnungszeitraum, bis Sie kündigen. Zahlungen werden von Creem als Merchant of Record abgewickelt.',
+    footnoteCancel: 'Sie können jederzeit kündigen unter',
+    footnoteRefund: 'Rückerstattungs- und Kündigungsrichtlinie',
+    plans: {
+      free: {
+        name: 'Kostenlos',
+        eyebrow: 'Kostenlos starten',
+        description: 'Probieren Sie die gängigen Eingabeformate aus. Gut für gelegentliche Artikel und Nachschlagematerial.',
+        price: '$0',
+        annualPrice: 'Dauerhaft kostenlos',
+        creditLabel: 'Credits bei Registrierung',
+        extras: ['Text / Dokumente / E-Books / Webseiten', 'Bearbeiten, Exportieren und öffentlich Teilen'],
+        action: 'Kostenlos starten',
+      },
+      basic: {
+        name: 'Basis',
+        eyebrow: 'Täglicher Gebrauch',
+        description: 'Für Studium und Arbeit im Alltag, mit komfortablem Monatskontingent.',
+        price: '$8.99 / Monat',
+        annualPrice: '$64.68 / Jahr (entspricht $5.39 / Monat)',
+        creditLabel: 'Credits / Monat',
+        extras: ['Alle verfügbaren Eingabeformate', 'Speichern, Teilen und Export in jedem Format'],
+        action: 'Basis wählen',
+      },
+      pro: {
+        name: 'Pro',
+        eyebrow: 'Empfohlen',
+        description: 'Für Tiefenrecherche und lange Dokumente. Schaltet das hochwertige Modell frei.',
+        price: '$17.99 / Monat',
+        annualPrice: '$129.48 / Jahr (entspricht $10.79 / Monat)',
+        creditLabel: 'Credits / Monat',
+        extras: ['Detaillierter Mindmap-Modus', 'Bewältigt komplexe, lange Dokumente'],
+        action: 'Pro wählen',
+      },
+      unlimited: {
+        name: 'Unbegrenzt',
+        eyebrow: 'Intensive Nutzung',
+        description: 'Für Vielschreibende und Forschende. Kein monatliches Zählen von Credits.',
+        price: '$26.99 / Monat',
+        annualPrice: '$194.28 / Jahr (entspricht $16.19 / Monat)',
+        creditLabel: 'unbegrenzte Credits',
+        extras: ['Alles aus Pro', 'Unbegrenzte Nutzung im Rahmen der Fair-Use-Richtlinie'],
+        action: 'Unbegrenzt wählen',
+      },
+    },
+  },
+};
+
+const fr: MarketingCopy = {
+  nav: {
+    tools: 'Outils',
+    blog: 'Blog',
+    pricing: 'Tarifs',
+    faq: 'Questions fréquentes',
+    signIn: 'Se connecter',
+    startFree: 'Commencer gratuitement',
+    workbench: "Ouvrir l'espace de travail",
+    workbenchShort: 'Espace de travail',
+    toolsGroups: { documents: 'Documents', textWeb: 'Texte et web' },
+    deepResearch: 'Recherche approfondie',
+    deepResearchHint: 'Un rapport sourcé à partir de plusieurs références',
+    allTools: 'Tous les outils',
+    allToolsHint: "Parcourir tous les formats d'entrée",
+    toolLabels: [
+      'PDF en carte mentale',
+      'Word en carte mentale',
+      'PowerPoint en carte mentale',
+      'EPUB en carte mentale',
+      'Texte en carte mentale',
+      'Page web en carte mentale',
+    ],
+    switchTo: 'Français',
+  },
+  footer: {
+    tagline: 'Transformez des contenus complexes en structures de connaissance claires, modifiables et vérifiables.',
+    columns: [
+      { title: 'Produit', labels: ['Outils', 'Tarifs', 'Mes cartes mentales', 'Questions fréquentes'] },
+      {
+        title: 'Outils et ressources',
+        labels: [
+          'PDF en carte mentale',
+          'Word en carte mentale',
+          'EPUB en carte mentale',
+          'PowerPoint en carte mentale',
+          'Texte en carte mentale',
+          'Page web en carte mentale',
+          'Blog',
+        ],
+      },
+      {
+        title: 'Assistance et mentions légales',
+        labels: ["Contacter l'assistance", "Gérer l'abonnement", 'Politique de confidentialité', "Conditions d'utilisation", 'Remboursement et résiliation'],
+      },
+    ],
+    legal: 'Paiements traités par Creem en qualité de Merchant of Record',
+  },
+  home: {
+    metaTitle: "MindMapAny — Transformez n'importe quel contenu en une carte mentale claire et vérifiable",
+    metaDescription:
+      "Collez du texte ou importez un PDF, un fichier Word, un EPUB, un PPTX ou un article web : vous obtenez en quelques secondes une carte mentale modifiable dont chaque nœud renvoie à la source.",
+    eyebrow: 'MINDMAPANY / STRUCTURATION DE CONTENU',
+    headingLead: 'Un contenu long commence par la',
+    headingHighlight: 'structure',
+    lede:
+      "Transformez articles, rapports, fichiers Word, livres numériques et pages web en cartes mentales dotées d'une véritable hiérarchie. Pas un résumé plus court : une carte du contenu que vous pouvez modifier et vérifier face à l'original.",
+    ctaPrimary: 'Créer une carte mentale gratuitement',
+    ctaSecondary: 'Pourquoi un résumé ne suffit pas',
+    worksWith: 'FONCTIONNE DIRECTEMENT AVEC',
+    inputLabels: ['Texte long', 'PDF', 'Word', 'EPUB', 'PPTX', 'Articles web'],
+    sourceDocLabel: "Document d'origine",
+    sourceDocPages: 'PDF de 48 pages',
+    panelTitle: 'Rapport de recherche en IA / méthodes et conclusions',
+    panelNodes: '42 nœuds',
+    panelTrace: 'Chaque nœud renvoie à la source',
+    panelFooter: ['Nœuds modifiables', 'Références de page', 'PNG / SVG / MD'],
+    stats: [
+      ['7', "formats d'entrée"],
+      ['30+', 'langues de sortie'],
+      ['110', 'nœuds max. par carte'],
+      ['Vérifiable', 'ancres de page et de section'],
+    ],
+    ctaEyebrow: 'QUAND VOUS VOULEZ',
+    ctaHeading: "Cessez d'aborder les longs documents par la page un.",
+    ctaBody:
+      "Importez votre contenu, prenez d'abord la mesure de la structure, puis décidez quelles sections méritent une lecture attentive. Créez un compte gratuit : 30 crédits vous attendent.",
+    ctaButton: 'Créer votre première carte',
+  },
+  features: {
+    eyebrow: 'FONCTIONNALITÉS',
+    lede: 'Conçu pour celles et ceux qui doivent lire, vérifier et organiser des contenus longs avec soin.',
+    headingA: 'Un résumé vous dit ce qui a été dit.',
+    headingB: 'La structure vous dit pourquoi.',
+    items: [
+      {
+        title: 'Des entrées variées, un seul traitement',
+        body: "Collez du texte, importez un PDF / DOCX / EPUB / PPTX, ou indiquez un lien. L'extraction diffère selon le format ; la clarté de la structure obtenue, non.",
+        detail: '7 sources',
+      },
+      {
+        title: 'Chaque nœud reste traçable',
+        body: "Les nœuds issus d'un PDF portent un numéro de page, ceux d'un PPTX un numéro de diapositive. La position est fixée au moment du découpage, elle n'est pas inventée après coup par le modèle.",
+        detail: 'Références déterministes',
+      },
+      {
+        title: 'Une hiérarchie stable, pas une liste à plat',
+        body: "Les documents longs sont résumés section par section puis fusionnés ; les thèmes redondants se rejoignent et les nœuds isolés sont écartés. Trois niveaux de détail correspondent à des limites différentes de profondeur et de nombre de nœuds.",
+        detail: "Jusqu'à 5 niveaux",
+      },
+      {
+        title: 'Modifiable après génération',
+        body: "Double-clic pour renommer, Tab pour un nœud enfant, Entrée pour un nœud voisin, Espace pour replier. Ce n'est pas une image figée que l'on se contente de regarder.",
+        detail: 'Édition au clavier',
+      },
+      {
+        title: 'Exporter et partager',
+        body: "Export en PNG, SVG ou Markdown en un clic. Activez le lien public et vos interlocuteurs consultent la carte sans créer de compte.",
+        detail: "3 formats d'export",
+      },
+      {
+        title: 'Plus de 30 langues de sortie',
+        body: "Lisez un article dans une langue et obtenez la carte dans une autre. La langue source et la langue de sortie sont indépendantes.",
+        detail: 'Multilingue',
+      },
+    ],
+    pipelineLabel: 'UN SEUL TRAITEMENT',
+    pipelineStages: ['Extraire', 'Découper et ancrer', 'Construire la hiérarchie', 'Modifier'],
+    pipelineNote:
+      "Seule la première étape dépend du format. Tout le reste est commun : c'est pourquoi une présentation et un article scientifique ressortent aussi bien structurés l'un que l'autre.",
+  },
+  inputTypes: {
+    eyebrow: "PAR FORMAT D'ENTRÉE",
+    lede: "Chaque format s'extrait différemment et ancre ses nœuds à un repère différent.",
+    heading: 'De quoi partez-vous ?',
+    items: [
+      {
+        name: 'PDF',
+        anchor: 'Numéros de page',
+        body: "Articles, rapports et livres blancs. Chaque nœud conserve la page dont il provient : vérifier un chiffre revient à ouvrir une page plutôt qu'à relire le fichier. PDF textuels uniquement — les documents scannés demandent d'abord une OCR.",
+        linkLabel: 'PDF en carte mentale',
+      },
+      {
+        name: 'Word',
+        anchor: 'Ordre du document',
+        body: "Cahiers des charges, brouillons et longs rapports. Les paragraphes du corps et le texte des tableaux sont lus dans l'ordre. Un DOCX n'a pas de pages fixes tant que Word ne l'a pas mis en page : les nœuds s'ancrent donc à la position dans le document.",
+        linkLabel: 'Word en carte mentale',
+      },
+      {
+        name: 'EPUB',
+        anchor: 'Titres de chapitre',
+        body: "Des livres entiers, lus dans l'ordre défini par l'éditeur. Les nœuds portent leur chapitre, l'ancre fiable d'un livre numérique — les numéros de page varient avec la taille de police. Les fichiers protégés par DRM ne peuvent pas être ouverts.",
+        linkLabel: 'EPUB en carte mentale',
+      },
+      {
+        name: 'PowerPoint',
+        anchor: 'Numéros de diapositive',
+        body: "Conférences, supports de formation et propositions. Le texte des diapositives est repris dans l'ordre et chaque nœud porte sa diapositive. Les notes du présentateur et les images ne sont pas lues : un support qui cache l'essentiel dans les notes donnera une carte pauvre.",
+        linkLabel: 'PowerPoint en carte mentale',
+      },
+      {
+        name: 'Texte long',
+        anchor: 'Coller et partir',
+        body: "Comptes rendus de réunion, transcriptions, notes de recherche — tout ce que vous pouvez sélectionner et copier. Le moyen le plus rapide de voir si un amas de texte tient réellement un raisonnement cohérent.",
+        linkLabel: 'Texte en carte mentale',
+      },
+      {
+        name: 'Pages web',
+        anchor: 'Ancres de section',
+        body: "Articles, documentations et notices encyclopédiques. Nous extrayons le corps du texte et écartons la navigation et la publicité. Les pages derrière une connexion, protégées contre les robots ou rendues entièrement côté client ne peuvent pas être lues.",
+        linkLabel: 'Page web en carte mentale',
+      },
+    ],
+  },
+  howItWorks: {
+    eyebrow: 'COMMENT ÇA MARCHE',
+    heading: 'La même lecture. Un meilleur ordre.',
+    steps: [
+      { title: 'Ajoutez votre contenu', body: "Du texte, un document, un livre numérique ou un lien. Choisissez la langue de sortie, la profondeur et l'objectif." },
+      { title: 'Patientez quelques secondes', body: "Nous extrayons le corps du texte, le découpons et ancrons chaque fragment à sa position, puis le modèle construit la hiérarchie." },
+      { title: 'Modifiez et emportez', body: "Modifiez directement sur le plan de travail, exportez en PNG / SVG / Markdown ou générez un lien public." },
+    ],
+  },
+  faq: {
+    eyebrow: 'QUESTIONS FRÉQUENTES',
+    headingA: 'Quelques précisions',
+    headingB: 'avant de commencer.',
+    lede: "Une autre question ? Écrivez à support@mindmapany.com : nous répondons généralement sous 3 jours ouvrés.",
+    items: [
+      {
+        q: "Quels formats d'entrée sont pris en charge ?",
+        a: "Texte collé, PDF, DOCX, EPUB, PPTX, TXT, Markdown et liens web publics. 20 Mo au maximum par fichier. Les PDF scannés, l'audio, la vidéo et les anciens fichiers DOC ne sont pas encore pris en charge.",
+      },
+      {
+        q: 'Les numéros de page des nœuds sont-ils exacts ?',
+        a: "Oui. Chaque fragment est lié à sa page ou à sa position de section au moment du découpage. Le modèle ne référence que des identifiants de fragment ; la position est résolue par recherche et n'est jamais générée par le modèle.",
+      },
+      {
+        q: 'Pourquoi certaines pages web ne peuvent-elles pas être lues ?',
+        a: "Les pages qui exigent une connexion, sont protégées contre les robots ou sont rendues entièrement en JavaScript ne peuvent pas être extraites dans la version actuelle. Les pages d'articles courantes, les documentations et les blogs fonctionnent généralement bien.",
+      },
+      {
+        q: 'À qui appartiennent les cartes que je génère ?',
+        a: "À vous. Vous pouvez les exporter ou les supprimer à tout moment. Les liens de partage sont désactivés par défaut : personne d'autre n'y a accès tant que vous n'activez pas vous-même le partage public.",
+      },
+      {
+        q: 'Que puis-je faire avec la formule gratuite ?',
+        a: "L'inscription donne 30 crédits, de quoi tester à fond les entrées texte et page web. Les documents longs et le modèle haute qualité sont décomptés de votre formule et de votre solde de crédits.",
+      },
+      {
+        q: "Faut-il s'inscrire pour essayer ?",
+        a: "Oui : générer une carte nécessite un compte. L'inscription est gratuite, prend quelques secondes avec Google ou une adresse e-mail, et donne immédiatement 30 crédits. Consulter une carte partagée avec vous ne demande aucun compte.",
+      },
+      {
+        q: 'Comment fonctionnent les crédits ?',
+        a: "Les crédits sont décomptés à chaque génération ; le coût dépend du format d'entrée, du modèle et de la longueur du contenu — un article court coûte une fraction d'un rapport de 200 pages. Votre solde apparaît dans l'espace de travail et, si une génération échoue, les crédits vous sont restitués.",
+      },
+      {
+        q: "Puis-je modifier la carte après coup, ou est-ce une image figée ?",
+        a: "Vous pouvez la modifier. Double-cliquez sur un nœud pour le renommer, Tab ajoute un enfant, Entrée un voisin, Espace replie une branche et Suppr la supprime. Disposition, palette, typographie et numérotation des branches sont réglables, et la mise en forme est enregistrée avec la carte.",
+      },
+      {
+        q: "Que puis-je exporter, et puis-je partager avec quelqu'un sans compte ?",
+        a: "Les cartes s'exportent en PNG, SVG et Markdown. Vous pouvez aussi activer un lien public permettant à quiconque d'ouvrir une vue en lecture seule sans s'inscrire. Le partage est désactivé par défaut et peut être coupé à tout moment.",
+      },
+    ],
+  },
+  toolsIndex: {
+    metaTitle: 'Outils de cartes mentales par IA',
+    metaDescription:
+      "Utilisez l'IA pour transformer PDF, fichiers Word, livres numériques, articles web et textes longs en cartes mentales multiniveaux, modifiables et vérifiables.",
+    eyebrow: 'Choisissez un outil selon votre contenu',
+    heading: 'Outils de cartes mentales par IA',
+    lede: "Chaque type de contenu a son propre traitement d'extraction, et tous aboutissent à la même structure modifiable, repliable et reliée à la source.",
+    viewDetails: "Voir le détail de l'outil",
+  },
+  toolPage: {
+    startFree: 'Commencer gratuitement',
+    goodFor: 'Utile pour',
+    benefitsHeading: "Pas un résumé — une structure que vous continuez d'utiliser",
+    stepsHeading: 'Trois étapes',
+    faqHeading: 'Questions fréquentes',
+    ctaHeading: 'Transformez votre contenu en une carte claire',
+    ctaBody: "Rien à installer : ouvrez votre navigateur et essayez.",
+    relatedHeading: 'Guides associés',
+    breadcrumbHome: 'Accueil',
+    breadcrumbTools: 'Outils',
+    seePlans: 'Voir les formules et les limites',
+  },
+  pricing: {
+    metaTitle: 'Tarifs et formules',
+    metaDescription:
+      'Comparez les crédits, les modèles et les limites de documents des formules Gratuite, Basique, Pro et Illimitée de MindMapAny.',
+    eyebrow: 'Simple et transparent — montez en formule quand vous en avez besoin',
+    heading: 'Commencer gratuitement',
+    intro:
+      "Tous les prix sont en dollars américains. Payez au mois pour rester souple, ou à l'année et économisez 40%. Les taxes sont indiquées clairement avant le paiement.",
+    badge: "30 crédits offerts à l'inscription — essayez tous les formats d'entrée",
+    mostPopular: 'LE PLUS CHOISI',
+    subscribeYearly: "S'abonner à l'année",
+    subscribeMonthly: "S'abonner au mois",
+    limitFastOnly: 'Modèle rapide',
+    limitBoth: 'Modèle rapide + modèle haute qualité',
+    limitChars: "Jusqu'à {n} caractères",
+    limitPdfPages: "PDF jusqu'à {n} pages",
+    teamHeading: 'Besoin de plus pour une équipe ou un établissement ?',
+    teamBody:
+      "Écrivez-nous au sujet des crédits mutualisés, des achats et d'une assistance dédiée. Nous répondons généralement sous 3 jours ouvrés.",
+    teamAction: "Contacter l'assistance",
+    footnoteEmail:
+      "Réglez avec la même adresse e-mail que votre compte MindMapAny afin que la formule s'active automatiquement après le paiement.",
+    footnoteRenewal:
+      "Les abonnements se renouvellent automatiquement selon la période de facturation choisie, jusqu'à résiliation. Les paiements sont traités par Creem en qualité de Merchant of Record.",
+    footnoteCancel: 'Vous pouvez résilier à tout moment depuis',
+    footnoteRefund: 'Politique de remboursement et de résiliation',
+    plans: {
+      free: {
+        name: 'Gratuite',
+        eyebrow: 'Commencer gratuitement',
+        description: "Essayez les formats d'entrée courants. Adapté aux articles et documents de référence occasionnels.",
+        price: '$0',
+        annualPrice: 'Gratuit pour toujours',
+        creditLabel: "crédits à l'inscription",
+        extras: ['Texte / documents / livres numériques / pages web', 'Modification, export et partage public'],
+        action: 'Commencer gratuitement',
+      },
+      basic: {
+        name: 'Basique',
+        eyebrow: 'Usage quotidien',
+        description: "Pour les études et le travail au quotidien, avec une enveloppe mensuelle confortable.",
+        price: '$8.99 / mois',
+        annualPrice: '$64.68 / an (soit $5.39 / mois)',
+        creditLabel: 'crédits / mois',
+        extras: ["Tous les formats d'entrée", 'Enregistrement, partage et export dans tous les formats'],
+        action: 'Choisir Basique',
+      },
+      pro: {
+        name: 'Pro',
+        eyebrow: 'Recommandée',
+        description: 'Pensée pour la recherche approfondie et les documents longs. Débloque le modèle haute qualité.',
+        price: '$17.99 / mois',
+        annualPrice: '$129.48 / an (soit $10.79 / mois)',
+        creditLabel: 'crédits / mois',
+        extras: ['Mode carte détaillée', 'Gère les documents longs et complexes'],
+        action: 'Choisir Pro',
+      },
+      unlimited: {
+        name: 'Illimitée',
+        eyebrow: 'Usage intensif',
+        description: "Pour les créateurs et chercheurs à fort volume. Plus besoin de compter les crédits chaque mois.",
+        price: '$26.99 / mois',
+        annualPrice: '$194.28 / an (soit $16.19 / mois)',
+        creditLabel: 'crédits illimités',
+        extras: ['Tout ce que contient Pro', "Usage illimité dans le cadre d'une politique d'usage raisonnable"],
+        action: 'Choisir Illimitée',
+      },
+    },
+  },
+};
+
+const COPY: Record<Locale, MarketingCopy> = { en, 'zh-CN': zhCN, ja, ko, es, de, fr };
 
 export function marketingCopy(locale: Locale): MarketingCopy {
   return COPY[locale] ?? en;

@@ -6,7 +6,7 @@
  * 不能假设「支持这门语言」就等于「每一页都有这门语言」。
  */
 
-export const LOCALES = ['en', 'zh-CN', 'ja', 'ko', 'es'] as const;
+export const LOCALES = ['en', 'zh-CN', 'ja', 'ko', 'es', 'de', 'fr'] as const;
 export type Locale = (typeof LOCALES)[number];
 
 /**
@@ -20,6 +20,8 @@ export const LOCALE_NAMES: Record<Locale, string> = {
   ja: '日本語',
   ko: '한국어',
   es: 'Español',
+  de: 'Deutsch',
+  fr: 'Français',
 };
 
 /** URL 前缀。英文是默认语言，留在根路径上不加前缀。 */
@@ -29,6 +31,8 @@ export const LOCALE_PREFIX: Record<Locale, string> = {
   ja: '/ja',
   ko: '/ko',
   es: '/es',
+  de: '/de',
+  fr: '/fr',
 };
 
 export const DEFAULT_LOCALE: Locale = 'en';
@@ -74,6 +78,8 @@ function matchAcceptLanguage(header: string | null): Locale {
     if (tag.startsWith('ja')) return 'ja';
     if (tag.startsWith('ko')) return 'ko';
     if (tag.startsWith('es')) return 'es';
+    if (tag.startsWith('de')) return 'de';
+    if (tag.startsWith('fr')) return 'fr';
     if (tag.startsWith('en')) return 'en';
   }
   return DEFAULT_LOCALE;

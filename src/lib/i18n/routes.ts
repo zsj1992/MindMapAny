@@ -38,6 +38,8 @@ const TRANSLATED: Record<Locale, Set<string>> = {
   ja: new Set(CORE_PAGES),
   ko: new Set(CORE_PAGES),
   es: new Set(CORE_PAGES),
+  de: new Set(CORE_PAGES),
+  fr: new Set(CORE_PAGES),
 };
 
 export function hasTranslation(path: string, locale: Locale): boolean {
@@ -94,8 +96,18 @@ export const OG_LOCALE: Record<Locale, string> = {
   ja: 'ja_JP',
   ko: 'ko_KR',
   es: 'es_ES',
+  de: 'de_DE',
+  fr: 'fr_FR',
 };
-export const HTML_LANG: Record<Locale, string> = { en: 'en', 'zh-CN': 'zh-CN', ja: 'ja', ko: 'ko', es: 'es' };
+export const HTML_LANG: Record<Locale, string> = {
+  en: 'en',
+  'zh-CN': 'zh-CN',
+  ja: 'ja',
+  ko: 'ko',
+  es: 'es',
+  de: 'de',
+  fr: 'fr',
+};
 
 export function absoluteUrl(path: string, locale: Locale): string {
   const localized = localizedPath(path, locale);
