@@ -36,7 +36,7 @@ const TRANSLATED: Record<Locale, Set<string>> = {
   en: new Set([...CORE_PAGES, ...TOOL_PAGES_PATHS]),
   'zh-CN': new Set([...CORE_PAGES, ...TOOL_PAGES_PATHS]),
   ja: new Set([...CORE_PAGES, ...TOOL_PAGES_PATHS]),
-  ko: new Set(CORE_PAGES),
+  ko: new Set([...CORE_PAGES, ...TOOL_PAGES_PATHS]),
   es: new Set(CORE_PAGES),
   de: new Set(CORE_PAGES),
   fr: new Set(CORE_PAGES),
