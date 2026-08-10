@@ -1,6 +1,9 @@
 import type { ToolPage } from '../content';
 import type { Locale } from '@/lib/i18n/locales';
+import { TOOLS_FR } from './fr';
 import { TOOLS_JA } from './ja';
+import { TOOLS_DE } from './de';
+import { TOOLS_ES } from './es';
 import { TOOLS_KO } from './ko';
 import { TOOLS_ZH_CN } from './zh-CN';
 
@@ -24,4 +27,7 @@ export const TOOL_COPY: Partial<Record<Locale, Record<string, ToolPageCopy>>> = 
   'zh-CN': TOOLS_ZH_CN,
   ja: TOOLS_JA,
   ko: TOOLS_KO,
+  es: TOOLS_ES,
+  de: TOOLS_DE,
+  fr: TOOLS_FR,
 };

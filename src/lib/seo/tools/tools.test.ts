@@ -30,6 +30,10 @@ const FOREIGN_SCRIPT: Record<string, { pattern: RegExp; label: string }> = {
   'ko.ts': { pattern: /[一-鿿぀-ヿ]/, label: '汉字或假名' },
   'ja.ts': { pattern: /[가-힯]/, label: '谚文' },
   'zh-CN.ts': { pattern: /[가-힯぀-ゟ゠-ヿ]/, label: '谚文或假名' },
+  // 拉丁语系：任何 CJK 字符都是误入
+  'es.ts': { pattern: /[一-鿿가-힯぀-ヿ]/, label: 'CJK 字符' },
+  'de.ts': { pattern: /[一-鿿가-힯぀-ヿ]/, label: 'CJK 字符' },
+  'fr.ts': { pattern: /[一-鿿가-힯぀-ヿ]/, label: 'CJK 字符' },
 };
 
 const dir = new URL('.', import.meta.url).pathname;

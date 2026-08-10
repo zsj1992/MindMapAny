@@ -37,9 +37,9 @@ const TRANSLATED: Record<Locale, Set<string>> = {
   'zh-CN': new Set([...CORE_PAGES, ...TOOL_PAGES_PATHS]),
   ja: new Set([...CORE_PAGES, ...TOOL_PAGES_PATHS]),
   ko: new Set([...CORE_PAGES, ...TOOL_PAGES_PATHS]),
-  es: new Set(CORE_PAGES),
-  de: new Set(CORE_PAGES),
-  fr: new Set(CORE_PAGES),
+  es: new Set([...CORE_PAGES, ...TOOL_PAGES_PATHS]),
+  de: new Set([...CORE_PAGES, ...TOOL_PAGES_PATHS]),
+  fr: new Set([...CORE_PAGES, ...TOOL_PAGES_PATHS]),
 };
 
 export function hasTranslation(path: string, locale: Locale): boolean {
