@@ -27,6 +27,9 @@ const LANGUAGE_NAMES: Record<string, string> = {
 };
 
 export function languageName(code: string): string {
+  // 兜底：'auto' 本该在路由层就被 resolveLanguage 解析掉。万一漏了，
+  // 也不能让「must be written in auto」这种句子进提示词 —— 换成一句语义正确的话。
+  if (code === 'auto') return 'the same language as the source content';
   return LANGUAGE_NAMES[code] ?? LANGUAGE_NAMES[code.split('-')[0]] ?? code;
 }
 

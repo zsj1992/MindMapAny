@@ -3,6 +3,7 @@ import { z } from 'zod';
 import { getCurrentProfile } from '@/lib/auth/session';
 import { refundCredits, reserveCredits } from '@/lib/db/repositories/profiles';
 import { record as recordJob } from '@/lib/db/repositories/jobs';
+import { resolveLanguage } from '@/lib/mindmap/detect-language';
 import { ResearchError, runDeepResearch } from '@/lib/research';
 import { rateLimitRequest } from '@/lib/rate-limit';
 
@@ -12,7 +13,8 @@ export const runtime = 'nodejs';
 const RESEARCH_CREDITS = 10;
 const bodySchema = z.object({
   query: z.string().trim().min(6).max(500),
-  language: z.enum(['zh-CN', 'zh-TW', 'en', 'ja', 'ko', 'es']).default('en'),
+  // 'auto' = 跟随提问语言，见 detect-language.ts
+  language: z.enum(['auto', 'zh-CN', 'zh-TW', 'en', 'ja', 'ko', 'es']).default('auto'),
   depth: z.enum(['standard', 'detailed']).default('detailed'),
 });
 
@@ -56,6 +58,8 @@ export async function POST(req: Request) {
       try {
         const result = await runDeepResearch({
           ...params,
+          // 报告语言跟着提问走：用中文问，不该收到一份英文报告
+          language: resolveLanguage(params.language, params.query),
           signal: req.signal,
           onProgress: (progress) => send({ type: 'progress', ...progress }),
         });

@@ -44,14 +44,15 @@ const EXAMPLES = [
 ];
 
 const LANGUAGES = [
-  ['zh-CN', '简体中文'], ['zh-TW', '繁體中文'], ['en', 'English'], ['ja', '日本語'], ['ko', '한국어'], ['es', 'Español'],
+  // 默认跟随提问语言，判定在服务端做，和脑图生成共用同一个 detect-language
+  ['auto', 'Auto (match question)'], ['zh-CN', '简体中文'], ['zh-TW', '繁體中文'], ['en', 'English'], ['ja', '日本語'], ['ko', '한국어'], ['es', 'Español'],
 ] as const;
 
 export function DeepResearchWorkspace() {
   const router = useRouter();
   const load = useEditor((state) => state.load);
   const [query, setQuery] = useState('');
-  const [language, setLanguage] = useState('en');
+  const [language, setLanguage] = useState('auto');
   const [depth, setDepth] = useState<'standard' | 'detailed'>('detailed');
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState<string | null>(null);

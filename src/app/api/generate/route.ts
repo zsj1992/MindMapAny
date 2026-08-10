@@ -9,6 +9,7 @@ import { isYoutubeUrl } from '@/lib/extract/youtube';
 import { getCurrentProfile } from '@/lib/auth/session';
 import { refundCredits, reserveCredits } from '@/lib/db/repositories/profiles';
 import { record as recordJob } from '@/lib/db/repositories/jobs';
+import { resolveLanguage } from '@/lib/mindmap/detect-language';
 import { generateMindMap, type ModelTier } from '@/lib/mindmap/generate';
 import { DEPTHS, PURPOSES, type Depth, type Purpose } from '@/lib/mindmap/schema';
 import { rateLimitRequest } from '@/lib/rate-limit';
@@ -20,7 +21,9 @@ export const runtime = 'nodejs';
 const paramsSchema = z.object({
   text: z.string().optional(),
   url: z.string().optional(),
-  language: z.string().default('en'),
+  // 'auto' = 跟随原文语种。默认值必须是 auto：默认英文时中文文档会被整篇翻译，
+  // 而绝大多数人只是想要一张和原文同语言的图。
+  language: z.string().default('auto'),
   depth: z.enum(DEPTHS).default('standard'),
   purpose: z.enum(PURPOSES).default('general'),
   tier: z.enum(['fast', 'quality']).default('fast'),
@@ -88,6 +91,13 @@ export async function POST(req: Request) {
     const chars = totalChars(doc);
     if (!chars) return fail(422, 'empty', 'No usable content could be extracted');
 
+    // 语言必须在提取之后才能定：链接和文件在这一步之前，服务端根本没见过正文。
+    // 标题一并计入 —— 纯数据的表格类文档，标题往往是唯一的自然语言线索。
+    const language = resolveLanguage(
+      params.language,
+      [doc.title ?? '', ...doc.blocks.map((b) => b.text)].join('\n'),
+    );
+
     // ── 配额校验 ──
     const tier = params.tier as ModelTier;
 
@@ -117,7 +127,7 @@ export async function POST(req: Request) {
     // ── 生成 ──
     const { map, warnings, usage } = await generateMindMap({
       doc,
-      language: params.language,
+      language,
       depth: params.depth as Depth,
       purpose: params.purpose as Purpose,
       tier: effectiveTier,

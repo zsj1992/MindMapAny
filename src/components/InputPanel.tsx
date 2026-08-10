@@ -3,6 +3,8 @@
 import { useRef, useState, type DragEvent, type ReactNode } from 'react';
 import { estimateCredits, type Plan } from '@/lib/credits';
 import type { InputKind } from '@/lib/extract/types';
+import { detectLanguage } from '@/lib/mindmap/detect-language';
+import { languageName } from '@/lib/mindmap/prompt';
 import { DEPTHS, PURPOSES, type Depth, type Purpose } from '@/lib/mindmap/schema';
 
 export interface GenerateParams {
@@ -58,6 +60,8 @@ const PURPOSE_LABEL: Record<Purpose, string> = {
   general: 'General',
 };
 const LANGUAGES = [
+  // 默认项。真正的判定在服务端做 —— 链接和文件的正文，浏览器这边根本看不到。
+  { value: 'auto', label: 'Auto (match source)' },
   { value: 'zh-CN', label: '简体中文' },
   { value: 'zh-TW', label: '繁體中文' },
   { value: 'en', label: 'English' },
@@ -103,7 +107,7 @@ export function InputPanel({
   const [url, setUrl] = useState('');
   const [file, setFile] = useState<File | null>(null);
   const [dragging, setDragging] = useState(false);
-  const [language, setLanguage] = useState('en');
+  const [language, setLanguage] = useState('auto');
   const [depth, setDepth] = useState<Depth>('standard');
   const [purpose, setPurpose] = useState<Purpose>('general');
   const fileRef = useRef<HTMLInputElement>(null);
@@ -140,6 +144,20 @@ export function InputPanel({
       : knownChars !== null
       ? `Estimated cost: ${cost} ${cost === 1 ? 'credit' : 'credits'}`
       : `From ${cost} ${cost === 1 ? 'credit' : 'credits'}, depending on length`;
+
+  /**
+   * 粘贴文本时把判定结果显示在选项上（"Auto · 简体中文"），让用户在点生成之前
+   * 就知道会输出什么语言，不合意可以直接改。链接和文件这边看不到正文，
+   * 只能等服务端提取完再判，所以保持中性文案，不许诺具体语言。
+   */
+  const detected = tab === 'text' && text.trim().length > 20 ? detectLanguage(text) : null;
+  const languageOptions = detected
+    ? LANGUAGES.map((opt) =>
+        opt.value === 'auto'
+          ? { ...opt, label: `Auto · ${LANGUAGES.find((l) => l.value === detected)?.label ?? languageName(detected)}` }
+          : opt,
+      )
+    : LANGUAGES;
 
   const submit = () => {
     if (!ready || busy) return;
@@ -300,7 +318,7 @@ export function InputPanel({
       </div>
 
       <footer className="grid gap-3 border-t bg-bg-subtle/70 px-4 py-3.5 sm:grid-cols-[repeat(3,minmax(0,1fr))_auto] sm:items-end sm:px-5" style={{ borderColor: 'var(--border)' }}>
-        <Select label="Output language" value={language} onChange={setLanguage} options={LANGUAGES} />
+        <Select label="Output language" value={language} onChange={setLanguage} options={languageOptions} />
         <Select
           label="Detail level"
           value={depth}
