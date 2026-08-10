@@ -3,6 +3,7 @@ import type { ReactNode } from 'react';
 import { HeaderAuth } from '@/components/auth/HeaderAuth';
 import { HeaderNav } from '@/components/site/HeaderNav';
 import { LanguageSwitch } from '@/components/site/LanguageSwitch';
+import { LocaleSync } from '@/components/site/LocaleSync';
 import { Logo } from '@/components/site/Logo';
 import { ThemeToggle } from '@/components/site/ThemeToggle';
 import { HTML_LANG, localizedPath } from '@/lib/i18n/routes';
@@ -17,6 +18,7 @@ import type { Locale } from '@/lib/i18n/locales';
 export function MarketingShell({ locale, children }: { locale: Locale; children: ReactNode }) {
   return (
     <div lang={HTML_LANG[locale]}>
+      <LocaleSync locale={locale} />
       <a href="#main-content" className="fixed left-3 top-3 z-50 -translate-y-20 rounded-md bg-[#102f53] px-4 py-2 text-sm font-semibold text-white transition-transform focus:translate-y-0">
         Skip to main content
       </a>

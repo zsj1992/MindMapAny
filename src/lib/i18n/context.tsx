@@ -2,7 +2,8 @@
 
 import { createContext, useCallback, useContext, useMemo, type ReactNode } from 'react';
 import { translate, type MessageKey } from './messages';
-import { DEFAULT_LOCALE, LOCALE_COOKIE, type Locale } from './locales';
+import { writeLocaleCookie } from './cookie';
+import { DEFAULT_LOCALE, type Locale } from './locales';
 
 /**
  * 语言由服务端在 /app 布局里定好后传进来。
@@ -31,8 +32,7 @@ export function useT() {
 export function useSetLocale() {
   return useMemo(
     () => (locale: Locale) => {
-      // 一年有效期，SameSite=Lax 足够 —— 这不是凭据，只是显示偏好
-      document.cookie = `${LOCALE_COOKIE}=${locale}; path=/; max-age=31536000; samesite=lax`;
+      writeLocaleCookie(locale);
       window.location.reload();
     },
     [],

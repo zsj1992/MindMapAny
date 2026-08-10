@@ -3,6 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useHoverMenu } from '@/components/site/useHoverMenu';
+import { writeLocaleCookie } from '@/lib/i18n/cookie';
 import { LOCALE_NAMES, type Locale } from '@/lib/i18n/locales';
 import { basePath, localesWithTranslation, localizedPath } from '@/lib/i18n/routes';
 
@@ -56,7 +57,11 @@ export function LanguageSwitch({ locale }: { locale: Locale }) {
                   hrefLang={item}
                   role="menuitem"
                   aria-current={item === locale ? 'true' : undefined}
-                  onClick={() => setOpen(false)}
+                  onClick={() => {
+                    // 记下这次是明确选择，工作台跟着走
+                    writeLocaleCookie(item);
+                    setOpen(false);
+                  }}
                   className={`flex items-center justify-between gap-3 px-4 py-2 text-sm transition-colors hover:bg-bg-subtle ${
                     item === locale ? 'font-semibold text-text' : 'text-text-muted hover:text-text'
                   }`}
