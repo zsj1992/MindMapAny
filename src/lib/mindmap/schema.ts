@@ -22,6 +22,9 @@ export const DEPTH_BUDGET: Record<Depth, { maxLevel: number; minNodes: number; m
 // 叶子节点是「标签：一句说明」，比纯标题长，上限相应放宽
 export const MAX_TITLE_LEN = 160;
 export const MAX_SUMMARY_LEN = 400;
+export const MAX_SAVED_NODES = 250;
+const MAX_ID_LEN = 128;
+const MAX_URL_LEN = 2_048;
 
 export const MAP_LAYOUTS = ['balanced', 'right', 'left'] as const;
 export type MapLayout = (typeof MAP_LAYOUTS)[number];
@@ -64,18 +67,18 @@ export const DEFAULT_MIND_MAP_FORMAT: MindMapFormat = {
  * 模型只负责回引 chunkId，页码/时间戳一律查表还原，绝不让模型自己写。
  */
 export const sourceRefSchema = z.discriminatedUnion('type', [
-  z.object({ type: z.literal('text'), chunkId: z.string() }),
-  z.object({ type: z.literal('pdf'), chunkId: z.string(), page: z.number().int().positive() }),
-  z.object({ type: z.literal('web'), chunkId: z.string(), url: z.string().url(), anchor: z.string().optional() }),
-  z.object({ type: z.literal('youtube'), chunkId: z.string(), startSec: z.number().int().nonnegative() }),
-  z.object({ type: z.literal('document'), chunkId: z.string(), location: z.string().max(120).optional() }),
+  z.object({ type: z.literal('text'), chunkId: z.string().min(1).max(MAX_ID_LEN) }),
+  z.object({ type: z.literal('pdf'), chunkId: z.string().min(1).max(MAX_ID_LEN), page: z.number().int().positive() }),
+  z.object({ type: z.literal('web'), chunkId: z.string().min(1).max(MAX_ID_LEN), url: z.string().max(MAX_URL_LEN).url(), anchor: z.string().max(300).optional() }),
+  z.object({ type: z.literal('youtube'), chunkId: z.string().min(1).max(MAX_ID_LEN), startSec: z.number().int().nonnegative() }),
+  z.object({ type: z.literal('document'), chunkId: z.string().min(1).max(MAX_ID_LEN), location: z.string().max(120).optional() }),
 ]);
 export type SourceRef = z.infer<typeof sourceRefSchema>;
 
 export const mindMapNodeSchema = z.object({
-  id: z.string().min(1),
+  id: z.string().min(1).max(MAX_ID_LEN),
   /** null 表示根节点，一张图有且只有一个 */
-  parentId: z.string().min(1).nullable(),
+  parentId: z.string().min(1).max(MAX_ID_LEN).nullable(),
   title: z.string().min(1).max(MAX_TITLE_LEN),
   summary: z.string().max(MAX_SUMMARY_LEN).optional(),
   source: sourceRefSchema.optional(),
@@ -89,11 +92,11 @@ export const mindMapSchema = z.object({
   version: z.literal(1),
   title: z.string().min(1).max(MAX_TITLE_LEN),
   /** BCP-47，如 zh-CN / en */
-  language: z.string().min(2),
+  language: z.string().min(2).max(35),
   depth: z.enum(DEPTHS),
   purpose: z.enum(PURPOSES),
   /** 扁平存储：编辑、局部更新、DB 查询都比嵌套树方便 */
-  nodes: z.array(mindMapNodeSchema),
+  nodes: z.array(mindMapNodeSchema).min(1).max(MAX_SAVED_NODES),
   /** 可视化偏好跟随脑图保存；optional 保证旧数据无迁移即可继续读取。 */
   format: mindMapFormatSchema.optional(),
   createdAt: z.string().datetime(),

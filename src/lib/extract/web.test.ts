@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import { parseHTML } from 'linkedom';
-import { requestHeaders } from './ssrf';
+import { ipIsPrivate, requestHeaders } from './ssrf';
 import { extractEmbeddedArticle, extractWechatArticle, htmlToBlocks } from './web';
 
 const legacyEditorArticle = `
@@ -52,6 +52,23 @@ assert.equal(wechatHeaders.referer, 'https://mp.weixin.qq.com/');
 assert.match(requestHeaders(new URL('https://example.com/article'))['user-agent'], /MapAnyBot/);
 
 console.log('✓ web extractor: WeChat article content passed');
+
+for (const privateIp of [
+  '::1',
+  'fe80::1',
+  'fe90::1',
+  'fea0::1',
+  'feb0::1',
+  'fc00::1',
+  'fd00::1',
+  '::ffff:7f00:1',
+  '::ffff:a9fe:a9fe',
+]) {
+  assert.equal(ipIsPrivate(privateIp), true, `${privateIp} must be blocked as a non-public IPv6 address`);
+}
+assert.equal(ipIsPrivate('2606:4700:4700::1111'), false, 'a global IPv6 address must remain fetchable');
+
+console.log('✓ SSRF guard: private IPv6 ranges passed');
 
 /**
  * 服务端把正文注入 <script>、DOM 里只有模板骨架的页面（政务站和国内 CMS 很常见）。

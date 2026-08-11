@@ -13,6 +13,7 @@ export function creemEventDetails(object: Record<string, unknown>, eventType: st
   const metadata = asRecord(object.metadata) ?? asRecord(subscription?.metadata);
   return {
     userId: stringValue(metadata?.userId),
+    binding: stringValue(metadata?.binding),
     email: stringValue(customer?.email) ?? stringValue(object.customer_email),
     customerId: stringValue(customer?.id) ?? (typeof object.customer === 'string' ? object.customer : null),
     subscriptionId: stringValue(subscription?.id) ?? (typeof object.subscription === 'string' ? object.subscription : eventType.startsWith('subscription.') ? stringValue(object.id) : null),

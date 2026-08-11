@@ -20,5 +20,7 @@ export async function GET(req: Request) {
   }
 
   const productId = productIdFor(parsed.data.plan, parsed.data.period);
-  return NextResponse.redirect(paymentLinkFor(productId, user.id), 303);
+  const bindingSecret = process.env.BETTER_AUTH_SECRET;
+  if (!bindingSecret) return NextResponse.json({ error: { code: 'billing_unavailable' } }, { status: 503 });
+  return NextResponse.redirect(paymentLinkFor(productId, user.id, bindingSecret), 303);
 }

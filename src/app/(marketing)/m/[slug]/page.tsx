@@ -1,6 +1,7 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
 import { SharedMap } from '@/components/SharedMap';
+import { JsonLd } from '@/components/seo/JsonLd';
 import { getPublicBySlug } from '@/lib/db/repositories/maps';
 import { toOutline } from '@/lib/mindmap/outline';
 import type { MindMap } from '@/lib/mindmap/schema';
@@ -67,17 +68,14 @@ export default async function SharePage({ params }: Props) {
         <pre>{toOutline(map)}</pre>
       </section>
 
-      <script
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{
-          __html: JSON.stringify({
-            '@context': 'https://schema.org',
-            '@type': 'Article',
-            headline: map.title,
-            dateModified: shared.updatedAt,
-            inLanguage: map.language,
-            articleBody: toOutline(map),
-          }),
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'Article',
+          headline: map.title,
+          dateModified: shared.updatedAt,
+          inLanguage: map.language,
+          articleBody: toOutline(map),
         }}
       />
     </main>

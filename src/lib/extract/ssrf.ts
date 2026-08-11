@@ -57,13 +57,46 @@ function ipv4IsPrivate(ip: string): boolean {
   return false;
 }
 
+function parseIpv6(ip: string): number[] | null {
+  const value = ip.toLowerCase();
+  if (!/^[0-9a-f:]+$/.test(value) || (value.match(/::/g)?.length ?? 0) > 1) return null;
+
+  const [leftRaw, rightRaw] = value.split('::');
+  const parseSide = (side: string | undefined): number[] | null => {
+    if (!side) return [];
+    const parts = side.split(':');
+    if (parts.some((part) => !/^[0-9a-f]{1,4}$/.test(part))) return null;
+    return parts.map((part) => Number.parseInt(part, 16));
+  };
+  const left = parseSide(leftRaw);
+  const right = parseSide(rightRaw);
+  if (!left || !right) return null;
+
+  if (value.includes('::')) {
+    const missing = 8 - left.length - right.length;
+    if (missing < 1) return null;
+    return [...left, ...Array<number>(missing).fill(0), ...right];
+  }
+  return left.length === 8 ? left : null;
+}
+
 function ipv6IsPrivate(ip: string): boolean {
-  const v = ip.toLowerCase();
-  if (v === '::' || v === '::1') return true;
-  if (v.startsWith('fe80') || v.startsWith('fc') || v.startsWith('fd')) return true;
-  // IPv4-mapped，如 ::ffff:127.0.0.1
-  const mapped = v.match(/::ffff:(\d+\.\d+\.\d+\.\d+)$/);
-  if (mapped) return ipv4IsPrivate(mapped[1]);
+  const words = parseIpv6(ip);
+  if (!words) return true;
+  const [first] = words;
+
+  // 未指定、回环、ULA(fc00::/7)、链路本地(fe80::/10)。
+  if (words.every((word) => word === 0)) return true;
+  if (words.slice(0, 7).every((word) => word === 0) && words[7] === 1) return true;
+  if ((first & 0xfe00) === 0xfc00 || (first & 0xffc0) === 0xfe80) return true;
+
+  // IPv4-mapped / IPv4-compatible。URL 会把点分形式规范化为两个十六进制 word。
+  const mapped = words.slice(0, 5).every((word) => word === 0) && words[5] === 0xffff;
+  const compatible = words.slice(0, 6).every((word) => word === 0);
+  if (mapped || compatible) {
+    const ipv4 = `${words[6] >> 8}.${words[6] & 0xff}.${words[7] >> 8}.${words[7] & 0xff}`;
+    return ipv4IsPrivate(ipv4);
+  }
   return false;
 }
 
@@ -72,7 +105,7 @@ export function ipVersion(value: string): 0 | 4 | 6 {
   if (/^\d{1,3}(\.\d{1,3}){3}$/.test(value)) {
     return value.split('.').every((p) => Number(p) <= 255) ? 4 : 0;
   }
-  if (/^[0-9a-fA-F:]+$/.test(value) && value.includes(':')) return 6;
+  if (value.includes(':') && parseIpv6(value)) return 6;
   return 0;
 }
 

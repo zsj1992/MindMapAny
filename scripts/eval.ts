@@ -7,7 +7,6 @@
  * 改 prompt 或换模型后必须跑一遍再合并 —— 否则质量退化是无声的。
  */
 import { readFileSync } from 'node:fs';
-import { chunkDocument } from '../src/lib/chunk';
 import { extractPdf } from '../src/lib/extract/pdf';
 import { extractWeb } from '../src/lib/extract/web';
 import { extractYoutube } from '../src/lib/extract/youtube';

@@ -16,7 +16,7 @@ assert.deepEqual(
     subscription: { id: 'sub_1' },
     metadata: { userId: 'user_1' },
   }, 'checkout.completed'),
-  { userId: 'user_1', email: 'user@example.com', customerId: 'cust_1', subscriptionId: 'sub_1', productId: 'prod_1' },
+  { userId: 'user_1', binding: null, email: 'user@example.com', customerId: 'cust_1', subscriptionId: 'sub_1', productId: 'prod_1' },
 );
 
 /*

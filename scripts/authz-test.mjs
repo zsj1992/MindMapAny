@@ -9,7 +9,6 @@
  * 对应原 Postgres 版那 14 项 RLS 检查：核心断言是「B 用户拿不到 A 用户的私有图」。
  */
 import { execFileSync } from 'node:child_process';
-import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
 
 const DB = 'mindmapany';

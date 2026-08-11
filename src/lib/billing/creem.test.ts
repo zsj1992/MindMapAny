@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { PLAN_CREDITS } from '@/lib/credits';
-import { planForProduct, productIdFor, type BillingPeriod, type PaidPlan } from './creem';
+import { billingActionFor } from './events';
+import { billingBindingFor, paymentLinkFor, planForProduct, productIdFor, verifyBillingBinding, type BillingPeriod, type PaidPlan } from './creem';
 
 /*
  * Creem 后台上线产品的真实 ID 与价格，2026-08-10 逐个页面核对过。
@@ -42,6 +43,16 @@ for (const plan of plans) {
   for (const period of periods) assert.equal(planForProduct(productIdFor(plan, period)), plan);
 }
 assert.equal(planForProduct('prod_unknown'), null);
+
+const bindingSecret = 'test-binding-secret';
+const paymentLink = new URL(paymentLinkFor('prod_test', 'user_1', bindingSecret));
+const binding = paymentLink.searchParams.get('metadata[binding]');
+assert.equal(binding, billingBindingFor('user_1', bindingSecret));
+assert.equal(verifyBillingBinding('user_1', binding, bindingSecret), true);
+assert.equal(verifyBillingBinding('user_2', binding, bindingSecret), false, 'a binding cannot be moved to another user');
+assert.equal(verifyBillingBinding('user_1', '0'.repeat(64), bindingSecret), false);
+assert.equal(billingActionFor('subscription.expired'), 'ignore', 'expired can still recover and must not revoke access');
+assert.equal(billingActionFor('subscription.canceled'), 'revoke');
 
 for (const plan of plans) {
   for (const period of periods) {

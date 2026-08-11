@@ -13,6 +13,7 @@ import { resolveLanguage } from '@/lib/mindmap/detect-language';
 import { generateMindMap, type ModelTier } from '@/lib/mindmap/generate';
 import { DEPTHS, PURPOSES, type Depth, type Purpose } from '@/lib/mindmap/schema';
 import { rateLimitRequest } from '@/lib/rate-limit';
+import { RequestBodyTooLargeError, readBodyBytesLimited, readJsonLimited } from '@/lib/http/body-limit';
 
 // map-reduce 长文档可能跑到几分钟，Fluid Compute 默认 300s 够用，不引入队列
 export const maxDuration = 300;
@@ -37,7 +38,6 @@ export async function POST(req: Request) {
   let jobUserId: string | null = null;
 
   try {
-    const { params, file, filename, mimeType } = await readRequest(req);
     // 生成必须登录。页面层的重定向挡不住直接打接口，真正的闸门在这里。
     const session = await getCurrentProfile();
     const user = session?.user ?? null;
@@ -52,6 +52,9 @@ export async function POST(req: Request) {
       windowSeconds: 60,
     });
     if (!burst.allowed) return rateLimited(burst.resetAt);
+
+    // 鉴权和限流都通过后才读取请求体，避免匿名请求用大文件消耗 Worker 内存。
+    const { params, file, filename, mimeType } = await readRequest(req);
 
     // ── 提取 ──
     if (file) {
@@ -186,11 +189,15 @@ function rateLimited(resetAt: number, message = 'Too many requests right now. Pl
 }
 
 const MAX_UPLOAD_BYTES = 20 * 1024 * 1024;
+const MAX_MULTIPART_BYTES = MAX_UPLOAD_BYTES + 256 * 1024;
+const MAX_JSON_REQUEST_BYTES = 2 * 1024 * 1024;
 
 async function readRequest(req: Request) {
   const ctype = req.headers.get('content-type') ?? '';
   if (ctype.includes('multipart/form-data')) {
-    const form = await req.formData();
+    const body = await readBodyBytesLimited(req, MAX_MULTIPART_BYTES);
+    const buffered = new Request(req.url, { method: req.method, headers: req.headers, body: body.buffer });
+    const form = await buffered.formData();
     const entry = form.get('file');
     const raw = Object.fromEntries(
       [...form.entries()].filter(([, v]) => typeof v === 'string'),
@@ -202,7 +209,7 @@ async function readRequest(req: Request) {
     }
     return { params, file: null, filename: undefined, mimeType: undefined };
   }
-  const params = paramsSchema.parse(await req.json());
+  const params = paramsSchema.parse(await readJsonLimited(req, MAX_JSON_REQUEST_BYTES));
   return { params, file: null, filename: undefined, mimeType: undefined };
 }
 
@@ -214,6 +221,12 @@ function describeError(err: unknown): { status: number; code: string; message: s
   if (err instanceof ExtractError) {
     const status = err.code === 'blocked_url' ? 400 : err.code === 'too_large' ? 413 : 422;
     return { status, code: err.code, message: err.message };
+  }
+  if (err instanceof RequestBodyTooLargeError) {
+    return { status: 413, code: 'too_large', message: 'The request body is too large' };
+  }
+  if (err instanceof SyntaxError) {
+    return { status: 400, code: 'bad_request', message: 'Invalid JSON request body' };
   }
   if (err instanceof z.ZodError) {
     return { status: 400, code: 'bad_request', message: 'Invalid request parameters' };

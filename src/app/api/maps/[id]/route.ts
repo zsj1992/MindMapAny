@@ -2,7 +2,9 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getCurrentUser } from '@/lib/auth/session';
 import { deleteOwned, getOwnedOrPublic, renameOwned, setPublicOwned, updateOwned } from '@/lib/db/repositories/maps';
+import { RequestBodyTooLargeError, readJsonLimited } from '@/lib/http/body-limit';
 import { mindMapSchema } from '@/lib/mindmap/schema';
+import { rateLimitRequest } from '@/lib/rate-limit';
 
 export const runtime = 'nodejs';
 
@@ -11,6 +13,7 @@ const updateSchema = z.object({
   isPublic: z.boolean().optional(),
   title: z.string().trim().min(1).max(120).optional(),
 });
+const MAX_MAP_REQUEST_BYTES = 512 * 1024;
 
 type Ctx = { params: Promise<{ id: string }> };
 
@@ -27,8 +30,23 @@ export async function PUT(req: Request, { params }: Ctx) {
   const user = await getCurrentUser();
   if (!user) return NextResponse.json({ error: { code: 'login_required' } }, { status: 401 });
 
+  const limited = await rateLimitRequest(req, {
+    scope: 'maps:update:user:minute',
+    subject: user.id,
+    limit: 120,
+    windowSeconds: 60,
+  });
+  if (!limited.allowed) return NextResponse.json({ error: { code: 'rate_limited' } }, { status: 429 });
+
   const { id } = await params;
-  const parsed = updateSchema.safeParse(await req.json());
+  let body: unknown;
+  try {
+    body = await readJsonLimited(req, MAX_MAP_REQUEST_BYTES);
+  } catch (error) {
+    const status = error instanceof RequestBodyTooLargeError ? 413 : 400;
+    return NextResponse.json({ error: { code: status === 413 ? 'too_large' : 'bad_request' } }, { status });
+  }
+  const parsed = updateSchema.safeParse(body);
   if (!parsed.success) return NextResponse.json({ error: { code: 'bad_request' } }, { status: 400 });
 
   if (parsed.data.map) {

@@ -70,6 +70,14 @@ export async function listOwned(userId: string, limit = 100): Promise<MapSummary
   }));
 }
 
+export async function countOwned(userId: string): Promise<number> {
+  const row = await getDb()
+    .prepare(`select count(*) as count from maps where user_id = ?1`)
+    .bind(userId)
+    .first<{ count: number }>();
+  return row?.count ?? 0;
+}
+
 /**
  * 编辑器读取用。userId 为 null 表示未登录 —— 此时只有公开图能读到。
  * 这条 SQL 就是原来那两条 RLS 策略的等价物，务必和它们保持一致。
