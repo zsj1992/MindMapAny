@@ -7,10 +7,13 @@
     "build": "next build --webpack",
     "start": "next start",
     "lint": "eslint",
-    "test": "tsx src/lib/security.test.ts && tsx src/lib/mindmap/outline.test.ts && tsx src/lib/mindmap/detect-language.test.ts && tsx src/lib/i18n/i18n.test.ts && tsx src/lib/seo/tools/tools.test.ts && tsx src/lib/pipeline.test.ts && tsx src/lib/extract/web.test.ts && tsx src/lib/extract/document.test.ts && tsx src/lib/research.test.ts && tsx src/lib/billing/creem.test.ts && tsx src/lib/billing/webhook.test.ts && tsx src/store/editor.test.ts",
+    "test": "tsx src/lib/security.test.ts && tsx src/lib/extension.test.ts && tsx src/lib/mindmap/outline.test.ts && tsx src/lib/mindmap/detect-language.test.ts && tsx src/lib/i18n/i18n.test.ts && tsx src/lib/seo/tools/tools.test.ts && tsx src/lib/pipeline.test.ts && tsx src/lib/extract/ssrf-fetch.test.ts && tsx src/lib/extract/web.test.ts && tsx src/lib/extract/document.test.ts && tsx src/lib/research.test.ts && tsx src/lib/billing/creem.test.ts && tsx src/lib/billing/webhook.test.ts && tsx src/store/editor.test.ts",
     "eval": "tsx scripts/eval.ts",
     "screenshot": "node scripts/screenshot.mjs",
-    "test:authz": "node scripts/authz-test.mjs"
+    "test:authz": "node scripts/authz-test.mjs",
+    "extension:icons": "node scripts/build-extension.mjs --icons",
+    "extension:build": "node scripts/build-extension.mjs",
+    "extension:test": "node scripts/test-extension.mjs"
   },
   "dependencies": {
     "@ai-sdk/deepseek": "^3.0.24",

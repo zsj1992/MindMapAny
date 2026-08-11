@@ -1,7 +1,12 @@
 'use client';
 
-import { useRef, useState, type DragEvent, type ReactNode } from 'react';
+import { useEffect, useRef, useState, type DragEvent, type ReactNode } from 'react';
 import { estimateCredits, type Plan } from '@/lib/credits';
+import {
+  EXTENSION_MESSAGE_PREFILL,
+  EXTENSION_MESSAGE_REQUEST,
+  parseExtensionPrefill,
+} from '@/lib/extension';
 import type { InputKind } from '@/lib/extract/types';
 import { useT } from '@/lib/i18n/context';
 import type { MessageKey } from '@/lib/i18n/messages';
@@ -12,6 +17,9 @@ import { DEPTHS, PURPOSES, type Depth, type Purpose } from '@/lib/mindmap/schema
 export interface GenerateParams {
   text?: string;
   url?: string;
+  sourceUrl?: string;
+  sourceTitle?: string;
+  sourceType?: 'pdf';
   file?: File;
   language: string;
   depth: Depth;
@@ -96,6 +104,7 @@ export function InputPanel({
   mode = 'all',
   copy,
   plan = null,
+  extensionToken,
 }: {
   onGenerate: (params: GenerateParams) => void;
   busy: boolean;
@@ -103,6 +112,7 @@ export function InputPanel({
   mode?: InputMode;
   copy?: InputPanelCopy;
   plan?: Plan | null;
+  extensionToken?: string;
 }) {
   const [tab, setTab] = useState<Tab>(mode === 'all' ? 'text' : MODE_TAB[mode]);
   const [text, setText] = useState('');
@@ -113,7 +123,57 @@ export function InputPanel({
   const [depth, setDepth] = useState<Depth>('standard');
   const [purpose, setPurpose] = useState<Purpose>('general');
   const fileRef = useRef<HTMLInputElement>(null);
+  const handledExtensionToken = useRef<string | null>(null);
   const t = useT();
+
+  useEffect(() => {
+    if (!extensionToken || handledExtensionToken.current === extensionToken) return;
+
+    const receivePrefill = (event: MessageEvent) => {
+      if (event.source !== window || event.data?.type !== EXTENSION_MESSAGE_PREFILL) return;
+      const prefill = parseExtensionPrefill(event.data.payload, extensionToken);
+      if (!prefill || handledExtensionToken.current === extensionToken) return;
+
+      handledExtensionToken.current = extensionToken;
+      setLanguage(prefill.language);
+      setDepth(prefill.depth);
+      setPurpose(prefill.purpose);
+
+      const shared = {
+        language: prefill.language,
+        depth: prefill.depth,
+        purpose: prefill.purpose,
+        tier: 'fast' as const,
+      };
+      if (prefill.input.kind === 'text') {
+        setText(prefill.input.text);
+        setTab('text');
+        onGenerate({
+          ...shared,
+          text: prefill.input.text,
+          sourceUrl: prefill.input.sourceUrl,
+          sourceTitle: prefill.input.sourceTitle,
+        });
+      } else {
+        setUrl(prefill.input.url);
+        setTab('url');
+        onGenerate({
+          ...shared,
+          url: prefill.input.url,
+          sourceTitle: prefill.input.sourceTitle,
+          sourceType: 'pdf',
+        });
+      }
+
+      // The token is single-use. Removing it also prevents a refresh from
+      // accidentally charging for the same generation twice.
+      window.history.replaceState(null, '', window.location.pathname);
+    };
+
+    window.addEventListener('message', receivePrefill);
+    window.postMessage({ type: EXTENSION_MESSAGE_REQUEST, token: extensionToken }, window.location.origin);
+    return () => window.removeEventListener('message', receivePrefill);
+  }, [extensionToken, onGenerate]);
 
   // PDF 示例是链接，当前版本不能直接当文件用，先不在 PDF 页展示
   const examples = ['pdf', 'docx', 'epub', 'pptx'].includes(mode) ? [] : (copy?.examples ?? []);

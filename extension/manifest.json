@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "MindMapAny — 网页转脑图",
+  "version": "0.1.0",
+  "description": "一键把当前网页、选中文本和网页 PDF 转成可编辑、可溯源的思维导图。",
+  "permissions": ["activeTab", "scripting", "storage"],
+  "host_permissions": ["https://mindmapany.com/*"],
+  "action": {
+    "default_title": "用 MindMapAny 整理当前页面",
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
+  "content_scripts": [
+    {
+      "matches": ["https://mindmapany.com/*"],
+      "js": ["bridge.js"],
+      "run_at": "document_start"
+    }
+  ]
+}

@@ -5,6 +5,7 @@ import { extractDocument, isSupportedDocument } from '@/lib/extract/document';
 import { extractPdf } from '@/lib/extract/pdf';
 import { ExtractError, totalChars, type ExtractedDoc, type InputKind } from '@/lib/extract/types';
 import { extractWeb } from '@/lib/extract/web';
+import { safeFetchPdf } from '@/lib/extract/ssrf';
 import { isYoutubeUrl } from '@/lib/extract/youtube';
 import { getCurrentProfile } from '@/lib/auth/session';
 import { refundCredits, reserveCredits } from '@/lib/db/repositories/profiles';
@@ -22,6 +23,9 @@ export const runtime = 'nodejs';
 const paramsSchema = z.object({
   text: z.string().optional(),
   url: z.string().optional(),
+  sourceUrl: z.string().url().max(2_048).optional(),
+  sourceTitle: z.string().trim().min(1).max(120).optional(),
+  sourceType: z.literal('pdf').optional(),
   // 'auto' = 跟随原文语种。默认值必须是 auto：默认英文时中文文档会被整篇翻译，
   // 而绝大多数人只是想要一张和原文同语言的图。
   language: z.string().default('auto'),
@@ -74,18 +78,26 @@ export async function POST(req: Request) {
       if (isYoutubeUrl(url)) {
         throw new ExtractError('unsupported', 'YouTube video summarisation is not available yet. Paste the captions or transcript instead.');
       }
-      kind = 'web';
-      doc = await extractWeb(url);
+      if (params.sourceType === 'pdf') {
+        kind = 'pdf';
+        const fetched = await safeFetchPdf(url);
+        doc = await extractPdf({ data: fetched.data, filename: params.sourceTitle ?? filenameFromUrl(fetched.url) });
+      } else {
+        kind = 'web';
+        doc = await extractWeb(url);
+      }
     } else if (params.text?.trim()) {
-      kind = 'text';
+      const sourceUrl = validHttpSource(params.sourceUrl);
+      kind = sourceUrl ? 'web' : 'text';
       doc = {
-        kind: 'text',
-        title: params.text.trim().split('\n')[0].slice(0, 80) || 'Untitled content',
+        kind: sourceUrl ? 'web' : 'text',
+        title: params.sourceTitle ?? (params.text.trim().split('\n')[0].slice(0, 80) || 'Untitled content'),
         blocks: params.text
           .split(/\n{2,}/)
           .map((t) => ({ text: t.trim() }))
           .filter((b) => b.text),
         notes: [],
+        ...(sourceUrl ? { url: sourceUrl } : {}),
       };
     } else {
       return fail(400, 'bad_request', 'Please provide text, a link, or a supported file');
@@ -168,6 +180,25 @@ export async function POST(req: Request) {
       errorMessage: message,
     });
     return fail(status, code, message);
+  }
+}
+
+function validHttpSource(value: string | undefined): string | undefined {
+  if (!value) return undefined;
+  try {
+    const url = new URL(value);
+    return url.protocol === 'http:' || url.protocol === 'https:' ? url.toString() : undefined;
+  } catch {
+    return undefined;
+  }
+}
+
+function filenameFromUrl(value: string): string {
+  try {
+    const pathname = new URL(value).pathname;
+    return decodeURIComponent(pathname.split('/').pop() || 'document.pdf').slice(0, 180);
+  } catch {
+    return 'document.pdf';
   }
 }
 

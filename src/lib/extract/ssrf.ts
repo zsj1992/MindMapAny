@@ -17,6 +17,7 @@ const ALLOWED_PROTOCOLS = new Set(['http:', 'https:']);
 const ALLOWED_PORTS = new Set(['', '80', '443', '8080', '8443']);
 export const FETCH_TIMEOUT_MS = 15_000;
 export const MAX_HTML_BYTES = 5 * 1024 * 1024;
+export const MAX_PDF_BYTES = 20 * 1024 * 1024;
 export const MAX_REDIRECTS = 3;
 
 const DEFAULT_USER_AGENT = 'Mozilla/5.0 (compatible; MapAnyBot/0.1; +https://mindmapany.com/bot)';
@@ -238,6 +239,53 @@ export async function safeFetchHtml(raw: string): Promise<{ url: string; html: s
   throw new ExtractError('fetch_failed', 'Too many redirects');
 }
 
+/**
+ * Fetch a public PDF URL with the same redirect-by-redirect SSRF checks as HTML.
+ * The extension uses this path for Chrome's built-in PDF viewer, where page DOM
+ * access is intentionally unavailable to content scripts.
+ */
+export async function safeFetchPdf(raw: string): Promise<{ url: string; data: ArrayBuffer }> {
+  let current = raw;
+  for (let hop = 0; hop <= MAX_REDIRECTS; hop++) {
+    const url = await assertPublicUrl(current);
+    const controller = new AbortController();
+    const timer = setTimeout(() => controller.abort(), FETCH_TIMEOUT_MS);
+    let res: Response;
+    try {
+      res = await fetch(url, {
+        redirect: 'manual',
+        signal: controller.signal,
+        headers: { ...requestHeaders(url), accept: 'application/pdf' },
+      });
+    } catch {
+      throw new ExtractError('fetch_failed', 'Fetching the PDF failed or timed out');
+    } finally {
+      clearTimeout(timer);
+    }
+
+    if (res.status >= 300 && res.status < 400) {
+      const location = res.headers.get('location');
+      if (!location) throw new ExtractError('fetch_failed', 'The redirect had no target');
+      current = new URL(location, url).toString();
+      continue;
+    }
+    if (!res.ok) {
+      const hint = res.status === 403 || res.status === 401 ? ' (the file may require a login)' : '';
+      throw new ExtractError('fetch_failed', `The PDF returned ${res.status}${hint}`);
+    }
+
+    const len = Number(res.headers.get('content-length') ?? 0);
+    if (len > MAX_PDF_BYTES) throw new ExtractError('too_large', 'The PDF exceeds the 20MB limit');
+    const data = await readBytesCapped(res, MAX_PDF_BYTES);
+    const prefix = new TextDecoder('ascii').decode(data.slice(0, 5));
+    if (prefix !== '%PDF-') throw new ExtractError('unsupported', 'That link did not return a valid PDF');
+    // Uint8Array.buffer is typed as ArrayBufferLike; copying guarantees the
+    // concrete ArrayBuffer expected by the PDF parser (never SharedArrayBuffer).
+    return { url: url.toString(), data: Uint8Array.from(data).buffer as ArrayBuffer };
+  }
+  throw new ExtractError('fetch_failed', 'Too many redirects');
+}
+
 /** content-length 可能缺失，读流时再兜一次大小上限 */
 async function readCapped(res: Response): Promise<string> {
   const reader = res.body?.getReader();
@@ -256,4 +304,34 @@ async function readCapped(res: Response): Promise<string> {
     out += decoder.decode(value, { stream: true });
   }
   return out + decoder.decode();
+}
+
+async function readBytesCapped(res: Response, maxBytes: number): Promise<Uint8Array> {
+  const reader = res.body?.getReader();
+  if (!reader) {
+    const data = new Uint8Array(await res.arrayBuffer());
+    if (data.byteLength > maxBytes) throw new ExtractError('too_large', 'The response is too large');
+    return data;
+  }
+
+  const chunks: Uint8Array[] = [];
+  let size = 0;
+  for (;;) {
+    const { done, value } = await reader.read();
+    if (done) break;
+    size += value.byteLength;
+    if (size > maxBytes) {
+      await reader.cancel();
+      throw new ExtractError('too_large', 'The response is too large');
+    }
+    chunks.push(value);
+  }
+
+  const out = new Uint8Array(size);
+  let offset = 0;
+  for (const chunk of chunks) {
+    out.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return out;
 }

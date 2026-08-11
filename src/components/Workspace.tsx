@@ -32,9 +32,11 @@ export interface WorkspaceProps {
   copy?: InputPanelCopy;
   /** 未登录传 null；用于在生成前显示本次预估积分 */
   plan?: Plan | null;
+  /** Single-use chrome.storage payload token supplied by the browser extension. */
+  extensionToken?: string;
 }
 
-export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, copy, plan = null }: WorkspaceProps) {
+export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, copy, plan = null, extensionToken }: WorkspaceProps) {
   const router = useRouter();
   const map = useEditor((s) => s.map);
   const dirty = useEditor((s) => s.dirty);
@@ -91,8 +93,8 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
       const inputType = params.file
         ? (params.file.name.toLowerCase().endsWith('.pdf') ? 'pdf' : 'document')
         : params.url
-          ? (isYoutube(params.url) ? 'youtube' : 'web')
-          : 'text';
+          ? (isYoutube(params.url) ? 'youtube' : params.sourceType === 'pdf' ? 'pdf' : 'web')
+          : params.sourceUrl ? 'web' : 'text';
       trackEvent('mindmap_generation_started', {
         input_type: inputType,
         depth: params.depth,
@@ -235,7 +237,15 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
             {busy ? (
               <GeneratingState />
             ) : (
-              <InputPanel onGenerate={generate} busy={busy} error={error} mode={mode} copy={copy} plan={plan} />
+              <InputPanel
+                onGenerate={generate}
+                busy={busy}
+                error={error}
+                mode={mode}
+                copy={copy}
+                plan={plan}
+                extensionToken={extensionToken}
+              />
             )}
           </div>
         </div>
