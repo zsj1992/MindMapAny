@@ -1,7 +1,7 @@
 # MindMapAny 站点架构
 
-> 2026-08-10 更新：站点语言为英文，`lang="en"`，OG locale `en_US`。
-> 同时修正了一处与实现不符的记录：`/tools/youtube-to-mind-map` 从未上线（实际 404），已从架构树移除。
+> 2026-08-12 更新：英文为默认语言，另有中文、日文、韩文、西班牙文、德文和法文本地化页面。
+> `/tools/youtube-to-mind-map` 从未上线（实际 404），继续保持不创建、不索引。
 
 ## 设计原则
 
@@ -12,7 +12,10 @@
 ├── /tools                         工具目录（CollectionPage）
 │   ├── /tools/pdf-to-mind-map     PDF to mind map
 │   ├── /tools/text-to-mind-map    Text to mind map
-│   └── /tools/webpage-to-mind-map Web page to mind map
+│   ├── /tools/webpage-to-mind-map Web page to mind map
+│   ├── /tools/docx-to-mind-map    Word document to mind map
+│   ├── /tools/epub-to-mind-map    EPUB ebook to mind map
+│   └── /tools/pptx-to-mind-map    PowerPoint to mind map
 ├── /blog                          内容中心（Blog）
 │   └── /blog/[slug]               Guide / How-to / Comparison
 ├── /pricing                       商业转化
@@ -21,9 +24,9 @@
 └── /app/*                         产品工作台（noindex）
 ```
 
-## 已实现但尚无工具页的输入类型
+## 已实现输入类型
 
-DOCX、EPUB、PPTX 在工作台已可用（`/app/docx`、`/app/epub`、`/app/pptx`），但没有对应的公开 `/tools/*` 落地页。这是当前最直接的一块 SEO 空缺：功能已经真实存在，只差承接页面，符合“功能可用才建页”的门槛。
+PDF、Text、Webpage、DOCX、EPUB、PPTX 都已有工作台输入和对应公开 `/tools/*` 落地页。下一步不是继续复制格式页，而是用真实示例、限制、FAQ、内部链接和转化数据把六页做深。
 
 `/tools/youtube-to-mind-map` 不同——YouTube 输入尚未开放（`/api/generate` 明确返回不支持），因此**不得**为它建页。
 
@@ -31,9 +34,9 @@ DOCX、EPUB、PPTX 在工作台已可用（`/app/docx`、`/app/epub`、`/app/ppt
 
 - 新输入能力先增加 `/tools/{input}-to-mind-map`，再将 CTA 指向 `/app/{kind}`。
 - 教程统一放在 `/blog/{descriptive-slug}`，不要把教程文案塞进工作台。
-- 用例达到至少 3 篇独立内容后再建立 `/use-cases` 聚合页，避免创建薄目录。
+- 用例达到至少 3 篇独立内容后再建立 `/use-cases` 聚合页，首批候选是 Students、Researchers 和 Knowledge Workers。
 - 暂不增加 `/categories/[slug]` 和标签归档；当博客超过 30 篇且每个分类至少 5 篇时再开放索引。
-- 英文为默认 locale，直接挂在根路径。若之后重开中文站，采用 `/zh/...` 并补 hreflang 与本地化 sitemap，不能把两种语言混在同一 URL。
+- 英文为默认 locale，直接挂在根路径；现有非英语版本使用独立前缀和 hreflang。新语言必须先有真实需求数据和人工语言质检。
 
 ## 索引策略
 
