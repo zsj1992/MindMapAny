@@ -19,6 +19,29 @@ const INPUT_HREFS = [
   '/tools/webpage-to-mind-map',
 ];
 
+const EXTENSION_CTA: Record<Locale, string> = {
+  en: 'Chrome extension',
+  'zh-CN': 'Chrome 插件',
+  ja: 'Chrome 拡張機能',
+  ko: 'Chrome 확장 프로그램',
+  es: 'Extensión de Chrome',
+  de: 'Chrome-Erweiterung',
+  fr: 'Extension Chrome',
+};
+
+function ChromeIcon() {
+  return (
+    <svg viewBox="0 0 24 24" className="h-4 w-4" aria-hidden="true">
+      <circle cx="12" cy="12" r="10" fill="#2563eb" />
+      <path d="M12 2a10 10 0 018.66 5H12a5 5 0 00-4.33 2.5L4.78 4.5A9.96 9.96 0 0112 2z" fill="#ef4444" />
+      <path d="M20.66 7A10 10 0 0112 22l4.33-7.5A5 5 0 0017 12c0-1.85-1-3.47-2.5-4.33L20.66 7z" fill="#facc15" />
+      <path d="M12 22A10 10 0 013.34 7h8.66A5 5 0 007.67 9.5L12 17v5z" fill="#22c55e" />
+      <circle cx="12" cy="12" r="3.5" fill="#fff" />
+      <circle cx="12" cy="12" r="2.7" fill="#3b82f6" />
+    </svg>
+  );
+}
+
 export function HomeContent({ locale }: { locale: Locale }) {
   const copy = marketingCopy(locale).home;
   return (
@@ -71,9 +94,12 @@ export function HomeContent({ locale }: { locale: Locale }) {
               <p className="mt-7 max-w-[34rem] text-pretty text-base leading-8 text-text-muted sm:text-[1.05rem]">
                 {copy.lede}
               </p>
-              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
+              <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
                 <Link href="/app/new" className="btn btn-primary h-12 px-6 text-[15px]">
                   {copy.ctaPrimary} <span aria-hidden="true">↗</span>
+                </Link>
+                <Link href="/browser-extension" className="btn btn-secondary h-12 px-5 text-[14px]">
+                  <ChromeIcon /> {EXTENSION_CTA[locale]} <span aria-hidden="true">↓</span>
                 </Link>
                 <Link href="#features" className="group inline-flex h-12 items-center justify-center gap-2 px-2 text-sm font-semibold text-text-muted transition-colors hover:text-text">
                   {copy.ctaSecondary} <span className="transition-transform group-hover:translate-x-1" aria-hidden="true">→</span>

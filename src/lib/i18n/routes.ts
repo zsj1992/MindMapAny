@@ -41,7 +41,7 @@ const TOOL_PAGES_PATHS = [
  * 于是 '/terms' 只剩一种语言，中文版既不进 sitemap 也拿不到 hreflang 互指。
  * 页面上线了、能打开，搜索引擎却永远不知道它存在。
  */
-const ALL_PAGES = [...CORE_PAGES, ...TOOL_PAGES_PATHS, ...LEGAL_PAGES];
+const ALL_PAGES = [...CORE_PAGES, ...TOOL_PAGES_PATHS, ...LEGAL_PAGES, '/browser-extension'];
 
 const TRANSLATED: Record<Locale, Set<string>> = {
   en: new Set(ALL_PAGES),

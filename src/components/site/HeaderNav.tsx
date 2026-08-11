@@ -84,12 +84,25 @@ const ALL_TOOLS_ICON = icon(
   </>,
 );
 
+const EXTENSION_LABEL: Record<Locale, string> = {
+  en: 'Chrome extension',
+  'zh-CN': 'Chrome 插件',
+  ja: 'Chrome 拡張',
+  ko: 'Chrome 확장',
+  es: 'Extensión Chrome',
+  de: 'Chrome-Erweiterung',
+  fr: 'Extension Chrome',
+};
+
 
 export function HeaderNav({ locale }: { locale: Locale }) {
   const copy = marketingCopy(locale).nav;
   return (
     <nav className="hidden items-center gap-8 text-[13px] font-medium text-text-muted md:flex">
       <ToolsMenu locale={locale} />
+      <Link href="/browser-extension" className="transition-colors hover:text-text">
+        {EXTENSION_LABEL[locale]}
+      </Link>
       <Link href={localizedPath('/blog', locale)} className="transition-colors hover:text-text">
         {copy.blog}
       </Link>

@@ -34,6 +34,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const base: MetadataRoute.Sitemap = [
     ...localizedEntries('/', { changeFrequency: 'weekly', priority: 1 }),
     ...localizedEntries('/pricing', { changeFrequency: 'monthly', priority: 0.7 }),
+    ...localizedEntries('/browser-extension', { changeFrequency: 'monthly', priority: 0.78 }),
     // 全部走 localizedEntries：某页新增译文时，只要它进了 TRANSLATED，
     // sitemap 会自动多出对应语言的条目。手写单条 URL 的写法必然漏掉这一步 ——
     // support 和 billing 补完六种语言后，sitemap 就曾经一条没变。
