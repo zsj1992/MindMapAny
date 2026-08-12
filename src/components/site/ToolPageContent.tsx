@@ -6,6 +6,7 @@ import { BLOG_POSTS, SITE_URL, type ToolPage } from '@/lib/seo/content';
 import { marketingCopy } from '@/lib/i18n/marketing';
 import { localizedPath } from '@/lib/i18n/routes';
 import type { Locale } from '@/lib/i18n/locales';
+import { TrackedLink } from '@/components/analytics/TrackedLink';
 
 /* 工具详情页正文。中英共用；tool 已经由调用方按语言取好。 */
 
@@ -57,7 +58,14 @@ export function ToolPageContent({ tool, locale }: { tool: ToolPage; locale: Loca
                 <h1 className="mt-5 text-4xl font-bold tracking-[-0.04em] sm:text-5xl">{tool.title}</h1>
                 <p className="mt-5 max-w-2xl text-base leading-8 text-text-muted sm:text-lg">{tool.description}</p>
                 <div className="mt-8 flex flex-wrap gap-3">
-                  <Link href={tool.appPath} className="btn btn-primary h-12 px-6">{copy.startFree} →</Link>
+                  <TrackedLink
+                    href={tool.appPath}
+                    eventName="landing_cta_clicked"
+                    eventParameters={{ page: 'tool', placement: 'hero', tool: tool.slug, locale }}
+                    className="btn btn-primary h-12 px-6"
+                  >
+                    {copy.startFree} →
+                  </TrackedLink>
                   <Link href={localizedPath('/pricing', locale)} className="btn btn-secondary h-12 px-5">{copy.seePlans}</Link>
                 </div>
               </div>
@@ -84,7 +92,18 @@ export function ToolPageContent({ tool, locale }: { tool: ToolPage; locale: Loca
         <section className="mx-auto max-w-4xl px-5 py-16 lg:px-8">
           <h2 className="text-3xl font-bold tracking-tight">{copy.faqHeading}</h2>
           <div className="mt-8 divide-y rounded-2xl border bg-surface px-6" style={{ borderColor: 'var(--border)' }}>{tool.faq.map((item) => <details key={item.question} className="group py-5"><summary className="cursor-pointer list-none font-semibold">{item.question}<span className="float-right text-brand-600 group-open:rotate-45">＋</span></summary><p className="mt-3 pr-8 text-sm leading-7 text-text-muted">{item.answer}</p></details>)}</div>
-          <div className="mt-10 rounded-2xl bg-[#102f53] px-6 py-10 text-center text-white"><h2 className="text-2xl font-bold">{copy.ctaHeading}</h2><p className="mt-3 text-sm text-blue-100/80">{copy.ctaBody}</p><Link href={tool.appPath} className="btn mt-6 h-11 bg-white px-6 text-[#102f53]">{copy.startFree} →</Link></div>
+          <div className="mt-10 rounded-2xl bg-[#102f53] px-6 py-10 text-center text-white">
+            <h2 className="text-2xl font-bold">{copy.ctaHeading}</h2>
+            <p className="mt-3 text-sm text-blue-100/80">{copy.ctaBody}</p>
+            <TrackedLink
+              href={tool.appPath}
+              eventName="landing_cta_clicked"
+              eventParameters={{ page: 'tool', placement: 'bottom', tool: tool.slug, locale }}
+              className="btn mt-6 h-11 bg-white px-6 text-[#102f53]"
+            >
+              {copy.startFree} →
+            </TrackedLink>
+          </div>
         </section>
 
         {relatedPosts.length > 0 && (

@@ -2,6 +2,7 @@
 
 import { useState, type FormEvent } from 'react';
 import { authClient, signIn, signUp } from '@/lib/auth/client';
+import { trackEvent } from '@/lib/analytics';
 
 type Mode = 'signin' | 'signup' | 'forgot';
 
@@ -61,6 +62,13 @@ export function EmailAuthForm({ next, emailVerificationRequired }: { next: strin
       setBusy(false);
       setError(friendlyError(result.error.code, result.error.message, mode));
       return;
+    }
+
+    if (mode === 'signup') {
+      trackEvent('signup_completed', {
+        method: 'email',
+        verification_required: emailVerificationRequired,
+      });
     }
 
     // 需要邮箱验证时注册不会自动登录，这时候跳转过去只会被弹回来

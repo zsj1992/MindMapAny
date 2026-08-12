@@ -50,8 +50,9 @@ export function OAuthButtons({ providers, next }: { providers: ('google' | 'gith
             disabled={busy !== null}
             onClick={async () => {
               setBusy(p);
-              // callbackURL 由 Better Auth 在回调后跳转，只接受站内相对路径
-              await signIn.social({ provider: p, callbackURL: next });
+              // 新账号先经过一次无索引的站内回调页记录注册完成；老账号仍直接回原目标。
+              const newUserCallbackURL = `/signup-complete?method=${p}&next=${encodeURIComponent(next)}`;
+              await signIn.social({ provider: p, callbackURL: next, newUserCallbackURL });
             }}
             className="group relative flex h-12 w-full items-center justify-center gap-3 rounded-xl border bg-surface text-[15px] font-medium text-text shadow-sm transition-all hover:border-brand-300 hover:shadow-md disabled:cursor-not-allowed disabled:opacity-60"
             style={{ borderColor: 'var(--border-strong)' }}

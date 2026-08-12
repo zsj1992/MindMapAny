@@ -1,10 +1,12 @@
 import Link from 'next/link';
+import { PurchaseCompletedTracker } from '@/components/analytics/PurchaseCompletedTracker';
 
 export const metadata = { title: 'Your subscription is activating' };
 
 export default function BillingSuccessPage() {
   return (
     <main className="hero-glow flex min-h-[calc(100vh-4rem)] items-center px-5 py-14">
+      <PurchaseCompletedTracker />
       <section className="mx-auto w-full max-w-xl rounded-3xl border bg-surface p-8 text-center shadow-xl shadow-brand-900/5 sm:p-11">
         <span className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-emerald-50 text-2xl text-emerald-600 dark:bg-emerald-950/40">✓</span>
         <h1 className="mt-6 text-3xl font-bold tracking-tight">Payment complete</h1>

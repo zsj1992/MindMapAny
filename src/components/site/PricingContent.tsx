@@ -1,12 +1,13 @@
 'use client';
 
 import Link from 'next/link';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { PLAN_CREDITS, PLAN_LIMITS, type Plan } from '@/lib/credits';
 import type { BillingPeriod } from '@/lib/billing/creem';
 import { fill, marketingCopy } from '@/lib/i18n/marketing';
 import { localizedPath } from '@/lib/i18n/routes';
 import type { Locale } from '@/lib/i18n/locales';
+import { trackEvent } from '@/lib/analytics';
 
 /**
  * 定价页正文。中英等 7 种语言共用这一个组件，只有 locale 不同。
@@ -43,6 +44,10 @@ export function PricingContent({ locale }: { locale: Locale }) {
   // 年付是主推项，默认选中；这也是竞品的普遍做法
   const [period, setPeriod] = useState<BillingPeriod>('annual');
   const pct = savePercent();
+
+  useEffect(() => {
+    trackEvent('pricing_viewed', { locale });
+  }, [locale]);
 
   const coreLimits = (plan: Plan): string[] => {
     const limits = PLAN_LIMITS[plan];
@@ -164,7 +169,11 @@ export function PricingContent({ locale }: { locale: Locale }) {
                 </ul>
 
                 {paid ? (
-                  <a href={`/api/checkout?plan=${planId}&period=${period}`} className={`btn mt-5 h-11 w-full ${featured ? 'btn-primary' : 'btn-secondary'}`}>
+                  <a
+                    href={`/api/checkout?plan=${planId}&period=${period}`}
+                    onClick={() => trackEvent('checkout_started', { plan: planId, period, locale })}
+                    className={`btn mt-5 h-11 w-full ${featured ? 'btn-primary' : 'btn-secondary'}`}
+                  >
                     {plan.action} <span aria-hidden="true">→</span>
                   </a>
                 ) : (

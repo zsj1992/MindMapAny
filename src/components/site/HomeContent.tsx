@@ -8,6 +8,7 @@ import { marketingCopy } from '@/lib/i18n/marketing';
 import { absoluteUrl, HTML_LANG, localizedPath } from '@/lib/i18n/routes';
 import type { Locale } from '@/lib/i18n/locales';
 import { CHROME_EXTENSION_PUBLIC } from '@/lib/features';
+import { TrackedLink } from '@/components/analytics/TrackedLink';
 
 /* 首页正文。中英两条路由共用，唯一差别是 locale。 */
 
@@ -96,9 +97,14 @@ export function HomeContent({ locale }: { locale: Locale }) {
                 {copy.lede}
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:flex-wrap sm:items-center">
-                <Link href="/app/new" className="btn btn-primary h-12 px-6 text-[15px]">
+                <TrackedLink
+                  href="/app/new"
+                  eventName="landing_cta_clicked"
+                  eventParameters={{ page: 'home', placement: 'hero', locale }}
+                  className="btn btn-primary h-12 px-6 text-[15px]"
+                >
                   {copy.ctaPrimary} <span aria-hidden="true">↗</span>
-                </Link>
+                </TrackedLink>
                 {CHROME_EXTENSION_PUBLIC ? (
                   <Link href="/browser-extension" className="btn btn-secondary h-12 px-5 text-[14px]">
                     <ChromeIcon /> {EXTENSION_CTA[locale]} <span aria-hidden="true">↓</span>
@@ -177,9 +183,14 @@ export function HomeContent({ locale }: { locale: Locale }) {
               <h2 className="mt-4 text-balance text-3xl font-semibold leading-tight tracking-[-0.04em] sm:text-4xl">{copy.ctaHeading}</h2>
               <p className="mt-4 max-w-xl text-sm leading-7 text-blue-100/70">{copy.ctaBody}</p>
             </div>
-            <Link href="/app/new" className="btn relative mt-8 h-12 bg-white px-6 text-[14px] text-[#102f53] shadow-lg transition-transform hover:-translate-y-0.5 hover:bg-blue-50 lg:mt-0">
+            <TrackedLink
+              href="/app/new"
+              eventName="landing_cta_clicked"
+              eventParameters={{ page: 'home', placement: 'bottom', locale }}
+              className="btn relative mt-8 h-12 bg-white px-6 text-[14px] text-[#102f53] shadow-lg transition-transform hover:-translate-y-0.5 hover:bg-blue-50 lg:mt-0"
+            >
               {copy.ctaButton} <span aria-hidden="true">↗</span>
-            </Link>
+            </TrackedLink>
           </div>
         </section>
       </main>
