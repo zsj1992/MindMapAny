@@ -16,6 +16,7 @@
     "extension:store-assets": "node scripts/build-extension-store-assets.mjs",
     "extension:test": "node scripts/test-extension.mjs",
     "gsc": "node --env-file-if-exists=.env.local scripts/gsc-pull.mjs",
+    "gsc:auth": "node --env-file-if-exists=.env.local scripts/gsc-pull.mjs auth",
     "extension:auth": "node --env-file-if-exists=.env.local scripts/publish-extension.mjs auth",
     "extension:publish": "node --env-file-if-exists=.env.local scripts/publish-extension.mjs publish"
   },

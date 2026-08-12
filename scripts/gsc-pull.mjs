@@ -3,19 +3,23 @@
  *
  *   node scripts/gsc-pull.mjs            # 最近 28 天
  *   node scripts/gsc-pull.mjs --days 90
+ *   node scripts/gsc-pull.mjs auth       # OAuth 方式的一次性授权
  *
- * 认证用服务账号，不用 OAuth：这个脚本迟早要挂在定时任务里跑，
- * 而 OAuth 的 refresh token 会过期、会被撤销，还要有人去点同意屏。
- * 服务账号只要在 GSC 里被加成用户，就能一直跑下去，无人值守。
+ * 两种认证都支持，优先服务账号：
  *
- * 需要两个环境变量（放 .env.local，已 gitignore）：
- *   GSC_SA_EMAIL       服务账号邮箱
- *   GSC_SA_PRIVATE_KEY 服务账号私钥（PEM，换行写成 \n）
+ *   服务账号（首选）  GSC_SA_EMAIL + GSC_SA_PRIVATE_KEY
+ *     适合无人值守。但 Google 现在对新组织默认打开
+ *     iam.disableServiceAccountKeyCreation，建不出密钥就只能走下面那条。
+ *
+ *   OAuth（兜底）    GSC_CLIENT_ID + GSC_CLIENT_SECRET + GSC_REFRESH_TOKEN
+ *     注意同意屏必须发布为「生产」。留在「测试」状态的话
+ *     refresh token 七天就失效，定时任务会莫名其妙断掉。
  */
 import { createSign } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import process from 'node:process';
+import { accessTokenFromRefresh, authorize } from './lib/google-oauth.mjs';
 
 const SCOPE = 'https://www.googleapis.com/auth/webmasters.readonly';
 const OUT_DIR = join(process.cwd(), 'docs', 'seo', 'data');
@@ -26,7 +30,15 @@ const PAGE_SIZE = 25_000;
 const days = Number(argValue('--days') ?? 28);
 const email = process.env.GSC_SA_EMAIL;
 const privateKey = process.env.GSC_SA_PRIVATE_KEY?.replace(/\\n/g, '\n');
-if (!email || !privateKey) die('缺少 GSC_SA_EMAIL / GSC_SA_PRIVATE_KEY，见 docs/seo/GSC-SETUP.md');
+const { GSC_CLIENT_ID: clientId, GSC_CLIENT_SECRET: clientSecret, GSC_REFRESH_TOKEN: refreshToken } = process.env;
+
+if (process.argv[2] === 'auth') {
+  if (!clientId || !clientSecret) die('缺少 GSC_CLIENT_ID / GSC_CLIENT_SECRET');
+  const issued = await authorize({ clientId, clientSecret, scope: SCOPE });
+  console.log('\n把这行加进 .env.local：\n');
+  console.log(`GSC_REFRESH_TOKEN=${issued}\n`);
+  process.exit(0);
+}
 
 const token = await accessToken();
 const site = await resolveSite(token);
@@ -50,6 +62,12 @@ console.log(`\n写入 docs/seo/data/gsc-${stamp}.{json,csv,md}`);
 // ── 认证 ──
 
 async function accessToken() {
+  if (clientId && clientSecret && refreshToken) {
+    return accessTokenFromRefresh({ clientId, clientSecret, refreshToken });
+  }
+  if (!email || !privateKey) {
+    die('没有可用的凭据。配服务账号（GSC_SA_EMAIL + GSC_SA_PRIVATE_KEY）或 OAuth（GSC_CLIENT_ID + GSC_CLIENT_SECRET + GSC_REFRESH_TOKEN），见 docs/seo/GSC-SETUP.md');
+  }
   const now = Math.floor(Date.now() / 1000);
   const claim = { iss: email, scope: SCOPE, aud: 'https://oauth2.googleapis.com/token', exp: now + 3600, iat: now };
   const unsigned = `${b64({ alg: 'RS256', typ: 'JWT' })}.${b64(claim)}`;
@@ -80,7 +98,11 @@ async function resolveSite(accessTokenValue) {
   if (!res.ok) die(`读取站点列表失败：${JSON.stringify(body)}`);
   const entries = (body.siteEntry ?? []).map((entry) => entry.siteUrl);
   if (!entries.length) {
-    die(`服务账号 ${email} 在 Search Console 里还没有任何站点权限。\n  到 GSC → 设置 → 用户和权限，把它添加为用户。`);
+    die(
+      email
+        ? `服务账号 ${email} 在 Search Console 里还没有任何站点权限。\n  到 GSC → 设置 → 用户和权限，把它添加为用户。`
+        : '这个账号在 Search Console 里没有任何站点。确认授权时用的是拥有 mindmapany.com 的那个 Google 账号。',
+    );
   }
   const match =
     entries.find((url) => url === `sc-domain:${SITE}`) ??

@@ -2,7 +2,15 @@
 
 一次性配置，之后 `npm run gsc` 就能拉数据，也能直接挂定时任务。
 
-## 为什么用服务账号而不是 OAuth
+## 先读这段：服务账号可能建不出密钥
+
+Google 现在对新建组织默认打开 `iam.disableServiceAccountKeyCreation`，会直接拦住「创建密钥」。遇到这个报错有两条路：
+
+1. **关掉那条组织政策**（推荐，需要 `Organization Policy Administrator` 角色）
+   IAM 和管理 → 组织政策 → 搜 `disableServiceAccountKeyCreation` → 管理政策 → 添加规则 → 关闭强制执行 → 保存。之后按下面的服务账号流程走。
+2. **改用 OAuth**（见文末），不需要动任何政策。
+
+## 为什么优先用服务账号而不是 OAuth
 
 OAuth 的 refresh token 会过期、会被撤销，还要有人去点同意屏。这个脚本迟早要无人值守地跑，服务账号只要在 GSC 里被加成用户就能一直用下去。
 
@@ -66,3 +74,20 @@ npm run gsc -- --days 90 # 最近 90 天
 - **刚提交 sitemap 时报告是空的，这正常。** 从收录到有展现通常要一到几周。
 - 排名是按展现**加权**平均的，不是算术平均——后者会被一堆零展现的长尾拉歪。
 - 脚本会自己去问有权限的站点列表，不用手填 `sc-domain:` 还是 `https://`（猜错就是 403）。
+
+## 备选：OAuth
+
+组织政策关不掉时走这条。代价是 refresh token 可能被撤销，需要重新授权一次。
+
+1. GCP「凭证 → 创建凭据 → OAuth 客户端 ID」，类型选**桌面应用**
+2. **同意屏必须发布为「生产」**。留在「测试」状态的话 refresh token **七天就失效**，定时任务会莫名其妙断掉 —— 这是这条路唯一真正的坑
+3. 填进 `.env.local`：
+   ```
+   GSC_CLIENT_ID=xxx.apps.googleusercontent.com
+   GSC_CLIENT_SECRET=xxx
+   ```
+4. 跑 `npm run gsc:auth`，浏览器里点一次「允许」，把输出的 `GSC_REFRESH_TOKEN=...` 也贴进 `.env.local`
+
+授权时要用**拥有 mindmapany.com 那个 Search Console 属性的 Google 账号**。这条路不需要在 GSC 里添加任何用户 —— 你本来就是所有者。
+
+之后 `npm run gsc` 用法完全相同；脚本两种凭据都认，OAuth 优先。
