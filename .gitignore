@@ -50,3 +50,6 @@ next-env.d.ts
 
 # Claude Code 个人配置（含生产库写权限，不要提交）
 .claude/settings.local.json
+
+# GSC 原始快照：可由 npm run gsc 重新生成，行数多，不进版本库
+docs/seo/data/*.json
