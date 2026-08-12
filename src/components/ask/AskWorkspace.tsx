@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { ReactFlowProvider } from '@xyflow/react';
 import { MindMapCanvas } from '@/components/canvas/MindMapCanvas';
+import { RefineBar } from '@/components/RefineBar';
 import { Toolbar } from '@/components/Toolbar';
 import { trackEvent } from '@/lib/analytics';
 import { useT } from '@/lib/i18n/context';
@@ -78,6 +79,7 @@ export function AskWorkspace({ unlimited }: { unlimited: boolean }) {
           <div className="min-h-0 flex-1">
             <MindMapCanvas />
           </div>
+          <RefineBar />
           {sources.length > 0 && (
             <div className="shrink-0 border-t bg-surface px-4 py-3" style={{ borderColor: 'var(--border)' }}>
               <p className="mb-1.5 text-[11px] font-semibold text-text-subtle">{t('ask.sources')}</p>

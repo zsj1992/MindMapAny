@@ -8,6 +8,7 @@ import type { Plan } from '@/lib/credits';
 import { InputPanel, type GenerateParams, type InputMode, type InputPanelCopy } from '@/components/InputPanel';
 import { GeneratingState } from '@/components/GeneratingState';
 import { FormatPanel } from '@/components/FormatPanel';
+import { RefineBar } from '@/components/RefineBar';
 import { Toolbar } from '@/components/Toolbar';
 import { trackEvent } from '@/lib/analytics';
 import type { MindMap } from '@/lib/mindmap/schema';
@@ -278,6 +279,7 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
           <MindMapCanvas />
           {formatOpen && <FormatPanel onClose={() => setFormatOpen(false)} />}
         </div>
+        <RefineBar />
         <p
           className="border-t px-4 py-2 text-[11px] text-text-subtle"
           style={{ borderColor: 'var(--border)' }}

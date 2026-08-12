@@ -107,6 +107,17 @@ const MESSAGES = {
   'toolbar.saving': { en: 'Saving…', 'zh-CN': '保存中…' },
   'toolbar.new': { en: 'New', 'zh-CN': '新建' },
 
+  // ── 生成后对话改图 ──
+  'refine.concise': { en: 'More concise', 'zh-CN': '更精简' },
+  'refine.detail': { en: 'Add details', 'zh-CN': '补充细节' },
+  'refine.translate': { en: 'Translate to', 'zh-CN': '翻译成' },
+  'refine.regenerate': { en: 'Reorganise', 'zh-CN': '重新组织' },
+  'refine.placeholder': { en: 'Ask for a change to this mind map…', 'zh-CN': '说说想怎么改这张脑图…' },
+  'refine.working': { en: 'Applying…', 'zh-CN': '正在修改…' },
+  'refine.cost': { en: 'Each change costs 1 credit', 'zh-CN': '每次修改消耗 1 积分' },
+  'refine.undo': { en: 'Undo', 'zh-CN': '撤销' },
+  'refine.failed': { en: 'Could not apply that change. Please try again.', 'zh-CN': '这次修改没成功，请重试。' },
+
   // ── 样式面板 ──
   'format.title': { en: 'Mind map format', 'zh-CN': '脑图样式' },
   'format.layout': { en: 'Layout', 'zh-CN': '布局' },
