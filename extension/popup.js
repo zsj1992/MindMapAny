@@ -3,7 +3,7 @@ const STORAGE_PREFIX = 'mindmapany:prefill:';
 // Leaves ample room below the API's 2MB JSON cap even for multi-byte CJK text.
 const MAX_CAPTURE_CHARS = 300_000;
 
-const state = { page: null, mode: 'page', busy: false };
+const state = { page: null, mode: 'page', busy: false, session: null };
 const els = {
   sourceIcon: document.querySelector('#sourceIcon'),
   sourceType: document.querySelector('#sourceType'),
@@ -17,9 +17,39 @@ const els = {
   purpose: document.querySelector('#purpose'),
   generate: document.querySelector('#generate'),
   error: document.querySelector('#error'),
+  account: document.querySelector('#account'),
+  accountName: document.querySelector('#accountName'),
+  accountPlan: document.querySelector('#accountPlan'),
+  accountCredits: document.querySelector('#accountCredits'),
+  signIn: document.querySelector('#signIn'),
 };
 
 void initialise();
+void loadSession();
+
+/**
+ * 读登录态。拿不到就显示登录入口 —— 未登录不是错误，是一种要引导的正常状态。
+ */
+async function loadSession() {
+  try {
+    state.session = await chrome.runtime.sendMessage({ type: 'MMA_SESSION' });
+  } catch {
+    state.session = { signedIn: false };
+  }
+  const s = state.session;
+  if (s?.signedIn) {
+    els.accountName.textContent = s.name;
+    els.accountPlan.textContent = PLAN_LABEL[s.plan] ?? s.plan;
+    els.accountCredits.textContent = s.credits === null ? '积分无限' : `剩余 ${s.credits} 积分`;
+    els.account.hidden = false;
+    els.signIn.hidden = true;
+  } else {
+    els.account.hidden = true;
+    els.signIn.hidden = false;
+  }
+}
+
+const PLAN_LABEL = { free: '免费版', basic: '基础版', pro: '专业版', unlimited: '无限版' };
 
 async function initialise() {
   cleanupExpiredPayloads();
@@ -103,16 +133,45 @@ for (const button of els.modeButtons) {
   });
 }
 
+els.signIn?.addEventListener('click', () => {
+  void chrome.tabs.create({ url: `${TARGET_ORIGIN}/login?next=/app/new` });
+  window.close();
+});
+
 els.generate.addEventListener('click', async () => {
   if (!state.page || state.busy) return;
   hideError();
   state.busy = true;
   els.generate.disabled = true;
-  els.generate.firstElementChild.textContent = '正在送往工作台…';
 
+  const page = state.page;
+  // 与下方跳转路径同一份取材逻辑，只是换了投递方式；溯源字段两边都得带上
+  const title = page.title.slice(0, 120);
+  const body = page.isPdf
+    ? { url: page.url, sourceType: 'pdf', sourceTitle: title }
+    : {
+        text: (state.mode === 'selection' ? page.selection : page.text).slice(0, MAX_CAPTURE_CHARS),
+        sourceUrl: page.url,
+        sourceTitle: title,
+      };
+  const request = { ...body, language: els.language.value, depth: els.depth.value, purpose: els.purpose.value };
+
+  // 已登录就地生成：注入浮层、交给后台去请求，popup 随即关闭也不影响
+  if (state.session?.signedIn) {
+    try {
+      const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+      await chrome.scripting.executeScript({ target: { tabId: tab.id }, files: ['overlay.js'] });
+      await chrome.runtime.sendMessage({ type: 'MMA_GENERATE', payload: request, tabId: tab.id });
+      window.close();
+      return;
+    } catch {
+      // 注入失败（受保护页面等）不算走投无路，掉回原来的跳转方案
+    }
+  }
+
+  els.generate.firstElementChild.textContent = '正在送往工作台…';
   try {
     const token = crypto.randomUUID();
-    const page = state.page;
     const input = page.isPdf
       ? { kind: 'url', url: page.url, sourceType: 'pdf', sourceTitle: page.title.slice(0, 120) }
       : {
@@ -135,7 +194,7 @@ els.generate.addEventListener('click', async () => {
     window.close();
   } catch {
     state.busy = false;
-    els.generate.firstElementChild.textContent = '生成脑图';
+    els.generate.firstElementChild.textContent = '总结为思维导图';
     els.generate.disabled = false;
     showError('没有成功打开工作台，请稍后重试。');
   }

@@ -26,7 +26,8 @@ if (process.argv.includes('--icons')) {
 const files = {};
 for (const path of await walk(extensionDir)) {
   const name = relative(extensionDir, path);
-  if (name === 'README.md' || name === 'icon.svg') continue;
+  // store-assets 是商店listing用的截图，不属于扩展本体，不进包
+  if (name === 'README.md' || name === 'icon.svg' || name.startsWith('store-assets')) continue;
   files[name] = new Uint8Array(await readFile(path));
 }
 await mkdir(distDir, { recursive: true });

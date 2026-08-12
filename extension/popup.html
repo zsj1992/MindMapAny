@@ -7,6 +7,14 @@
     <link rel="stylesheet" href="popup.css" />
   </head>
   <body>
+    <div id="account" hidden class="account">
+      <div class="account-main">
+        <span id="accountName" class="account-name"></span>
+        <span id="accountPlan" class="account-plan"></span>
+      </div>
+      <span id="accountCredits" class="account-credits"></span>
+    </div>
+    <button id="signIn" hidden class="signin" type="button">登录后可在当前页面直接生成 →</button>
     <main class="shell">
       <header class="brand-row">
         <div class="brand">
@@ -72,7 +80,7 @@
 
       <p class="error" id="error" role="alert" hidden></p>
       <button type="button" class="generate" id="generate" disabled>
-        <span>生成脑图</span>
+        <span>总结为思维导图</span>
         <span aria-hidden="true">→</span>
       </button>
       <p class="fine-print">将在工作台中生成，并按现有套餐扣除积分</p>
