@@ -7,7 +7,6 @@ import { SITE_URL } from '@/lib/seo/content';
 import { marketingCopy } from '@/lib/i18n/marketing';
 import { absoluteUrl, HTML_LANG, localizedPath } from '@/lib/i18n/routes';
 import type { Locale } from '@/lib/i18n/locales';
-import { CHROME_EXTENSION_PUBLIC } from '@/lib/features';
 import { TrackedLink } from '@/components/analytics/TrackedLink';
 
 /* 首页正文。中英两条路由共用，唯一差别是 locale。 */
@@ -105,11 +104,9 @@ export function HomeContent({ locale }: { locale: Locale }) {
                 >
                   {copy.ctaPrimary} <span aria-hidden="true">↗</span>
                 </TrackedLink>
-                {CHROME_EXTENSION_PUBLIC ? (
-                  <Link href="/browser-extension" className="btn btn-secondary h-12 px-5 text-[14px]">
-                    <ChromeIcon /> {EXTENSION_CTA[locale]} <span aria-hidden="true">↓</span>
-                  </Link>
-                ) : null}
+                <Link href="/browser-extension" className="btn btn-secondary h-12 px-5 text-[14px]">
+                  <ChromeIcon /> {EXTENSION_CTA[locale]} <span aria-hidden="true">↓</span>
+                </Link>
                 <Link href="#features" className="group inline-flex h-12 items-center justify-center gap-2 px-2 text-sm font-semibold text-text-muted transition-colors hover:text-text">
                   {copy.ctaSecondary} <span className="transition-transform group-hover:translate-x-1" aria-hidden="true">→</span>
                 </Link>

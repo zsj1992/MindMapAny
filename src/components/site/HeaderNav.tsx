@@ -6,7 +6,6 @@ import { useHoverMenu } from '@/components/site/useHoverMenu';
 import { marketingCopy } from '@/lib/i18n/marketing';
 import { localizedPath } from '@/lib/i18n/routes';
 import type { Locale } from '@/lib/i18n/locales';
-import { CHROME_EXTENSION_PUBLIC } from '@/lib/features';
 
 /**
  * 站点页头导航。Tools 是一个悬停展开的大面板 —— 6 个工具页埋在 /tools 列表页里，
@@ -101,11 +100,9 @@ export function HeaderNav({ locale }: { locale: Locale }) {
   return (
     <nav className="hidden items-center gap-8 text-[13px] font-medium text-text-muted md:flex">
       <ToolsMenu locale={locale} />
-      {CHROME_EXTENSION_PUBLIC ? (
-        <Link href="/browser-extension" className="transition-colors hover:text-text">
-          {EXTENSION_LABEL[locale]}
-        </Link>
-      ) : null}
+      <Link href="/browser-extension" className="transition-colors hover:text-text">
+        {EXTENSION_LABEL[locale]}
+      </Link>
       <Link href={localizedPath('/blog', locale)} className="transition-colors hover:text-text">
         {copy.blog}
       </Link>

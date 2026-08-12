@@ -54,7 +54,8 @@ async function auth() {
       res.writeHead(200, { 'content-type': 'text/html; charset=utf-8' });
       res.end(`<h2>${received ? '授权完成，回到终端。' : '授权失败：' + params.get('error')}</h2>`);
       server.close();
-      received ? resolve(received) : reject(new Error(params.get('error') ?? 'no_code'));
+      if (received) resolve(received);
+      else reject(new Error(params.get('error') ?? 'no_code'));
     });
     server.listen(PORT);
     setTimeout(() => { server.close(); reject(new Error('等待授权超时')); }, 300_000);
