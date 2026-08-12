@@ -61,9 +61,11 @@ PDF、Text、Webpage、DOCX、EPUB、PPTX 都已有工作台输入和对应公�
 
 ## 2026-08-12 架构审计待办
 
-- 首页正文增加到 `/blog/ai-mind-map-guide` 的上下文链接，完成首页到支柱内容的入口。
-- 博客相关文章改为按主题簇选择；不能继续用数组顺序截取两篇。
+扩展规划见 [`PAGE-EXPANSION-PLAN.md`](./PAGE-EXPANSION-PLAN.md)。
+
+- ~~首页正文增加到 `/blog/ai-mind-map-guide` 的上下文链接~~ 已完成（7 语言）。
+- ~~博客相关文章改为按主题簇选择~~ 已完成，簇键为 `relatedTool`。
+- ~~JSON-LD 面包屑的 Tools 层使用当前 locale 的 URL~~ 已完成，与可见面包屑逐项一致。
 - DOCX、EPUB、PPTX、Webpage 四个工具页逐步补一篇真正相关、带真实示例的内容回链。
-- `/m/[slug]` 进入 sitemap 前增加公开内容质量门，至少检查节点数、正文量、重复度和敏感/垃圾内容。
-- JSON-LD 面包屑的 Tools 层使用当前 locale 的 URL，与可见面包屑和 canonical 保持一致。
+- `/m/[slug]` 进入 sitemap 前增加公开内容质量门，至少检查节点数、正文量、重复度和敏感/垃圾内容。图默认私有，公开图达到两位数前不紧急。
 - `/use-cases` 至少有 3 个合格页面、`/compare` 至少有 3 个带日期实测页面后才建立各自聚合页。

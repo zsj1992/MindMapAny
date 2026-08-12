@@ -29,8 +29,10 @@ export function ToolPageContent({ tool, locale }: { tool: ToolPage; locale: Loca
       '@context': 'https://schema.org',
       '@type': 'BreadcrumbList',
       itemListElement: [
-        { '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL },
-        { '@type': 'ListItem', position: 2, name: 'Tools', item: `${SITE_URL}/tools` },
+        // 必须和下面可见的面包屑逐项一致 —— 结构化数据和页面内容对不上，
+        // Google 会判定为不匹配并直接丢掉这个富媒体结果
+        { '@type': 'ListItem', position: 1, name: copy.breadcrumbHome, item: `${SITE_URL}${localizedPath('/', locale)}` },
+        { '@type': 'ListItem', position: 2, name: copy.breadcrumbTools, item: `${SITE_URL}${localizedPath('/tools', locale)}` },
         { '@type': 'ListItem', position: 3, name: tool.title, item: url },
       ],
     },

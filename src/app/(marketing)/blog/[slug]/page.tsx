@@ -15,11 +15,24 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return { title: post.title, description: post.description, keywords: [post.primaryKeyword], alternates: { canonical: `/blog/${post.slug}` }, openGraph: { type: 'article', title: post.title, description: post.description, publishedTime: post.publishedAt, modifiedTime: post.updatedAt, url: `/blog/${post.slug}` } };
 }
 
+/**
+ * 同簇优先挑两篇。按数组顺序截前两篇的话，每篇文章推的都是同样那两篇，
+ * 簇内链就退化成了一条指向文章列表头部的单行道。
+ *
+ * relatedTool 就是簇键：指向同一个工具页的文章，谈的本来就是同一件事。
+ */
+function relatedTo(post: (typeof BLOG_POSTS)[number]) {
+  const others = BLOG_POSTS.filter((candidate) => candidate.slug !== post.slug);
+  const rank = (candidate: (typeof BLOG_POSTS)[number]) =>
+    (candidate.relatedTool === post.relatedTool ? 0 : 2) + (candidate.category === post.category ? 0 : 1);
+  return [...others].sort((a, b) => rank(a) - rank(b)).slice(0, 2);
+}
+
 export default async function BlogPostPage({ params }: Props) {
   const post = getBlogPost((await params).slug);
   if (!post) notFound();
   const url = `${SITE_URL}/blog/${post.slug}`;
-  const relatedPosts = BLOG_POSTS.filter((candidate) => candidate.slug !== post.slug).slice(0, 2);
+  const relatedPosts = relatedTo(post);
   const jsonLd = [
     { '@context': 'https://schema.org', '@type': 'BlogPosting', headline: post.title, description: post.description, datePublished: post.publishedAt, dateModified: post.updatedAt, mainEntityOfPage: url, image: `${SITE_URL}/og.png`, author: { '@type': 'Organization', name: post.author, url: SITE_URL }, publisher: { '@type': 'Organization', name: 'MindMapAny', url: SITE_URL } },
     { '@context': 'https://schema.org', '@type': 'BreadcrumbList', itemListElement: [{ '@type': 'ListItem', position: 1, name: 'Home', item: SITE_URL }, { '@type': 'ListItem', position: 2, name: 'Blog', item: `${SITE_URL}/blog` }, { '@type': 'ListItem', position: 3, name: post.title, item: url }] },

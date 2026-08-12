@@ -33,6 +33,8 @@ export interface MarketingCopy {
     ctaPrimary: string;
     ctaSecondary: string;
     worksWith: string;
+    guideLead: string;
+    guideLink: string;
     inputLabels: string[];
     sourceDocLabel: string;
     sourceDocPages: string;
@@ -290,6 +292,8 @@ const en: MarketingCopy = {
     ctaPrimary: 'Create a mind map free',
     ctaSecondary: 'Why not just a summary',
     worksWith: 'WORKS DIRECTLY WITH',
+    guideLead: 'New to this?',
+    guideLink: 'Read the guide to AI mind maps',
     inputLabels: ['Long text', 'PDF', 'Word', 'EPUB', 'PPTX', 'Web articles'],
     sourceDocLabel: 'Source document',
     sourceDocPages: '48-page PDF',
@@ -626,6 +630,8 @@ const zhCN: MarketingCopy = {
     ctaPrimary: '免费生成思维导图',
     ctaSecondary: '为什么不用摘要就够了',
     worksWith: '直接支持',
+    guideLead: '第一次用？',
+    guideLink: '读一读 AI 思维导图指南',
     inputLabels: ['长文本', 'PDF', 'Word', 'EPUB', 'PPTX', '网页文章'],
     sourceDocLabel: '原始文档',
     sourceDocPages: '48 页 PDF',
@@ -938,6 +944,8 @@ const ja: MarketingCopy = {
     ctaPrimary: '無料でマインドマップを作る',
     ctaSecondary: '要約では足りない理由',
     worksWith: '対応している形式',
+    guideLead: 'はじめてですか？',
+    guideLink: 'AI マインドマップ入門を読む',
     inputLabels: ['長文テキスト', 'PDF', 'Word', 'EPUB', 'PPTX', 'ウェブ記事'],
     sourceDocLabel: '元の文書',
     sourceDocPages: '48ページの PDF',
@@ -1272,6 +1280,8 @@ const ko: MarketingCopy = {
     ctaPrimary: '무료로 마인드맵 만들기',
     ctaSecondary: '요약만으로는 왜 부족한가',
     worksWith: '바로 지원하는 형식',
+    guideLead: '처음이신가요?',
+    guideLink: 'AI 마인드맵 가이드 읽기',
     inputLabels: ['긴 텍스트', 'PDF', 'Word', 'EPUB', 'PPTX', '웹 기사'],
     sourceDocLabel: '원본 문서',
     sourceDocPages: '48쪽 PDF',
@@ -1604,6 +1614,8 @@ const es: MarketingCopy = {
     ctaPrimary: 'Crear un mapa mental gratis',
     ctaSecondary: 'Por qué un resumen no basta',
     worksWith: 'FUNCIONA DIRECTAMENTE CON',
+    guideLead: '¿Es tu primera vez?',
+    guideLink: 'Lee la guía de mapas mentales con IA',
     inputLabels: ['Texto largo', 'PDF', 'Word', 'EPUB', 'PPTX', 'Artículos web'],
     sourceDocLabel: 'Documento original',
     sourceDocPages: 'PDF de 48 páginas',
@@ -1941,6 +1953,8 @@ const de: MarketingCopy = {
     ctaPrimary: 'Kostenlos eine Mindmap erstellen',
     ctaSecondary: 'Warum eine Zusammenfassung nicht reicht',
     worksWith: 'FUNKTIONIERT DIREKT MIT',
+    guideLead: 'Zum ersten Mal hier?',
+    guideLink: 'Leitfaden für KI-Mindmaps lesen',
     inputLabels: ['Langer Text', 'PDF', 'Word', 'EPUB', 'PPTX', 'Webartikel'],
     sourceDocLabel: 'Ausgangsdokument',
     sourceDocPages: 'PDF mit 48 Seiten',
@@ -2278,6 +2292,8 @@ const fr: MarketingCopy = {
     ctaPrimary: 'Créer une carte mentale gratuitement',
     ctaSecondary: 'Pourquoi un résumé ne suffit pas',
     worksWith: 'FONCTIONNE DIRECTEMENT AVEC',
+    guideLead: 'Une première ?',
+    guideLink: 'Lire le guide des cartes mentales IA',
     inputLabels: ['Texte long', 'PDF', 'Word', 'EPUB', 'PPTX', 'Articles web'],
     sourceDocLabel: "Document d'origine",
     sourceDocPages: 'PDF de 48 pages',

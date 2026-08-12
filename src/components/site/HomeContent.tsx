@@ -120,6 +120,17 @@ export function HomeContent({ locale }: { locale: Locale }) {
                     </Link>
                   ))}
                 </div>
+                {/* 首页到支柱指南唯一的正文入口。只挂在导航里的话，
+                    「首页 → 支柱 → 簇内容 → 工具」这条内链路径就断在第一步。 */}
+                <p className="mt-4 text-xs text-text-subtle">
+                  {copy.guideLead}{' '}
+                  <Link
+                    href={localizedPath('/blog/ai-mind-map-guide', locale)}
+                    className="font-medium text-brand-600 underline decoration-brand-200 underline-offset-4 transition-colors hover:text-brand-700"
+                  >
+                    {copy.guideLink}
+                  </Link>
+                </p>
               </div>
             </div>
 
