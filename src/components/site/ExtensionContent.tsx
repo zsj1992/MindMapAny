@@ -4,6 +4,17 @@ import { JsonLd } from '@/components/seo/JsonLd';
 import { Footer } from '@/components/site/Footer';
 import { SITE_URL } from '@/lib/seo/content';
 
+/** 应用商店上架地址。已核对：名称、描述、域名与 extension/manifest.json 一致。 */
+const WEB_STORE = 'https://chromewebstore.google.com/detail/fhbmomjeiofpapgjpdafmoddicpfilmf';
+
+/*
+ * 离线包保留但降级成兜底。
+ *
+ * 侧载安装永远不会自动更新，正常情况下上架之后就该撤掉 —— 今天发出去的 bug
+ * 会永远留在那些机器上，Chrome 还会一直弹「请停用开发者模式扩展程序」。
+ * 之所以留着，是因为 Chrome 应用商店在中国大陆访问不了，而中文是我们主推的语言之一。
+ * 对那批用户这是唯一的路，所以它不做主按钮，只做一行小字。
+ */
 const DOWNLOAD = '/downloads/mindmapany-chrome-extension.zip';
 
 const FEATURES = [
@@ -13,9 +24,9 @@ const FEATURES = [
 ];
 
 const STEPS = [
-  ['Download and unzip', 'Download the Beta ZIP below and expand it to a permanent folder on your computer.'],
-  ['Open Chrome extensions', 'Visit chrome://extensions and turn on Developer mode in the top-right corner.'],
-  ['Load the extension', 'Choose “Load unpacked”, select the expanded folder, then pin MindMapAny to the toolbar.'],
+  ['Add it to Chrome', 'Open the Chrome Web Store listing and choose “Add to Chrome”. It updates itself from then on.'],
+  ['Pin it to the toolbar', 'Click the puzzle-piece icon in Chrome and pin MindMapAny so it is one click away while you read.'],
+  ['Sign in once', 'Open the workbench and sign in. The extension hands each capture to your own account.'],
 ];
 
 export function ExtensionContent() {
@@ -29,8 +40,9 @@ export function ExtensionContent() {
           applicationCategory: 'BrowserApplication',
           operatingSystem: 'Chrome',
           url: `${SITE_URL}/browser-extension`,
-          downloadUrl: `${SITE_URL}${DOWNLOAD}`,
-          softwareVersion: '0.1.0 beta',
+          downloadUrl: WEB_STORE,
+          installUrl: WEB_STORE,
+          softwareVersion: '0.1.0',
           offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
         }}
       />
@@ -40,7 +52,7 @@ export function ExtensionContent() {
           <div className="relative mx-auto grid max-w-6xl items-center gap-12 lg:grid-cols-[1fr_0.82fr]">
             <div className="max-w-2xl">
               <p className="flex items-center gap-3 text-[11px] font-semibold uppercase tracking-[0.14em] text-brand-600 dark:text-brand-300">
-                <span className="h-px w-9 bg-brand-500" /> Browser extension · Beta
+                <span className="h-px w-9 bg-brand-500" /> Browser extension
               </p>
               <h1 className="mt-6 text-balance text-4xl font-semibold leading-[1.04] tracking-[-0.055em] sm:text-6xl">
                 Map what you are reading without breaking your flow
@@ -49,13 +61,17 @@ export function ExtensionContent() {
                 Turn the current page, a highlighted passage, or an online PDF into an editable, source-traceable mind map from the Chrome toolbar.
               </p>
               <div className="mt-8 flex flex-col gap-3 sm:flex-row sm:items-center">
-                <a href={DOWNLOAD} download className="btn btn-primary h-12 px-6 text-[15px]">
-                  Download Chrome Beta <span aria-hidden="true">↓</span>
+                <a href={WEB_STORE} target="_blank" rel="noopener noreferrer" className="btn btn-primary h-12 px-6 text-[15px]">
+                  Add to Chrome <span aria-hidden="true">↗</span>
                 </a>
                 <Link href="/app/new" className="btn btn-secondary h-12 px-5 text-sm">Open workbench ↗</Link>
               </div>
               <p className="mt-4 text-xs leading-5 text-text-subtle">
-                Manual Beta installation for Chrome on desktop. Chrome Web Store release is coming after review.
+                Free, for Chrome on desktop.{' '}
+                <a href={DOWNLOAD} download className="underline underline-offset-2 hover:text-text-muted">
+                  Cannot reach the Web Store? Download the offline package
+                </a>{' '}
+                — it installs but will not update itself.
               </p>
             </div>
 
@@ -101,10 +117,10 @@ export function ExtensionContent() {
         <section className="border-y bg-bg-subtle px-5 py-16 lg:px-8" style={{ borderColor: 'var(--border)' }}>
           <div className="mx-auto grid max-w-6xl gap-12 lg:grid-cols-[0.72fr_1.28fr]">
             <div>
-              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-brand-600">Install the Beta</p>
+              <p className="text-[10px] font-semibold uppercase tracking-[0.14em] text-brand-600">Install it</p>
               <h2 className="mt-4 text-3xl font-semibold tracking-[-0.04em]">Ready in about a minute</h2>
               <p className="mt-4 text-sm leading-7 text-text-muted">The public ZIP is temporary while the extension awaits Chrome Web Store review.</p>
-              <a href={DOWNLOAD} download className="btn btn-primary mt-7 h-11 px-5 text-sm">Download ZIP ↓</a>
+              <a href={WEB_STORE} target="_blank" rel="noopener noreferrer" className="btn btn-primary mt-7 h-11 px-5 text-sm">Add to Chrome ↗</a>
             </div>
             <ol className="space-y-3">
               {STEPS.map(([title, body], index) => (
