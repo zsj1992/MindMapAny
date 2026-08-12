@@ -10,6 +10,7 @@ import { isYoutubeUrl } from '@/lib/extract/youtube';
 import { getCurrentProfile } from '@/lib/auth/session';
 import { refundCredits, reserveCredits } from '@/lib/db/repositories/profiles';
 import { record as recordJob } from '@/lib/db/repositories/jobs';
+import { autoSaveMap } from '@/lib/maps/autosave';
 import { resolveLanguage } from '@/lib/mindmap/detect-language';
 import { generateMindMap, type ModelTier } from '@/lib/mindmap/generate';
 import { DEPTHS, PURPOSES, type Depth, type Purpose } from '@/lib/mindmap/schema';
@@ -165,7 +166,21 @@ export async function POST(req: Request) {
       durationMs: Date.now() - started,
     });
 
-    return NextResponse.json({ map, warnings, notes: doc.notes, usage, creditsCharged: cost });
+    // 生成成功即入库，失败不影响本次返回
+    const saved = await autoSaveMap(user.id, {
+      map,
+      sourceKind: kind,
+      ...(doc.url ? { sourceUrl: doc.url } : {}),
+    });
+
+    return NextResponse.json({
+      map,
+      warnings,
+      notes: doc.notes,
+      usage,
+      creditsCharged: cost,
+      ...(saved.saved ? { savedId: saved.id } : { saveFailed: saved.reason }),
+    });
   } catch (err) {
     const { status, code, message } = describeError(err);
     if (reserved) await refundCredits(reserved.userId, reserved.amount).catch(() => undefined);

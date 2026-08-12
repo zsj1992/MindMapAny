@@ -103,6 +103,7 @@ const MESSAGES = {
   'toolbar.share': { en: 'Share', 'zh-CN': '分享' },
   'toolbar.copyLink': { en: 'Copy link', 'zh-CN': '复制链接' },
   'toolbar.copied': { en: 'Copied', 'zh-CN': '已复制' },
+  'toolbar.saved': { en: 'Saved', 'zh-CN': '已保存' },
   'toolbar.save': { en: 'Save', 'zh-CN': '保存' },
   'toolbar.saving': { en: 'Saving…', 'zh-CN': '保存中…' },
   'toolbar.new': { en: 'New', 'zh-CN': '新建' },
@@ -207,6 +208,10 @@ const MESSAGES = {
   'error.network': { en: 'Network error. Please try again.', 'zh-CN': '网络错误，请重试。' },
   'error.saveSignIn': { en: 'Please sign in before saving', 'zh-CN': '请先登录再保存' },
   'error.saveFailed': { en: 'Could not save', 'zh-CN': '保存失败' },
+  'error.saveLimit': {
+    en: 'This map was not saved — your library is full at {n} maps. Delete a few in My mind maps to make room.',
+    'zh-CN': '这张图没有保存 —— 脑图库已满（{n} 张上限）。到「我的脑图」删掉几张再试。',
+  },
   'error.saveFailedNetwork': { en: 'Could not save. Check your connection and try again.', 'zh-CN': '保存失败，请检查网络后重试。' },
   'error.shareFailed': { en: 'Could not create a share link', 'zh-CN': '无法创建分享链接' },
   'error.shareFailedNetwork': { en: 'Sharing failed. Check your connection and try again.', 'zh-CN': '分享失败，请检查网络后重试。' },

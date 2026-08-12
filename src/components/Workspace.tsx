@@ -122,7 +122,11 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
         }
 
         // Workers 的类型定义里 json() 返回 unknown，比浏览器的 any 严格，这里显式收窄
-        const body = (await res.json()) as Partial<GenerateResponse> & { error?: { message?: string; code?: string } };
+        const body = (await res.json()) as Partial<GenerateResponse> & {
+          savedId?: string;
+          saveFailed?: 'limit_reached' | 'failed';
+          error?: { message?: string; code?: string };
+        };
         if (!res.ok) {
           trackEvent('mindmap_generation_failed', { input_type: inputType, error_code: body?.error?.code ?? 'request_failed' });
           setError(localizedError(t, body?.error?.code, body?.error?.message));
@@ -141,7 +145,11 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
         router.refresh();
         setNotes([...data.notes, ...data.warnings.slice(0, 2)]);
         setSourceKind(inputType === 'document' ? 'text' : inputType);
-        setSavedId(null);
+        // 服务端已经入库，这里接住它的 id：保存按钮从此是「更新」而不是「新建」
+        setSavedId(body.savedId ?? null);
+        if (body.savedId) markSaved();
+        // 撞到上限必须说出来 —— 用户以为都存好了而实际没存，比不自动保存更糟
+        if (body.saveFailed === 'limit_reached') setError(t('error.saveLimit', { n: 100 }));
         setShareUrl(null);
       } catch {
         trackEvent('mindmap_generation_failed', { input_type: inputType, error_code: 'network_error' });
@@ -150,7 +158,7 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
         setBusy(false);
       }
     },
-    [load, router, t],
+    [load, router, t, markSaved],
   );
 
   const save = useCallback(async (): Promise<string | null> => {

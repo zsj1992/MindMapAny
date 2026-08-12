@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getCurrentProfile } from '@/lib/auth/session';
 import { refundCredits, reserveCredits } from '@/lib/db/repositories/profiles';
+import { autoSaveMap } from '@/lib/maps/autosave';
 import { record as recordJob } from '@/lib/db/repositories/jobs';
 import { resolveLanguage } from '@/lib/mindmap/detect-language';
 import { ResearchError, runDeepResearch } from '@/lib/research';
@@ -75,7 +76,11 @@ export async function POST(req: Request) {
           durationMs: Date.now() - started,
           warnings: [`${result.plan.length} research tasks`, `${result.sources.length} research sources`, `${result.usage.webSearchRequests} web search requests`],
         });
-        send({ type: 'result', data: { ...result, creditsCharged: cost } });
+        const saved = await autoSaveMap(session.user.id, { map: result.map, sourceKind: 'web' });
+        send({
+          type: 'result',
+          data: { ...result, creditsCharged: cost, ...(saved.saved ? { savedId: saved.id } : { saveFailed: saved.reason }) },
+        });
       } catch (error) {
         const described = describe(error);
         if (cost) await refundCredits(session.user.id, cost).catch(() => undefined);

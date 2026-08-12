@@ -4,6 +4,7 @@ import { ASK_CREDITS, runAskAnything } from '@/lib/ask';
 import { getCurrentProfile } from '@/lib/auth/session';
 import { record as recordJob } from '@/lib/db/repositories/jobs';
 import { refundCredits, reserveCredits } from '@/lib/db/repositories/profiles';
+import { autoSaveMap } from '@/lib/maps/autosave';
 import { resolveLanguage } from '@/lib/mindmap/detect-language';
 import { DEPTHS, type Depth } from '@/lib/mindmap/schema';
 import { rateLimitRequest } from '@/lib/rate-limit';
@@ -63,7 +64,14 @@ export async function POST(req: Request) {
       warnings: [],
       durationMs: Date.now() - started,
     });
-    return NextResponse.json({ map: result.map, brief: result.brief, sources: result.sources, creditsCharged: cost });
+    const saved = await autoSaveMap(session.user.id, { map: result.map, sourceKind: 'web' });
+    return NextResponse.json({
+      map: result.map,
+      brief: result.brief,
+      sources: result.sources,
+      creditsCharged: cost,
+      ...(saved.saved ? { savedId: saved.id } : { saveFailed: saved.reason }),
+    });
   } catch (error) {
     // 失败必须退积分：用户没拿到图，钱不能扣
     if (cost) await refundCredits(session.user.id, cost).catch(() => undefined);

@@ -127,7 +127,7 @@ export function Toolbar({
 
         {!readOnly && onSave && (
           <button type="button" onClick={onSave} disabled={saving} className="btn btn-primary h-9 px-4 text-xs">
-            {saving ? t('toolbar.saving') : dirty ? `${t('toolbar.save')} ·` : t('toolbar.save')}
+            {saving ? t('toolbar.saving') : dirty ? `${t('toolbar.save')} ·` : t('toolbar.saved')}
           </button>
         )}
 

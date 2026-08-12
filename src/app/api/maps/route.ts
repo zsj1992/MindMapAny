@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getCurrentUser } from '@/lib/auth/session';
 import { countOwned, create, listOwned } from '@/lib/db/repositories/maps';
+import { MAX_SAVED_MAPS } from '@/lib/maps/autosave';
 import { RequestBodyTooLargeError, readJsonLimited } from '@/lib/http/body-limit';
 import { mindMapSchema } from '@/lib/mindmap/schema';
 import { rateLimitRequest } from '@/lib/rate-limit';
@@ -15,7 +16,6 @@ const createSchema = z.object({
 });
 
 const MAX_MAP_REQUEST_BYTES = 512 * 1024;
-const MAX_SAVED_MAPS = 100;
 
 export async function GET() {
   const user = await getCurrentUser();

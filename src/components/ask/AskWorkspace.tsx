@@ -61,7 +61,12 @@ export function AskWorkspace({ unlimited }: { unlimited: boolean }) {
         body: JSON.stringify({ question: question.trim() }),
         signal: controller.signal,
       });
-      const body = (await res.json()) as { map?: MindMap; sources?: Source[]; error?: { message?: string } };
+      const body = (await res.json()) as {
+        map?: MindMap;
+        sources?: Source[];
+        saveFailed?: 'limit_reached' | 'failed';
+        error?: { message?: string };
+      };
       if (!res.ok || !body.map) {
         trackEvent('ask_failed', {});
         setError(body.error?.message ?? t('error.generic'));
@@ -70,6 +75,7 @@ export function AskWorkspace({ unlimited }: { unlimited: boolean }) {
       trackEvent('ask_completed', {});
       load(body.map);
       setSources(body.sources ?? []);
+      if (body.saveFailed === 'limit_reached') setError(t('error.saveLimit', { n: 100 }));
     } catch (thrown) {
       // 用户主动中止不是错误，不能弹报错框。服务端会看到 request 被取消，
       // 在它自己的 catch 里把积分退回去 —— 这条路径和生成失败共用同一段逻辑。
