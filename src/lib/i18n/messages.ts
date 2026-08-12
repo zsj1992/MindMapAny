@@ -11,6 +11,7 @@ import { DEFAULT_LOCALE } from './locales';
 const MESSAGES = {
   // ── 侧栏 ──
   'nav.quickStart': { en: 'Quick start', 'zh-CN': '快速开始' },
+  'nav.askAnything': { en: 'Ask Anything', 'zh-CN': '直接提问' },
   'nav.deepResearch': { en: 'Deep research', 'zh-CN': '深度研究' },
   'nav.myMaps': { en: 'My mind maps', 'zh-CN': '我的脑图' },
   'nav.new': { en: 'New', 'zh-CN': '新' },
@@ -205,6 +206,27 @@ const MESSAGES = {
   'error.code.too_large': { en: 'The file exceeds the 20MB limit', 'zh-CN': '文件超过 20MB 限制' },
   'error.code.unsupported': { en: 'That format is not supported yet', 'zh-CN': '暂不支持这种格式' },
   'error.code.bad_request': { en: 'Please provide text, a link, or a supported file', 'zh-CN': '请提供文本、链接或受支持的文件' },
+
+  // ── Ask Anything ──
+  'ask.title': { en: 'Ask Anything', 'zh-CN': '直接提问' },
+  'ask.lede': {
+    en: 'No document needed. Ask a question and we search the web, then lay the answer out as a mind map you can check against its sources.',
+    'zh-CN': '不需要准备任何素材。提一个问题，我们联网检索，再把答案铺成一张可以对着来源核实的脑图。',
+  },
+  'ask.placeholder': { en: 'Ask a question, or name a topic to map…', 'zh-CN': '提一个问题，或写下想梳理的主题…' },
+  'ask.submit': { en: 'Build the map', 'zh-CN': '生成脑图' },
+  'ask.cost': { en: 'Costs {n} credits · charged only if it succeeds', 'zh-CN': '消耗 {n} 积分 · 仅在成功时扣费' },
+  'ask.searching': { en: 'Searching the web…', 'zh-CN': '正在联网检索…' },
+  'ask.mapping': { en: 'Laying out the map…', 'zh-CN': '正在生成脑图…' },
+  'ask.sources': { en: 'Sources', 'zh-CN': '来源' },
+  'ask.examples': { en: 'Try one of these', 'zh-CN': '试试这些' },
+  'ask.example1': { en: 'Analyse the trade-offs of remote work', 'zh-CN': '分析远程办公的利弊权衡' },
+  'ask.example2': { en: 'How does spaced repetition actually work?', 'zh-CN': '间隔重复记忆法到底是怎么起作用的' },
+  'ask.example3': { en: 'What drives data centre electricity use?', 'zh-CN': '数据中心的耗电量主要由什么决定' },
+  'ask.grounded': {
+    en: 'Every answer is built from live web sources, so each branch can be checked.',
+    'zh-CN': '每个回答都基于实时检索到的网页来源，每条分支都能核实。',
+  },
 
   // ── 深度研究 ──
   'research.reportLanguage': { en: 'Report language', 'zh-CN': '报告语言' },

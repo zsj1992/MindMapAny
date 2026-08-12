@@ -75,3 +75,7 @@
 ## 历史遗留
 
 旧文档仍有“只有三个工具页”“英文单站”等过时描述；实现已经扩展为六个工具页和七种语言。以后每次重大产品节点都必须同步更新策略、路线图和工作日历。
+
+## 2026-08-12 Similarweb 竞品词结论
+
+本次 mindmapai.app 与 mapify.so 的 89 行关键词快照已经导入。新信号把执行顺序微调为：先做深西语 PDF/工具入口，再补英文 Text/PDF 长尾与 Markdown 导出表达，同时保持日语核心词集中在 `/ja`。跨四种语言出现的 YouTube 查询被视为产品发现信号；功能未上线前不创建 SEO 页面。详见 [`SIMILARWEB-KEYWORD-REVIEW.md`](./SIMILARWEB-KEYWORD-REVIEW.md)。

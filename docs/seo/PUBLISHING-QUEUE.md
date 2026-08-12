@@ -33,6 +33,20 @@
 | 13 | 比较页 | Best PDF to mind map tools | HOLD-EVIDENCE | 同一 PDF 实测至少三款工具 + 搜索量 | 比较维度、失败样本、价格日期和适用人群可复核 |
 | 14 | 比较页 | Mapify alternatives / MindMapAny vs Mapify | HOLD-DATA | 搜索量 + 最新竞品复测 | 无虚假主张、无暗示关联、季度更新责任明确 |
 
+## Similarweb 导入后的插队项
+
+这些任务只优化现有 URL，不违反上面的新页面发布闸门：
+
+| 顺序 | 页面/任务 | 状态 | 完成定义 |
+|---:|---|---|---|
+| S1 | `/es/tools/pdf-to-mind-map` | READY-CONTENT-AUDIT | 三个西语 PDF 查询完成自然映射；真实样本、来源页码、限制和 CTA 事件齐全 |
+| S2 | `/es` 与 `/es/tools` | READY-CONTENT-AUDIT | `ia mapa mental`、`mapa mental`、在线工具意图各有清晰位置；不把完整概念图能力写成已支持 |
+| S3 | `/tools/text-to-mind-map` | READY-CONTENT-AUDIT | paragraph、long text、AI output 三个输入例子可复现；新增词不堆砌在 metadata |
+| S4 | `/ja` | MEASURE-FIRST | 核心日语词保持集中；接入 GSC 后按查询与页面表现调整，不新建重复首页 |
+| S5 | YouTube 产品发现 | HOLD-PRODUCT | 字幕覆盖、时间戳、限制、失败路径和合规验证通过后，才允许重新讨论工具页 |
+
+数据与判断来源见 [`SIMILARWEB-KEYWORD-REVIEW.md`](./SIMILARWEB-KEYWORD-REVIEW.md)。
+
 `READY-PROVISIONAL` 表示页面类型已有公开 SERP 证据，允许先做内容/示例审计，但在搜索量补全前不扩展相似页面。
 
 ## 单篇 Brief 必填字段
@@ -62,4 +76,3 @@
 - 用 GSC 查询更新母表和 URL 决策，而不是只看总流量。
 - 同一个簇有多个页面开始争同一查询时优先合并，不继续加文章。
 - 队列少于 5 个有效候选时再收词；候选很多但无数据时先补数据，不批量写作。
-

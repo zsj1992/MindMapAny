@@ -3,6 +3,19 @@
 > 采集日期：2026-08-12；默认市场：美国英语。
 > 当前没有 DataForSEO/Keyword Planner 实时搜索量接口，因此数量、CPC 和 KD 在关键词母表中保持为空。第一版用于建立正确页面边界和发布流程，不用于假装精确排序。
 
+## Similarweb 竞品词补充（2026-08-12）
+
+- `/es` 保留为 `ia mapa mental`、`mapa mental` 的唯一西语品类入口；`mapa conceptual` 只作为差异解释和测试词，不复制概念图首页。
+- `/es/tools` 承接在线/免费工具选择意图；`/es/tools/pdf-to-mind-map` 合并三个西语 PDF 转脑图表达。
+- `/ja` 保留为 `マインドマップ`、`マインドマップai` 的唯一日语品类入口。
+- `/tools/text-to-mind-map` 合并 `generate mind map from text`、`make mind map from paragraph`、`tool to summarize text into mind map`。
+- `export mind map to markdown` 先作为现有页面功能区块测试；没有 GSC 查询证据前不建文章。
+- `concept map` 与 `mind map` 的 SERP 和产品任务不同，候选 `/blog/mind-map-vs-concept-map` 必须先验证，且必须明确当前编辑器是树状层级而不是任意关系图。
+- 英/西/日/印尼语的 YouTube 词统一进入产品等待簇。`/tools/youtube-to-mind-map` 继续不存在、继续不进 sitemap，直到真实输入能力通过发布门。
+- 俄语、葡语、印尼语需求不能用孤立页面承接；必须先完成整个 locale 的核心架构和人工 QA。
+
+完整导入与架构影响见 [`SIMILARWEB-KEYWORD-REVIEW.md`](./SIMILARWEB-KEYWORD-REVIEW.md)。
+
 ## 已确认保留的 URL
 
 | 主 URL | 主任务 | 合并承接的表达 | 决策 |
@@ -57,4 +70,3 @@
 3. study notes / lecture notes / text to mind map
 4. PowerPoint / lecture slides / PPT summarizer mind map
 5. Mapify alternatives / best PDF to mind map tools
-

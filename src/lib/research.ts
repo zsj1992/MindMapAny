@@ -166,7 +166,7 @@ export async function runDeepResearch(opts: {
   };
 }
 
-async function requestDeepSeek(apiKey: string, payload: unknown, signal?: AbortSignal): Promise<AnthropicResponse> {
+export async function requestDeepSeek(apiKey: string, payload: unknown, signal?: AbortSignal): Promise<AnthropicResponse> {
   const response = await fetch('https://api.deepseek.com/anthropic/v1/messages', {
     method: 'POST',
     headers: {
@@ -188,11 +188,11 @@ async function requestDeepSeek(apiKey: string, payload: unknown, signal?: AbortS
   return body;
 }
 
-function textBlocks(body: AnthropicResponse): string {
+export function textBlocks(body: AnthropicResponse): string {
   return body.content?.filter((block) => block.type === 'text').map((block) => block.text ?? '').join('\n').trim() ?? '';
 }
 
-function extractToolSources(body: AnthropicResponse, limit: number): ResearchSource[] {
+export function extractToolSources(body: AnthropicResponse, limit: number): ResearchSource[] {
   const seen = new Set<string>();
   const sources: ResearchSource[] = [];
   for (const block of body.content ?? []) {
@@ -290,7 +290,7 @@ export function parseResearchOutput(raw: string): { report: string; sources: Res
   return { report, sources };
 }
 
-function attachCitedSources(map: MindMap, sources: ResearchSource[]): void {
+export function attachCitedSources(map: MindMap, sources: ResearchSource[]): void {
   for (const node of map.nodes) {
     const match = `${node.title} ${node.summary ?? ''}`.match(/\[(\d+)]/);
     const source = match ? sources[Number(match[1]) - 1] : undefined;

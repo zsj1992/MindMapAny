@@ -27,6 +27,12 @@ const ICONS = {
   spark: icon(
     <path strokeLinecap="round" strokeLinejoin="round" d="M12 3l1.9 5.1L19 10l-5.1 1.9L12 17l-1.9-5.1L5 10l5.1-1.9L12 3z" />,
   ),
+  ask: icon(
+    <>
+      <circle cx="12" cy="12" r="9" />
+      <path strokeLinecap="round" strokeLinejoin="round" d="M9.6 9.4a2.5 2.5 0 114 2c-1 .7-1.6 1.1-1.6 2.4M12 17h.01" />
+    </>,
+  ),
   research: icon(
     <>
       <circle cx="10" cy="10" r="6" />
@@ -76,6 +82,7 @@ const ICONS = {
 // 存文案 key 而不是文案本身：这两张表在模块顶层求值，那时还拿不到语言
 const PRIMARY = [
   { href: '/app/new', key: 'nav.quickStart', icon: ICONS.spark },
+  { href: '/app/ask', key: 'nav.askAnything', icon: ICONS.ask, badgeKey: 'nav.new' },
   { href: '/app/research', key: 'nav.deepResearch', icon: ICONS.research, badgeKey: 'nav.new' },
   { href: '/app/maps', key: 'nav.myMaps', icon: ICONS.maps },
 ] satisfies Array<{ href: string; key: MessageKey; icon: ReactNode; badgeKey?: MessageKey }>;
