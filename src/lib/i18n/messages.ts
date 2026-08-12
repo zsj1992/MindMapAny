@@ -244,6 +244,16 @@ const MESSAGES = {
     en: 'Every answer is built from live web sources, so each branch can be checked.',
     'zh-CN': '每个回答都基于实时检索到的网页来源，每条分支都能核实。',
   },
+  'ask.modeGrounded': { en: 'With sources', 'zh-CN': '联网找来源' },
+  'ask.modeQuick': { en: 'Quick draft', 'zh-CN': '快速草稿' },
+  'ask.modeGroundedHint': { en: 'Searches the web first. Slower, and every branch cites where it came from.', 'zh-CN': '先联网检索。慢一些，但每条分支都标明出处。' },
+  'ask.modeQuickHint': { en: 'Straight from the model. Faster and cheaper, with nothing to check it against.', 'zh-CN': '模型直接写。更快更便宜，但没有任何东西可以核对。' },
+  'ask.thinking': { en: 'Writing the outline…', 'zh-CN': '正在梳理结构…' },
+  'ask.quickWarning': {
+    en: 'Written from the model’s own knowledge — no sources, so check anything that matters before you rely on it.',
+    'zh-CN': '这张图由模型凭自身知识写成，没有来源。要紧的内容请自行核实后再使用。',
+  },
+  'ask.addSources': { en: 'Rebuild it with sources', 'zh-CN': '重做一张带来源的' },
 
   // ── 深度研究 ──
   'research.reportLanguage': { en: 'Report language', 'zh-CN': '报告语言' },

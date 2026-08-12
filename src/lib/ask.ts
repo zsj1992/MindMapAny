@@ -21,9 +21,21 @@ import {
  * 与深度研究的区别是深度和成本，不是「有没有来源」：
  *   Ask Anything  一次检索、一段简报、一张图，几十秒，3 积分
  *   深度研究       多任务规划、交叉验证、完整报告 + 图，几分钟，10 积分
+ *
+ * ── 后来加的 runTopicMap，以及它为什么不违背上面那段 ──
+ *
+ * 上面写「检索是前提不是开关」，说的是**不能把无来源的图当成有来源的图端出去**。
+ * runTopicMap 走的是另一条路：它不假装有来源。界面明确标注这是模型凭知识
+ * 整理的结构、需要自行核实，并在图旁边给一个「补上来源」把同一个问题重跑一遍
+ * 有检索的版本。
+ *
+ * 这样溯源不是被稀释，而是被演示了 —— 用户先免费看到结构，想要可信度时
+ * 一键就能拿到，那一下正好就是我们和别家的区别所在。
  */
 
 export const ASK_CREDITS = 3;
+/** 不检索，只有一次生成，所以便宜得多 */
+export const TOPIC_CREDITS = 1;
 
 /** 简报的目标长度。太短撑不起层级，太长就变成深度研究了。 */
 const BRIEF_WORDS: Record<Depth, number> = { concise: 260, standard: 420, detailed: 600 };
@@ -143,4 +155,77 @@ function parseBrief(raw: string, first: Parameters<typeof extractToolSources>[0]
     if (match) sources.push({ id: Number(match[1]), title: match[2].trim(), url: match[3].trim(), description: '' });
   }
   return { brief, sources: sources.length ? sources : extractToolSources(first, 8) };
+}
+
+export interface TopicResult {
+  map: MindMap;
+  usage: { inputTokens: number; outputTokens: number; calls: number };
+}
+
+/**
+ * 主题 → 脑图，不联网。承接 `ai mind map generator` 这类只给一个题目的意图。
+ *
+ * 仍然先让模型写一段结构化正文、再交给 generateMindMap，而不是让它直接吐大纲：
+ * generateMindMap 那套提示词、深度控制和解析已经被前面所有输入类型验证过，
+ * 为这一条路再写一套并行的出图逻辑，等于多养一处会各自跑偏的分支。
+ */
+export async function runTopicMap(opts: {
+  topic: string;
+  language: string;
+  depth: Depth;
+  signal?: AbortSignal;
+}): Promise<TopicResult> {
+  const apiKey = process.env.DEEPSEEK_API_KEY;
+  if (!apiKey) throw new ResearchError('provider_unconfigured', 'The service is not configured');
+
+  const prompt = [
+    `Topic: ${opts.topic}`,
+    '',
+    `Write a compact, well-organised overview of this topic in ${languageName(opts.language)}.`,
+    'Organise it as 4-6 "## " sections that between them cover the topic at the same level of abstraction.',
+    'Under each section use short paragraphs stating the substantive points.',
+    `The body should run to roughly ${BRIEF_WORDS[opts.depth]} words (or the equivalent in the target language).`,
+    'Write only what is well established. Where something is contested or uncertain, say so in the text rather than picking a side.',
+    'Do not invent specific figures, dates, studies or quotations — if a precise number matters, describe it qualitatively instead.',
+    'Do not output a source list; this overview is written from general knowledge, not from retrieved documents.',
+  ].join('\n');
+
+  const body = await requestDeepSeek(
+    apiKey,
+    {
+      model: process.env.DEEPSEEK_MODEL_FAST ?? 'deepseek-v4-flash',
+      max_tokens: 2600,
+      thinking: { type: 'disabled' },
+      system: 'You are a careful analyst writing a structured overview from general knowledge.',
+      messages: [{ role: 'user', content: prompt }],
+    },
+    opts.signal,
+  );
+
+  const overview = textBlocks(body).trim();
+  if (overview.length < 200) throw new ResearchError('generation_failed', 'The answer came back incomplete. Please try again.');
+
+  const mapResult = await generateMindMap({
+    doc: {
+      kind: 'text',
+      title: opts.topic.slice(0, 120),
+      blocks: overview.split(/\n{2,}/).map((part) => ({ text: part.trim() })).filter((block) => block.text),
+      // 这条注记会跟着图存进库里，是它日后唯一还看得出「没有来源」的痕迹
+      notes: ['Written from the model’s general knowledge, without web sources'],
+    },
+    language: opts.language,
+    depth: opts.depth,
+    purpose: 'structure',
+    tier: 'fast',
+    signal: opts.signal,
+  });
+
+  return {
+    map: mapResult.map,
+    usage: {
+      inputTokens: (body.usage?.input_tokens ?? 0) + mapResult.usage.inputTokens,
+      outputTokens: (body.usage?.output_tokens ?? 0) + mapResult.usage.outputTokens,
+      calls: 1 + mapResult.usage.calls,
+    },
+  };
 }

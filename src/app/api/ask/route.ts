@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
 import { z } from 'zod';
-import { ASK_CREDITS, runAskAnything } from '@/lib/ask';
+import { ASK_CREDITS, TOPIC_CREDITS, runAskAnything, runTopicMap } from '@/lib/ask';
 import { getCurrentProfile } from '@/lib/auth/session';
 import { record as recordJob } from '@/lib/db/repositories/jobs';
 import { refundCredits, reserveCredits } from '@/lib/db/repositories/profiles';
@@ -17,6 +17,8 @@ const bodySchema = z.object({
   question: z.string().trim().min(4).max(500),
   language: z.string().default('auto'),
   depth: z.enum(DEPTHS).default('standard'),
+  // 默认联网。无来源那条路必须由调用方明确要求 —— 默认值决定了绝大多数人拿到哪种图
+  grounded: z.boolean().default(true),
 });
 
 export async function POST(req: Request) {
@@ -39,23 +41,32 @@ export async function POST(req: Request) {
     return fail(400, 'bad_request', 'Please enter a question or topic');
   }
 
-  const cost = session.profile.plan === 'unlimited' ? 0 : ASK_CREDITS;
+  const price = params.grounded ? ASK_CREDITS : TOPIC_CREDITS;
+  const cost = session.profile.plan === 'unlimited' ? 0 : price;
   if (cost && !(await reserveCredits(session.user.id, cost))) {
-    return fail(402, 'insufficient_credits', `Ask Anything costs ${ASK_CREDITS} credits`);
+    return fail(402, 'insufficient_credits', `This costs ${price} credits`);
   }
 
   try {
-    const result = await runAskAnything({
-      question: params.question,
-      // 问题本身就是语言线索，和深度研究一致
-      language: resolveLanguage(params.language, params.question),
-      depth: params.depth as Depth,
-      signal: req.signal,
-    });
+    // 问题本身就是语言线索，和深度研究一致
+    const language = resolveLanguage(params.language, params.question);
+    const depth = params.depth as Depth;
+    // 两条路的返回形状不同，先归一成同一个壳，下面的记账和响应就不用各写一遍
+    const result = params.grounded
+      ? await runAskAnything({ question: params.question, language, depth, signal: req.signal }).then((r) => ({
+          map: r.map,
+          usage: r.usage,
+          cited: { brief: r.brief, sources: r.sources },
+        }))
+      : await runTopicMap({ topic: params.question, language, depth, signal: req.signal }).then((r) => ({
+          map: r.map,
+          usage: r.usage,
+          cited: null,
+        }));
     await recordJobSafely({
       userId: session.user.id,
       status: 'succeeded',
-      sourceKind: 'web',
+      sourceKind: params.grounded ? 'web' : 'text',
       sourceChars: params.question.length,
       modelTier: 'fast',
       inputTokens: result.usage.inputTokens,
@@ -64,11 +75,14 @@ export async function POST(req: Request) {
       warnings: [],
       durationMs: Date.now() - started,
     });
-    const saved = await autoSaveMap(session.user.id, { map: result.map, sourceKind: 'web' });
+    const saved = await autoSaveMap(session.user.id, {
+      map: result.map,
+      sourceKind: params.grounded ? 'web' : 'text',
+    });
     return NextResponse.json({
       map: result.map,
-      brief: result.brief,
-      sources: result.sources,
+      grounded: params.grounded,
+      ...(result.cited ?? {}),
       creditsCharged: cost,
       ...(saved.saved ? { savedId: saved.id } : { saveFailed: saved.reason }),
     });
@@ -80,7 +94,7 @@ export async function POST(req: Request) {
     await recordJobSafely({
       userId: session.user.id,
       status: 'failed',
-      sourceKind: 'web',
+      sourceKind: params.grounded ? 'web' : 'text',
       sourceChars: params.question.length,
       durationMs: Date.now() - started,
       errorCode: code,
