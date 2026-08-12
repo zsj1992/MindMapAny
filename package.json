@@ -14,7 +14,9 @@
     "extension:icons": "node scripts/build-extension.mjs --icons",
     "extension:build": "node scripts/build-extension.mjs",
     "extension:store-assets": "node scripts/build-extension-store-assets.mjs",
-    "extension:test": "node scripts/test-extension.mjs"
+    "extension:test": "node scripts/test-extension.mjs",
+    "extension:auth": "node --env-file-if-exists=.env.local scripts/publish-extension.mjs auth",
+    "extension:publish": "node --env-file-if-exists=.env.local scripts/publish-extension.mjs publish"
   },
   "dependencies": {
     "@ai-sdk/deepseek": "^3.0.24",
