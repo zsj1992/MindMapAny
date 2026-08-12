@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Spinner } from '@/components/Spinner';
 import { useT } from '@/lib/i18n/context';
 import { LOCALE_NAMES, LOCALES } from '@/lib/i18n/locales';
 import type { MindMap } from '@/lib/mindmap/schema';
@@ -70,14 +71,16 @@ export function RefineBar() {
               type="button"
               disabled={!!busy}
               onClick={() => void run(item.action)}
-              className="btn btn-secondary h-8 px-3 text-xs"
+              className="btn btn-secondary h-8 gap-1.5 px-3 text-xs"
             >
+              {busy === item.action && <Spinner className="h-3 w-3" />}
               {busy === item.action ? t('refine.working') : item.label}
             </button>
           ))}
 
           <div className="relative">
-            <button type="button" disabled={!!busy} onClick={() => setLangOpen((v) => !v)} className="btn btn-secondary h-8 gap-1 px-3 text-xs">
+            <button type="button" disabled={!!busy} onClick={() => setLangOpen((v) => !v)} className="btn btn-secondary h-8 gap-1.5 px-3 text-xs">
+              {busy === 'translate' && <Spinner className="h-3 w-3" />}
               {busy === 'translate' ? t('refine.working') : t('refine.translate')}
               <svg viewBox="0 0 20 20" fill="none" stroke="currentColor" strokeWidth="1.8" className="h-3 w-3" aria-hidden="true">
                 <path strokeLinecap="round" strokeLinejoin="round" d="m6.5 8 3.5 3.5L13.5 8" />
@@ -138,14 +141,26 @@ export function RefineBar() {
             disabled={!!busy || !instruction.trim()}
             onClick={() => void run('custom', instruction.trim())}
             className="btn btn-primary h-10 w-10 shrink-0 p-0"
-            aria-label={t('refine.placeholder')}
+            aria-label={busy === 'custom' ? t('refine.working') : t('refine.placeholder')}
           >
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M12 19V5m0 0l-6 6m6-6l6 6" />
-            </svg>
+            {busy === 'custom' ? (
+              <Spinner />
+            ) : (
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" className="h-4 w-4">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M12 19V5m0 0l-6 6m6-6l6 6" />
+              </svg>
+            )}
           </button>
         </div>
 
+        {busy && (
+          <div className="flex items-center gap-2">
+            <div className="h-0.5 flex-1 overflow-hidden rounded-full bg-bg-muted" aria-hidden="true">
+              <div className="h-full w-1/4 animate-indeterminate rounded-full bg-brand-500" />
+            </div>
+            <span className="text-[10px] text-text-subtle">{t('refine.working')}</span>
+          </div>
+        )}
         {error && <p className="text-xs text-red-600 dark:text-red-400">{error}</p>}
       </div>
     </div>

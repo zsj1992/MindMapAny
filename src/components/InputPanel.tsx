@@ -10,6 +10,7 @@ import {
 import type { InputKind } from '@/lib/extract/types';
 import { useT } from '@/lib/i18n/context';
 import type { MessageKey } from '@/lib/i18n/messages';
+import { Spinner } from '@/components/Spinner';
 import { detectLanguage } from '@/lib/mindmap/detect-language';
 import { languageName } from '@/lib/mindmap/prompt';
 import { DEPTHS, PURPOSES, type Depth, type Purpose } from '@/lib/mindmap/schema';
@@ -435,14 +436,6 @@ function isAcceptedFile(file: File, mode: InputMode): boolean {
   return allowed.includes(ext);
 }
 
-function Spinner() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-4 w-4 animate-spin" fill="none">
-      <circle cx="12" cy="12" r="9" stroke="currentColor" strokeOpacity="0.25" strokeWidth="3" />
-      <path d="M21 12a9 9 0 00-9-9" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-    </svg>
-  );
-}
 
 function Select({
   label,

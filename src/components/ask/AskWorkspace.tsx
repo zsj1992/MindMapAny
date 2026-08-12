@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { ReactFlowProvider } from '@xyflow/react';
 import { MindMapCanvas } from '@/components/canvas/MindMapCanvas';
+import { Spinner } from '@/components/Spinner';
 import { RefineBar } from '@/components/RefineBar';
 import { Toolbar } from '@/components/Toolbar';
 import { trackEvent } from '@/lib/analytics';
@@ -76,7 +77,7 @@ export function AskWorkspace({ unlimited }: { unlimited: boolean }) {
       <ReactFlowProvider>
         <div className="flex h-full min-h-0 flex-col">
           <Toolbar onReset={() => useEditor.setState({ map: null, dirty: false })} />
-          <div className="min-h-0 flex-1">
+          <div className="relative min-h-0 flex-1">
             <MindMapCanvas />
           </div>
           <RefineBar />
@@ -128,10 +129,26 @@ export function AskWorkspace({ unlimited }: { unlimited: boolean }) {
             disabled={busy || question.trim().length < 4}
             className="btn btn-primary h-11 px-6"
           >
-            {busy ? (stage === 'searching' ? t('ask.searching') : t('ask.mapping')) : t('ask.submit')}
-            {!busy && <span aria-hidden="true">→</span>}
+            {busy ? (
+              <>
+                <Spinner />
+                {stage === 'searching' ? t('ask.searching') : t('ask.mapping')}
+              </>
+            ) : (
+              <>
+                {t('ask.submit')}
+                <span aria-hidden="true">→</span>
+              </>
+            )}
           </button>
         </div>
+        {busy && (
+          /* 不报百分比：真实进度拿不到，假的百分比比没有更糟。
+             这条只表达「还在动」，用无限循环的滑块而不是会走到头的进度条。 */
+          <div className="mt-3 h-1 overflow-hidden rounded-full bg-bg-muted" aria-hidden="true">
+            <div className="h-full w-1/3 animate-indeterminate rounded-full bg-gradient-to-r from-brand-500 to-accent-500" />
+          </div>
+        )}
         {error && (
           <p className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700 dark:bg-red-950/40 dark:text-red-300">{error}</p>
         )}
