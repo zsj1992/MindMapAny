@@ -32,6 +32,8 @@
 
 ## 规划原则：先证明需求，再创建页面
 
+SEO 内页与文章不受本日历日期轴约束，持续从 [滚动发布队列](./PUBLISHING-QUEUE.md) 领取第一个满足 Ready 条件的任务；关键词原始记录见 [`KEYWORD-MASTER.csv`](./KEYWORD-MASTER.csv)，合并和 URL 结论见 [URL 决策表](./URL-DECISIONS.md)。日历只保留产品、数据闭环和阶段性复盘节奏。
+
 所有 SEO 页面都按下面的顺序产生，禁止跳过前四步直接写页面：
 
 1. **收词**：GSC、Google 自动补全与相关搜索、Google Ads Keyword Planner、Google Trends、竞品排名页和相关平台搜索建议。

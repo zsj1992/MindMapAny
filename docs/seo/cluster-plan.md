@@ -1,5 +1,7 @@
 # AI mind map 关键词簇（英文站）
 
+> **历史快照，不再作为发布队列。** 2026-08-12 起，新增关键词进入 [`KEYWORD-MASTER.csv`](./KEYWORD-MASTER.csv)，URL 合并/拆分以 [`URL-DECISIONS.md`](./URL-DECISIONS.md) 为准，实际内页与文章顺序由 [`PUBLISHING-QUEUE.md`](./PUBLISHING-QUEUE.md) 滚动管理。本文件保留用于追溯旧决策，不能按“规划中”条目直接发文。
+
 > 2026-08-10 更新：站点英文化后重做。原中文簇（“PDF 转思维导图”等）全部作废。
 > 同时移除 `/tools/youtube-to-mind-map`：该页从未上线，YouTube 输入功能也尚未开放。
 

@@ -1,5 +1,7 @@
 {
   "generatedAt": "2026-08-10",
+  "status": "historical_snapshot",
+  "supersededBy": ["KEYWORD-MASTER.csv", "URL-DECISIONS.md", "PUBLISHING-QUEUE.md"],
   "supersedes": "2026-08-08 Chinese-keyword plan, void after the site switched to English",
   "locale": "en",
   "method": "intent-first with sampled SERP validation",
