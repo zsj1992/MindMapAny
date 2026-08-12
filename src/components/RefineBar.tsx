@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { Spinner } from '@/components/Spinner';
 import { useT } from '@/lib/i18n/context';
 import { LOCALE_NAMES, LOCALES } from '@/lib/i18n/locales';
@@ -25,6 +25,7 @@ export function RefineBar() {
   const [error, setError] = useState<string | null>(null);
   const [previous, setPrevious] = useState<MindMap | null>(null);
   const [langOpen, setLangOpen] = useState(false);
+  const abortRef = useRef<AbortController | null>(null);
 
   if (!map) return null;
 
@@ -34,11 +35,14 @@ export function RefineBar() {
     setError(null);
     setLangOpen(false);
     const before = map;
+    const controller = new AbortController();
+    abortRef.current = controller;
     try {
       const res = await fetch('/api/refine', {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ map: before, action, ...(extra ? { instruction: extra } : {}) }),
+        signal: controller.signal,
       });
       const body = (await res.json()) as { map?: MindMap; error?: { message?: string } };
       if (!res.ok || !body.map) {
@@ -48,9 +52,11 @@ export function RefineBar() {
       setPrevious(before);
       load(body.map);
       if (action === 'custom') setInstruction('');
-    } catch {
-      setError(t('error.network'));
+    } catch (thrown) {
+      // 中止是用户的选择，不是故障：图保持原样，服务端退回积分
+      if ((thrown as { name?: string })?.name !== 'AbortError') setError(t('error.network'));
     } finally {
+      abortRef.current = null;
       setBusy(null);
     }
   };
@@ -159,6 +165,9 @@ export function RefineBar() {
               <div className="h-full w-1/4 animate-indeterminate rounded-full bg-brand-500" />
             </div>
             <span className="text-[10px] text-text-subtle">{t('refine.working')}</span>
+            <button type="button" onClick={() => abortRef.current?.abort()} className="text-[10px] font-medium text-brand-600 hover:text-brand-700">
+              {t('ask.stop')}
+            </button>
           </div>
         )}
         {error && <p className="text-xs text-red-600 dark:text-red-400">{error}</p>}

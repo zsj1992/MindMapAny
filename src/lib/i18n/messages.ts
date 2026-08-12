@@ -229,6 +229,7 @@ const MESSAGES = {
   'ask.cost': { en: 'Costs {n} credits · charged only if it succeeds', 'zh-CN': '消耗 {n} 积分 · 仅在成功时扣费' },
   'ask.searching': { en: 'Searching the web…', 'zh-CN': '正在联网检索…' },
   'ask.mapping': { en: 'Laying out the map…', 'zh-CN': '正在生成脑图…' },
+  'ask.stop': { en: 'Stop', 'zh-CN': '停止' },
   'ask.sources': { en: 'Sources', 'zh-CN': '来源' },
   'ask.examples': { en: 'Try one of these', 'zh-CN': '试试这些' },
   'ask.example1': { en: 'Analyse the trade-offs of remote work', 'zh-CN': '分析远程办公的利弊权衡' },

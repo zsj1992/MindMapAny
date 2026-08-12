@@ -1,8 +1,9 @@
 'use client';
 
-import { useState } from 'react';
+import { useRef, useState } from 'react';
 import { ReactFlowProvider } from '@xyflow/react';
 import { MindMapCanvas } from '@/components/canvas/MindMapCanvas';
+import { MapSkeleton } from '@/components/ask/MapSkeleton';
 import { Spinner } from '@/components/Spinner';
 import { RefineBar } from '@/components/RefineBar';
 import { Toolbar } from '@/components/Toolbar';
@@ -37,9 +38,14 @@ export function AskWorkspace({ unlimited }: { unlimited: boolean }) {
   const [stage, setStage] = useState<'searching' | 'mapping'>('searching');
   const [error, setError] = useState<string | null>(null);
   const [sources, setSources] = useState<Source[]>([]);
+  const abortRef = useRef<AbortController | null>(null);
+
+  const stop = () => abortRef.current?.abort();
 
   const submit = async () => {
     if (question.trim().length < 4 || busy) return;
+    const controller = new AbortController();
+    abortRef.current = controller;
     setBusy(true);
     setError(null);
     setSources([]);
@@ -53,6 +59,7 @@ export function AskWorkspace({ unlimited }: { unlimited: boolean }) {
         method: 'POST',
         headers: { 'content-type': 'application/json' },
         body: JSON.stringify({ question: question.trim() }),
+        signal: controller.signal,
       });
       const body = (await res.json()) as { map?: MindMap; sources?: Source[]; error?: { message?: string } };
       if (!res.ok || !body.map) {
@@ -63,11 +70,18 @@ export function AskWorkspace({ unlimited }: { unlimited: boolean }) {
       trackEvent('ask_completed', {});
       load(body.map);
       setSources(body.sources ?? []);
-    } catch {
+    } catch (thrown) {
+      // 用户主动中止不是错误，不能弹报错框。服务端会看到 request 被取消，
+      // 在它自己的 catch 里把积分退回去 —— 这条路径和生成失败共用同一段逻辑。
+      if ((thrown as { name?: string })?.name === 'AbortError') {
+        trackEvent('ask_stopped', {});
+        return;
+      }
       trackEvent('ask_failed', {});
       setError(t('error.network'));
     } finally {
       window.clearTimeout(toMapping);
+      abortRef.current = null;
       setBusy(false);
     }
   };
@@ -123,24 +137,27 @@ export function AskWorkspace({ unlimited }: { unlimited: boolean }) {
           <p className="text-[11px] text-text-subtle">
             {unlimited ? t('input.costUnlimited') : t('ask.cost', { n: ASK_CREDITS })}
           </p>
-          <button
-            type="button"
-            onClick={() => void submit()}
-            disabled={busy || question.trim().length < 4}
-            className="btn btn-primary h-11 px-6"
-          >
-            {busy ? (
-              <>
+          {busy ? (
+            <div className="flex items-center gap-2.5">
+              <span className="flex items-center gap-2 text-sm text-text-muted">
                 <Spinner />
                 {stage === 'searching' ? t('ask.searching') : t('ask.mapping')}
-              </>
-            ) : (
-              <>
-                {t('ask.submit')}
-                <span aria-hidden="true">→</span>
-              </>
-            )}
-          </button>
+              </span>
+              <button type="button" onClick={stop} className="btn btn-secondary h-11 px-4 text-sm">
+                {t('ask.stop')}
+              </button>
+            </div>
+          ) : (
+            <button
+              type="button"
+              onClick={() => void submit()}
+              disabled={question.trim().length < 4}
+              className="btn btn-primary h-11 px-6"
+            >
+              {t('ask.submit')}
+              <span aria-hidden="true">→</span>
+            </button>
+          )}
         </div>
         {busy && (
           /* 不报百分比：真实进度拿不到，假的百分比比没有更糟。
@@ -154,7 +171,13 @@ export function AskWorkspace({ unlimited }: { unlimited: boolean }) {
         )}
       </div>
 
-      <p className="mt-4 text-center text-[11px] leading-5 text-text-subtle">{t('ask.grounded')}</p>
+      {busy ? (
+        <div className="mt-6">
+          <MapSkeleton />
+        </div>
+      ) : (
+        <p className="mt-4 text-center text-[11px] leading-5 text-text-subtle">{t('ask.grounded')}</p>
+      )}
 
       {!busy && (
         <div className="mt-5">
