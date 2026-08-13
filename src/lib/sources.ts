@@ -14,7 +14,7 @@ export interface SourceExample {
 
 export interface SourceCopy {
   kind: InputKind;
-  slug: 'text' | 'pdf' | 'docx' | 'epub' | 'pptx' | 'web';
+  slug: 'text' | 'pdf' | 'docx' | 'epub' | 'pptx' | 'web' | 'youtube';
   nav: string;
   title: string;
   subtitle: string;
@@ -133,6 +133,25 @@ Machine learning divides into supervised, unsupervised and reinforcement learnin
 
 Natural language processing concerns understanding and generating text, and in recent years has been dominated by large pre-trained models. Computer vision handles images and video, with classification, detection and segmentation as its core tasks.`,
       },
+    ],
+  },
+  youtube: {
+    kind: 'youtube',
+    slug: 'youtube',
+    nav: 'YouTube video',
+    title: 'YouTube video to mind map',
+    subtitle: 'Paste a video link. We read its captions and every node links back to the second it came from.',
+    seoTitle: 'YouTube to Mind Map — turn any video into a map you can check',
+    seoDescription: 'Paste a YouTube link and get an editable mind map from the video captions. Every node carries a timestamp that jumps straight back to that moment.',
+    hint: 'Videos without captions cannot be mapped — auto-generated captions are fine, but something has to exist to read.',
+    zh: {
+      title: 'YouTube 视频转思维导图',
+      subtitle: '贴上视频链接。我们读取它的字幕，每个节点都能跳回它出自的那一秒。',
+      hint: '没有字幕的视频做不了——自动生成的字幕可以，但总得有字幕可读。',
+    },
+    examples: [
+      { label: 'Andrej Karpathy: Intro to LLMs', value: 'https://www.youtube.com/watch?v=zjkBMFhNj_g' },
+      { label: '3Blue1Brown: Neural networks', value: 'https://www.youtube.com/watch?v=aircAruvnKk' },
     ],
   },
   web: {

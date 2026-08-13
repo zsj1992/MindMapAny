@@ -1,7 +1,7 @@
 # MindMapAny 站点架构
 
 > 2026-08-12 更新：英文为默认语言，另有中文、日文、韩文、西班牙文、德文和法文本地化页面。
-> `/tools/youtube-to-mind-map` 从未上线（实际 404），继续保持不创建、不索引。
+> 2026-08-13：`/tools/youtube-to-mind-map` 已上线。字幕抓取（Supadata）、30 秒分段、时间戳溯源、可点跳转全部打通，符合当初设的开闸条件。
 > Similarweb 竞品词导入后的详细判断见 [`SIMILARWEB-KEYWORD-REVIEW.md`](./SIMILARWEB-KEYWORD-REVIEW.md)。现阶段结论仍是做深现有六个工具页，而不是扩张 URL 数量。
 
 ## 设计原则
@@ -12,6 +12,7 @@
 /
 ├── /tools                         工具目录（CollectionPage）
 │   ├── /tools/pdf-to-mind-map     PDF to mind map
+│   ├── /tools/youtube-to-mind-map YouTube video to mind map
 │   ├── /tools/text-to-mind-map    Text to mind map
 │   ├── /tools/webpage-to-mind-map Web page to mind map
 │   ├── /tools/docx-to-mind-map    Word document to mind map
@@ -29,7 +30,7 @@
 
 PDF、Text、Webpage、DOCX、EPUB、PPTX 都已有工作台输入和对应公开 `/tools/*` 落地页。下一步不是继续复制格式页，而是用真实示例、限制、FAQ、内部链接和转化数据把六页做深。
 
-`/tools/youtube-to-mind-map` 不同——YouTube 输入尚未开放（`/api/generate` 明确返回不支持），因此**不得**为它建页。
+YouTube 已于 2026-08-13 开放：读字幕而非听音频，每个节点带时间戳且可点回跳。无字幕视频明确报错，不做静默降级。免费版不含此输入 —— 字幕走按次计费的第三方 API。
 
 ## URL 扩展规则
 

@@ -81,6 +81,33 @@ export const TOOLS_DE: Record<string, ToolPageCopy> = {
       { question: 'Funktioniert das mit Nachrichtenseiten und Blogs?', answer: 'Ja — Nachrichten, Blogs, Lexika und öffentliche Dokumentation sind allesamt geeignete Eingaben.' },
     ],
   },
+  'youtube-to-mind-map': {
+    eyebrow: 'KI-Werkzeug für Video-Zusammenfassungen',
+    title: 'YouTube-Video zur Mindmap',
+    description: 'Videolink einfügen. Wir lesen die Untertitel und legen den Gedankengang als Mindmap aus, bei der jeder Knoten seinen Zeitpunkt mitbringt — ein Klick öffnet das Video an genau dieser Sekunde.',
+    seoTitle: 'YouTube zur Mindmap — ein Video, das sich überprüfen lässt',
+    seoDescription:
+      'YouTube-Link einfügen und aus den Untertiteln eine bearbeitbare Mindmap erhalten. Jeder Knoten trägt einen Zeitstempel, der direkt zu dieser Stelle springt.',
+    primaryKeyword: 'youtube zur mindmap',
+    relatedKeywords: ['youtube video zusammenfassen', 'video zur mindmap', 'video zusammenfassung ki', 'youtube untertitel zusammenfassen'],
+    benefits: [
+      { title: 'Jeder Knoten führt zur Sekunde zurück', description: 'Zeitstempel sind keine Zierde: Ein Klick startet das Video an dieser Stelle, und Sie hören selbst, was tatsächlich gesagt wurde.' },
+      { title: 'Eine Stunde Vortrag auf einen Blick', description: 'Lange Vorlesungen und Konferenzbeiträge werden zu einer Struktur, die man überfliegen kann — kein Suchen mehr im Fortschrittsbalken.' },
+      { title: 'Nur ansehen, was Sie brauchen', description: 'Erst die Mindmap lesen, dann gezielt die Abschnitte abspielen, auf die es ankommt.' },
+    ],
+    steps: [
+      { title: 'Videolink einfügen', description: 'Normale Wiedergabelinks, youtu.be-Kurzlinks und Shorts-Adressen funktionieren alle.' },
+      { title: 'Untertitel lesen und gruppieren', description: 'Untertitel werden zu kurzen Passagen zusammengefasst, damit der Sinn erhalten bleibt; jede Passage behält ihre Startzeit.' },
+      { title: 'Per Zeitstempel prüfen', description: 'Jeden zweifelhaften Knoten gleichen Sie mit einem Klick am Video selbst ab.' },
+    ],
+    useCases: ['Notizen zu Vorlesungen und Onlinekursen', 'Konferenzvorträge und Interviews erschließen', 'Die Argumentation langer Rezensionen herausziehen', 'Entscheiden, ob ein einstündiges Video lohnt'],
+    faq: [
+      { question: 'Funktionieren Videos ohne Untertitel?', answer: 'Nein. Wir lesen Untertitel, statt den Ton auszuwerten — ein Video ganz ohne Untertitel lässt sich nicht umwandeln. Automatisch erzeugte Untertitel genügen.' },
+      { question: 'Wie genau sind die Zeitstempel?', answer: 'Untertitel werden zu Passagen von etwa 30 Sekunden gebündelt, der Zeitstempel zeigt auf deren Anfang. So landen Sie kurz vor der Aussage und nicht mitten im Satz.' },
+      { question: 'Und Videos in anderen Sprachen?', answer: 'Ja, sofern Untertitel vorhanden sind. Stimmt deren Sprache nicht mit der gewünschten überein, wird die Mindmap übersetzt und in den Notizen vermerkt.' },
+      { question: 'Was ist mit sehr langen Videos?', answer: 'Die gehen, kosten aber mehr Credits; die Zeichengrenzen Ihres Tarifs gelten genauso wie bei Dokumenten.' },
+    ],
+  },
   'docx-to-mind-map': {
     eyebrow: 'KI-Werkzeug zur Dokumentstrukturierung',
     title: 'Word-Dokument zur Mindmap',

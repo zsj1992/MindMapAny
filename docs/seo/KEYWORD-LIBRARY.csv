@@ -20,7 +20,7 @@ hacer mapas mentales de un pdf,es,pdf,similarweb_competitor,mindmapai.app + mapi
 ia mapa mental,es,generic,similarweb_competitor,mindmapai.app + mapify.so top100,candidate,,
 マインドマップ,ja,generic,similarweb_competitor,mindmapai.app + mapify.so top100,candidate,,
 マインドマップai,ja,generic,similarweb_competitor,mindmapai.app + mapify.so top100,candidate,,
-youtube文字起こしマインドマップ,ja,youtube,similarweb_competitor,mindmapai.app + mapify.so top100,candidate,,
+youtube文字起こしマインドマップ,ja,youtube,similarweb_competitor,mindmapai.app + mapify.so top100,live,/tools/youtube-to-mind-map,2026-08-13 上线
 концептуальная карта,ru,generic,similarweb_competitor,mindmapai.app + mapify.so top100,candidate,,
 ментальная карта,ru,generic,similarweb_competitor,mindmapai.app + mapify.so top100,candidate,,
 создать ментальную карту,ru,generic,similarweb_competitor,mindmapai.app + mapify.so top100,candidate,,
@@ -36,10 +36,10 @@ export mind map to markdown,en,markdown,similarweb_competitor,mindmapai.app + ma
 markdown格式如何转换成思维导图,zh-CN,markdown,similarweb_competitor,mindmapai.app + mapify.so top100,candidate,,
 para hacer mapa mental de un pdf,es,pdf,similarweb_competitor,mindmapai.app + mapify.so top100,candidate,,
 crear un mapa conceptual de un pdf,es,concept-map,similarweb_competitor,mindmapai.app + mapify.so top100,candidate,,
-transcript youtube video to mind map,en,youtube,similarweb_competitor,mindmapai.app + mapify.so top100,candidate,,
-youtube transcript into mind map,en,youtube,similarweb_competitor,mindmapai.app + mapify.so top100,candidate,,
-extract mind map from youtube video,en,youtube,similarweb_competitor,mindmapai.app + mapify.so top100,candidate,,
-transkript yt ke teks rangkuman,id,youtube,similarweb_competitor,mindmapai.app + mapify.so top100,candidate,,
+transcript youtube video to mind map,en,youtube,similarweb_competitor,mindmapai.app + mapify.so top100,live,/tools/youtube-to-mind-map,2026-08-13 上线
+youtube transcript into mind map,en,youtube,similarweb_competitor,mindmapai.app + mapify.so top100,live,/tools/youtube-to-mind-map,2026-08-13 上线
+extract mind map from youtube video,en,youtube,similarweb_competitor,mindmapai.app + mapify.so top100,live,/tools/youtube-to-mind-map,2026-08-13 上线
+transkript yt ke teks rangkuman,id,youtube,similarweb_competitor,mindmapai.app + mapify.so top100,live,/tools/youtube-to-mind-map,2026-08-13 上线
 mind map vocabulary,en,generic,similarweb_competitor,mindmapai.app + mapify.so top100,candidate,,
 mind map questions,en,generic,similarweb_competitor,mindmapai.app + mapify.so top100,candidate,,
 sigmund freud psychoanalytic theory mindmap,en,generic,similarweb_competitor,mindmapai.app + mapify.so top100,candidate,,
@@ -50,15 +50,15 @@ online mind map generator,en,generic,similarweb_competitor,mindmapai.app + mapif
 tool to summarize text into mind map,en,summarise,similarweb_competitor,mindmapai.app + mapify.so top100,candidate,,
 herramienta para hacer mapas conceptuales gratis,es,concept-map,similarweb_competitor,mindmapai.app + mapify.so top100,candidate,,
 herramienta para mapas mentales online,es,generic,similarweb_competitor,mindmapai.app + mapify.so top100,candidate,,
-transkript youtube,en,youtube,similarweb_competitor,mindmapai.app + mapify.so top100,candidate,,
+transkript youtube,en,youtube,similarweb_competitor,mindmapai.app + mapify.so top100,live,/tools/youtube-to-mind-map,2026-08-13 上线
 pagina de la que me puede reproducir un mapa mental,es,generic,similarweb_competitor,mindmapai.app + mapify.so top100,candidate,,
 melhor para fazer resumos académicos,pt,summarise,similarweb_competitor,mindmapai.app + mapify.so top100,candidate,,
 crear un mapa conceptual,es,concept-map,similarweb_competitor,mindmapai.app + mapify.so top100,candidate,,
 con que ia se pueden generar mapas mentales a partir de,es,generic,similarweb_competitor,mindmapai.app + mapify.so top100,candidate,,
-web video youtube,en,youtube,similarweb_competitor,mindmapai.app + mapify.so top100,candidate,,
-youtube文字起こしダウンロード,ja,youtube,similarweb_competitor,mindmapai.app + mapify.so top100,candidate,,
-youtube音声テキストサイト,ja,youtube,similarweb_competitor,mindmapai.app + mapify.so top100,candidate,,
-youtubeの音声の全文を表示する機能ない,ja,youtube,similarweb_competitor,mindmapai.app + mapify.so top100,candidate,,
+web video youtube,en,youtube,similarweb_competitor,mindmapai.app + mapify.so top100,live,/tools/youtube-to-mind-map,2026-08-13 上线
+youtube文字起こしダウンロード,ja,youtube,similarweb_competitor,mindmapai.app + mapify.so top100,live,/tools/youtube-to-mind-map,2026-08-13 上线
+youtube音声テキストサイト,ja,youtube,similarweb_competitor,mindmapai.app + mapify.so top100,live,/tools/youtube-to-mind-map,2026-08-13 上线
+youtubeの音声の全文を表示する機能ない,ja,youtube,similarweb_competitor,mindmapai.app + mapify.so top100,live,/tools/youtube-to-mind-map,2026-08-13 上线
 PDF in Mindmap umwandeln,de,pdf,our_live_page,已投放于工具页,live,,
 Text in Mindmap umwandeln,de,text,our_live_page,已投放于工具页,live,,
 Webseite in Mindmap umwandeln,de,generic,our_live_page,已投放于工具页,live,,

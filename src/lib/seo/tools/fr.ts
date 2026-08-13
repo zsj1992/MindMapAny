@@ -81,6 +81,33 @@ export const TOOLS_FR: Record<string, ToolPageCopy> = {
       { question: 'Cela marche-t-il avec les sites d’actualité et les blogs ?', answer: 'Oui : actualité, blogs, encyclopédies et documentation publique sont autant d’entrées adaptées.' },
     ],
   },
+  'youtube-to-mind-map': {
+    eyebrow: 'Outil de résumé vidéo par IA',
+    title: 'Vidéo YouTube en carte mentale',
+    description: 'Collez le lien d\'une vidéo. Nous lisons ses sous-titres et disposons le raisonnement en carte, chaque nœud portant l\'instant dont il provient : un clic ouvre la vidéo à cette seconde.',
+    seoTitle: 'YouTube en carte mentale — une vidéo que vous pouvez vérifier',
+    seoDescription:
+      'Collez un lien YouTube et obtenez une carte mentale modifiable construite à partir des sous-titres. Chaque nœud conserve un horodatage qui ramène directement à ce moment.',
+    primaryKeyword: 'youtube en carte mentale',
+    relatedKeywords: ['résumé de vidéo youtube', 'vidéo en carte mentale', 'résumer une vidéo ia', 'résumé des sous-titres youtube'],
+    benefits: [
+      { title: 'Chaque nœud renvoie à sa seconde', description: 'Les horodatages ne sont pas décoratifs : un clic lance la vidéo à cet instant et vous entendez ce qui a réellement été dit.' },
+      { title: 'Une heure de parole, à plat', description: 'Les cours et conférences deviennent une structure qui se parcourt d\'un regard, sans faire glisser la barre de lecture.' },
+      { title: 'Ne regarder que l\'utile', description: 'Lisez d\'abord la carte, puis ne lisez que les passages qui vous concernent.' },
+    ],
+    steps: [
+      { title: 'Collez le lien de la vidéo', description: 'Les liens de lecture classiques, les liens courts youtu.be et les adresses Shorts fonctionnent.' },
+      { title: 'Lecture et regroupement des sous-titres', description: 'Les sous-titres sont réunis en courts passages pour préserver le sens, chacun gardant son heure de début.' },
+      { title: 'Vérifiez en cliquant un horodatage', description: 'Tout nœud douteux se confronte à la vidéo elle-même en un seul clic.' },
+    ],
+    useCases: ['Prendre des notes de cours et de MOOC', 'Assimiler conférences et entretiens', 'Extraire la thèse d\'une longue analyse', 'Décider si une vidéo d\'une heure vaut le temps'],
+    faq: [
+      { question: 'Les vidéos sans sous-titres fonctionnent-elles ?', answer: 'Non. Nous lisons les sous-titres au lieu d\'écouter l\'audio : une vidéo totalement dépourvue de sous-titres ne peut pas être convertie. Les sous-titres automatiques conviennent.' },
+      { question: 'Les horodatages sont-ils précis ?', answer: 'Les sous-titres sont groupés en passages d\'environ 30 secondes et l\'horodatage vise le début du passage : vous arrivez juste avant l\'idée, pas au milieu d\'une phrase.' },
+      { question: 'Et les vidéos en d\'autres langues ?', answer: 'Oui, dès lors que des sous-titres existent. S\'ils ne sont pas dans la langue demandée, la carte est traduite et les notes le précisent.' },
+      { question: 'Et les vidéos très longues ?', answer: 'Elles passent, mais coûtent davantage de crédits, et les limites de caractères de votre forfait s\'appliquent comme pour les documents.' },
+    ],
+  },
   'docx-to-mind-map': {
     eyebrow: 'Outil de structuration de documents par IA',
     title: 'Document Word en carte mentale',

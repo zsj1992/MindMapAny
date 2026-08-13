@@ -6,7 +6,7 @@ import { extractPdf } from '@/lib/extract/pdf';
 import { ExtractError, totalChars, type ExtractedDoc, type InputKind } from '@/lib/extract/types';
 import { extractWeb } from '@/lib/extract/web';
 import { safeFetchPdf } from '@/lib/extract/ssrf';
-import { isYoutubeUrl } from '@/lib/extract/youtube';
+import { extractYoutube, isYoutubeUrl } from '@/lib/extract/youtube';
 import { getCurrentProfile } from '@/lib/auth/session';
 import { refundCredits, reserveCredits } from '@/lib/db/repositories/profiles';
 import { record as recordJob } from '@/lib/db/repositories/jobs';
@@ -77,9 +77,11 @@ export async function POST(req: Request) {
     } else if (params.url?.trim()) {
       const url = params.url.trim();
       if (isYoutubeUrl(url)) {
-        throw new ExtractError('unsupported', 'YouTube video summarisation is not available yet. Paste the captions or transcript instead.');
-      }
-      if (params.sourceType === 'pdf') {
+        kind = 'youtube';
+        // 字幕语言跟随请求的输出语言：想要中文图就优先取中文字幕，
+        // 取不到时 provider 会回退到视频原生语言并在 notes 里说明。
+        doc = await extractYoutube(url, params.language === 'auto' ? 'en' : params.language);
+      } else if (params.sourceType === 'pdf') {
         kind = 'pdf';
         const fetched = await safeFetchPdf(url);
         doc = await extractPdf({ data: fetched.data, filename: params.sourceTitle ?? filenameFromUrl(fetched.url) });

@@ -107,6 +107,36 @@ export const TOOL_PAGES: ToolPage[] = [
     ],
   },
   {
+    slug: 'youtube-to-mind-map',
+    appPath: '/app/youtube',
+    eyebrow: 'AI video summarising tool',
+    title: 'YouTube video to mind map',
+    description:
+      'Paste a video link. We read its captions and lay out the argument as a map where every node carries the timestamp it came from — click one and the video opens at that second.',
+    seoTitle: 'YouTube to Mind Map — turn a video into a map you can check',
+    seoDescription:
+      'Paste a YouTube link and get an editable mind map built from the video captions. Every node keeps a timestamp that jumps straight back to that moment, so nothing has to be taken on trust.',
+    primaryKeyword: 'youtube to mind map',
+    relatedKeywords: ['youtube video summary', 'summarize youtube video', 'video to mind map', 'youtube transcript summary'],
+    benefits: [
+      { title: 'Every node jumps back to the second', description: 'Timestamps are not decoration — click one and the video opens at that moment, so you can check what was actually said.' },
+      { title: 'An hour of talk, laid out flat', description: 'Long lectures and conference talks become a structure you can scan, instead of a progress bar you have to scrub through.' },
+      { title: 'Find the part you actually need', description: 'Read the map first, then watch only the sections that matter to you.' },
+    ],
+    steps: [
+      { title: 'Paste the video link', description: 'A normal watch link, a youtu.be short link or a Shorts URL all work.' },
+      { title: 'Captions are read and grouped', description: 'Captions are merged into short passages so the meaning stays intact, each keeping its start time.' },
+      { title: 'Check by clicking a timestamp', description: 'Any node you doubt takes one click to verify against the video itself.' },
+    ],
+    useCases: ['Take notes from lectures and course videos', 'Digest conference talks and interviews', 'Pull the argument out of a long review or explainer', 'Decide whether an hour-long video is worth watching'],
+    faq: [
+      { question: 'Do videos without captions work?', answer: 'No. We read captions rather than listening to audio, so a video with no captions at all cannot be mapped. Auto-generated captions are fine.' },
+      { question: 'How accurate are the timestamps?', answer: 'Captions are grouped into roughly 30-second passages and the timestamp points at the start of the passage, so you land just before the point is made rather than in the middle of it.' },
+      { question: 'Can it handle videos in other languages?', answer: 'Yes, wherever captions exist. If the captions are not in the language you asked for, the map is translated and the map notes say so.' },
+      { question: 'What about very long videos?', answer: 'Long videos work but cost more credits, and the character limits of your plan apply the same way they do to documents.' },
+    ],
+  },
+  {
     slug: 'docx-to-mind-map',
     appPath: '/app/docx',
     eyebrow: 'AI document structuring tool',

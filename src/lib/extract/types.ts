@@ -40,7 +40,7 @@ export function blockToSource(doc: ExtractedDoc, block: Block, chunkId: string):
     case 'pdf':
       return { type: 'pdf', chunkId, page: block.page ?? 1 };
     case 'youtube':
-      return { type: 'youtube', chunkId, startSec: block.startSec ?? 0 };
+      return { type: 'youtube', chunkId, startSec: block.startSec ?? 0, ...(doc.url ? { url: doc.url } : {}) };
     case 'web':
       return { type: 'web', chunkId, url: doc.url ?? '', ...(block.anchor ? { anchor: block.anchor } : {}) };
     case 'document':

@@ -70,7 +70,8 @@ export const sourceRefSchema = z.discriminatedUnion('type', [
   z.object({ type: z.literal('text'), chunkId: z.string().min(1).max(MAX_ID_LEN) }),
   z.object({ type: z.literal('pdf'), chunkId: z.string().min(1).max(MAX_ID_LEN), page: z.number().int().positive() }),
   z.object({ type: z.literal('web'), chunkId: z.string().min(1).max(MAX_ID_LEN), url: z.string().max(MAX_URL_LEN).url(), anchor: z.string().max(300).optional() }),
-  z.object({ type: z.literal('youtube'), chunkId: z.string().min(1).max(MAX_ID_LEN), startSec: z.number().int().nonnegative() }),
+  // url 可选：光有秒数跳不回视频，但旧数据没有它也必须能读出来
+  z.object({ type: z.literal('youtube'), chunkId: z.string().min(1).max(MAX_ID_LEN), startSec: z.number().int().nonnegative(), url: z.string().max(MAX_URL_LEN).url().optional() }),
   z.object({ type: z.literal('document'), chunkId: z.string().min(1).max(MAX_ID_LEN), location: z.string().max(120).optional() }),
 ]);
 export type SourceRef = z.infer<typeof sourceRefSchema>;

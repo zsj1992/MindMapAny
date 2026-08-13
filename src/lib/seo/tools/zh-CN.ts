@@ -81,6 +81,33 @@ export const TOOLS_ZH_CN: Record<string, ToolPageCopy> = {
       { question: '新闻站和博客支持吗？', answer: '支持 —— 新闻、博客、百科和公开技术文档都是合适的输入类型。' },
     ],
   },
+  'youtube-to-mind-map': {
+    eyebrow: 'AI 视频总结工具',
+    title: 'YouTube 视频转思维导图',
+    description: '贴上视频链接，我们读取字幕并把脉络画成脑图，每个节点都带着它出自的时间点 —— 点一下，视频就跳到那一秒。',
+    seoTitle: 'YouTube 转思维导图 —— 把视频变成能核实的脑图',
+    seoDescription:
+      '粘贴 YouTube 链接，用视频字幕生成可编辑的思维导图。每个节点都带时间戳，点一下直接跳回那一刻，不用凭空相信。',
+    primaryKeyword: 'YouTube 转思维导图',
+    relatedKeywords: ['YouTube 视频总结', '视频转思维导图', '视频摘要', 'YouTube 字幕总结'],
+    benefits: [
+      { title: '每个节点都跳得回那一秒', description: '时间戳不是装饰 —— 点一下视频就从那一刻开始播，你能亲耳确认当时到底说了什么。' },
+      { title: '一小时的话，摊平成一张图', description: '长讲座和会议演讲变成能一眼扫完的结构，不用再拖进度条来回找。' },
+      { title: '只看你真正需要的那段', description: '先读图，再挑重要的片段看，省掉整段快进的功夫。' },
+    ],
+    steps: [
+      { title: '贴上视频链接', description: '普通观看链接、youtu.be 短链接或 Shorts 地址都可以。' },
+      { title: '读取并分段字幕', description: '字幕会合并成短段落以保住语义，每段各自记住起始时间。' },
+      { title: '点时间戳核对', description: '任何一条你不确定的分支，点一下就能回到视频里对证。' },
+    ],
+    useCases: ['听课和网课记笔记', '消化会议演讲与访谈', '提取长测评或科普视频的观点', '判断一小时的视频值不值得看'],
+    faq: [
+      { question: '没有字幕的视频能做吗？', answer: '不能。我们读的是字幕而不是听音频，完全没有字幕的视频无法生成。自动生成的字幕可以。' },
+      { question: '时间戳准不准？', answer: '字幕按大约 30 秒合并成一段，时间戳指向段落起点，所以你会落在这个要点被说出来之前一点，而不是话说到一半。' },
+      { question: '其它语言的视频行吗？', answer: '只要有字幕就行。字幕语言和你要的语言不一致时，图会翻译过来，并在备注里说明。' },
+      { question: '很长的视频呢？', answer: '可以，但更费积分，而且和文档一样受你所在套餐的字数上限约束。' },
+    ],
+  },
   'docx-to-mind-map': {
     eyebrow: 'AI 文档结构化工具',
     title: 'Word 文档转思维导图',

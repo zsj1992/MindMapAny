@@ -70,6 +70,12 @@ const ICONS = {
       <path strokeLinecap="round" d="M8 20l4-4 4 4M8 8h8M8 11h5" />
     </>,
   ),
+  video: icon(
+    <>
+      <rect x="3" y="5" width="18" height="14" rx="3" />
+      <path strokeLinejoin="round" d="M11 9.5l4 2.5-4 2.5v-5z" />
+    </>,
+  ),
   maps: icon(
     <>
       <rect x="3" y="4" width="7" height="6" rx="1.5" />
@@ -102,6 +108,7 @@ const GROUPS = [
     items: [
       { key: 'nav.longText', icon: ICONS.text, href: '/app/text' },
       { key: 'nav.webArticle', icon: ICONS.web, href: '/app/web' },
+      { key: 'nav.youtube', icon: ICONS.video, href: '/app/youtube' },
     ],
   },
 ] satisfies Array<{ key: MessageKey; items: Array<{ key: MessageKey; icon: ReactNode; href: string }> }>;

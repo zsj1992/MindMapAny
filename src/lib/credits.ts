@@ -24,7 +24,9 @@ export type Plan = keyof typeof PLAN_CREDITS;
  * 真正防成本的两道闸门保留：单次内容长度、积分总量。等有了付费数据再决定卡哪里。
  */
 export const PLAN_LIMITS: Record<Plan, { kinds: InputKind[]; tiers: ModelTier[]; maxChars: number; maxPdfPages: number }> = {
-  free: { kinds: ['text', 'web', 'pdf', 'youtube'], tiers: ['fast'], maxChars: 60_000, maxPdfPages: 30 },
+  // 免费版不含 youtube：字幕走的是按次计费的第三方 API，成本是真金白银，
+  // 和其它输入不同——那些只花模型钱。要放开就把 'youtube' 加回这一行。
+  free: { kinds: ['text', 'web', 'pdf'], tiers: ['fast'], maxChars: 60_000, maxPdfPages: 30 },
   basic: { kinds: ['text', 'web', 'pdf', 'youtube'], tiers: ['fast'], maxChars: 150_000, maxPdfPages: 60 },
   pro: { kinds: ['text', 'web', 'pdf', 'youtube'], tiers: ['fast', 'quality'], maxChars: 800_000, maxPdfPages: 200 },
   unlimited: { kinds: ['text', 'web', 'pdf', 'youtube'], tiers: ['fast', 'quality'], maxChars: 2_000_000, maxPdfPages: 200 },

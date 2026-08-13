@@ -181,6 +181,7 @@ const MESSAGES = {
   'maps.kind.pdf': { en: 'PDF', 'zh-CN': 'PDF' },
   'maps.kind.web': { en: 'Web', 'zh-CN': '网页' },
   'maps.kind.youtube': { en: 'YouTube', 'zh-CN': 'YouTube' },
+  'nav.youtube': { en: 'YouTube video', 'zh-CN': 'YouTube 视频' },
 
   // ── 工作区 ──
   'workspace.step1': { en: 'Add content', 'zh-CN': '添加内容' },

@@ -82,7 +82,7 @@ const LANGUAGES = [
 ];
 
 /** 来源页只放一种输入，快速开始页保留三个 tab */
-export type InputMode = 'all' | 'text' | 'pdf' | 'docx' | 'epub' | 'pptx' | 'web';
+export type InputMode = 'all' | 'text' | 'pdf' | 'docx' | 'epub' | 'pptx' | 'web' | 'youtube';
 
 const MODE_TAB: Record<Exclude<InputMode, 'all'>, Tab> = {
   text: 'text',
@@ -91,6 +91,9 @@ const MODE_TAB: Record<Exclude<InputMode, 'all'>, Tab> = {
   epub: 'pdf',
   pptx: 'pdf',
   web: 'url',
+  // 视频和网页共用同一个 URL 输入框；服务端按链接形态分流，
+  // 用户不需要先告诉我们这是不是 YouTube
+  youtube: 'url',
 };
 
 export interface InputPanelCopy {

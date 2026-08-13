@@ -11,7 +11,7 @@
 |---|---:|---|---|
 | generic | 25 | **不能** | `mind map`、`mind map maker`、`ai mind map generator` 是同一个宽泛品类的变体，归首页和支柱指南。为变体复制 URL 是自我内耗 |
 | concept-map | 11 | **一页** | 见下方 C1。产品是树状层级，不支持任意节点连线，只能做「区别说明」不能声称支持 |
-| youtube | 10 | **不能** | `/api/generate` 明确拒绝 YouTube。建页 = 用户点进来必然失败 |
+| youtube | 10 | ~~不能~~ **已建** | 2026-08-13 开放。端到端跑通后才建页，不是先占坑 |
 | summarise | 5 | **不能** | 并入现有工具页和 `/blog/mind-map-vs-summary` |
 | pdf / text | 7 | **不能** | 已有对应工具页，长尾合并进去做深 |
 | markdown | 2 | **待定** | 见 M1，需先有 GSC 展现 |

@@ -36,6 +36,16 @@ function sourceLabel(source: SourceRef): string {
   }
 }
 
+/** 能跳回原始位置的地址；目前只有视频有这种东西 */
+function sourceDeepLink(source: SourceRef): string | null {
+  if (source.type === 'youtube' && source.url) {
+    // t 参数用 YouTube 自己的秒数写法；30 秒窗口取的是起点，
+    // 落在这一段开头而不是中间，听到的正好是这个要点被说出来的地方
+    return `${source.url}${source.url.includes('?') ? '&' : '?'}t=${source.startSec}s`;
+  }
+  return null;
+}
+
 export function MindMapNodeCard({ id, data, selected }: NodeProps & { data: MindMapNodeData }) {
   const editingId = useEditor((s) => s.editingId);
   const renameNode = useEditor((s) => s.renameNode);
@@ -65,6 +75,7 @@ export function MindMapNodeCard({ id, data, selected }: NodeProps & { data: Mind
   const isRoot = data.level === 0;
   const isBranch = data.level === 1;
   const label = data.source ? sourceLabel(data.source) : '';
+  const deepLink = data.source ? sourceDeepLink(data.source) : null;
   // 左侧子树的父节点在右边，折叠按钮跟着换边，否则会压在连线上
   const collapseOnLeft = data.side === 'left';
 
@@ -148,17 +159,38 @@ export function MindMapNodeCard({ id, data, selected }: NodeProps & { data: Mind
         <div className="mt-1 text-xs leading-snug text-text-muted line-clamp-3">{data.summary}</div>
       )}
 
-      {label && (
-        <div
-          className="mt-1.5 inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-medium tabular-nums"
-          style={{ color: data.color, background: `${data.color}14` }}
-        >
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" className="h-2.5 w-2.5">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M20 6L9 17l-5-5" />
-          </svg>
-          {label}
-        </div>
-      )}
+      {label &&
+        /*
+         * 视频溯源是唯一一种点一下就能当场验证的：跳到那一秒，看到的是视频本身，
+         * 不是字幕。所以这里必须是链接，做成不可点的徽标等于把这个功能最有说服力的
+         * 一下浪费掉。其余来源（页码、章节）没有可跳的地址，保持静态徽标。
+         */
+        (deepLink ? (
+          <a
+            href={deepLink}
+            target="_blank"
+            rel="noopener noreferrer"
+            onClick={(event) => event.stopPropagation()}
+            title={`Open the video at ${label}`}
+            className="mt-1.5 inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-medium tabular-nums underline-offset-2 hover:underline"
+            style={{ color: data.color, background: `${data.color}14` }}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" className="h-2.5 w-2.5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M8 5v14l11-7z" />
+            </svg>
+            {label}
+          </a>
+        ) : (
+          <div
+            className="mt-1.5 inline-flex items-center gap-1 rounded px-1.5 py-0.5 text-[10px] font-medium tabular-nums"
+            style={{ color: data.color, background: `${data.color}14` }}
+          >
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.6" className="h-2.5 w-2.5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M20 6L9 17l-5-5" />
+            </svg>
+            {label}
+          </div>
+        ))}
 
       {data.childCount > 0 && (
         <button

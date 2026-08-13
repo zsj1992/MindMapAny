@@ -81,6 +81,33 @@ export const TOOLS_ES: Record<string, ToolPageCopy> = {
       { question: '¿Sirve con periódicos y blogs?', answer: 'Sí: noticias, blogs, enciclopedias y documentación pública son todos tipos de entrada adecuados.' },
     ],
   },
+  'youtube-to-mind-map': {
+    eyebrow: 'Herramienta de resumen de vídeo con IA',
+    title: 'Vídeo de YouTube a mapa mental',
+    description: 'Pega el enlace de un vídeo. Leemos sus subtítulos y trazamos el argumento como un mapa donde cada nodo lleva el momento del que salió: haz clic y el vídeo se abre en ese segundo.',
+    seoTitle: 'YouTube a mapa mental — convierte un vídeo en algo que puedes verificar',
+    seoDescription:
+      'Pega un enlace de YouTube y obtén un mapa mental editable creado a partir de los subtítulos. Cada nodo guarda una marca de tiempo que salta directamente a ese momento.',
+    primaryKeyword: 'youtube a mapa mental',
+    relatedKeywords: ['resumen de vídeo de youtube', 'vídeo a mapa mental', 'resumir vídeo con ia', 'resumen de subtítulos de youtube'],
+    benefits: [
+      { title: 'Cada nodo vuelve a su segundo', description: 'Las marcas de tiempo no son decoración: al pulsarlas el vídeo se abre en ese instante y compruebas qué se dijo realmente.' },
+      { title: 'Una hora de charla, en una sola vista', description: 'Las clases largas y las ponencias se convierten en una estructura que se recorre de un vistazo, sin arrastrar la barra de reproducción.' },
+      { title: 'Mira solo lo que necesitas', description: 'Lee primero el mapa y reproduce después únicamente los tramos que te importan.' },
+    ],
+    steps: [
+      { title: 'Pega el enlace del vídeo', description: 'Sirven los enlaces normales, los cortos de youtu.be y las direcciones de Shorts.' },
+      { title: 'Leemos y agrupamos los subtítulos', description: 'Los subtítulos se unen en pasajes cortos para que el sentido no se rompa, y cada uno conserva su hora de inicio.' },
+      { title: 'Comprueba pulsando una marca de tiempo', description: 'Cualquier nodo que te genere dudas se contrasta con el vídeo en un solo clic.' },
+    ],
+    useCases: ['Tomar apuntes de clases y cursos', 'Asimilar ponencias y entrevistas', 'Extraer el argumento de un análisis largo', 'Decidir si un vídeo de una hora merece la pena'],
+    faq: [
+      { question: '¿Funciona con vídeos sin subtítulos?', answer: 'No. Leemos subtítulos en lugar de escuchar el audio, así que un vídeo sin ningún subtítulo no se puede convertir. Los subtítulos automáticos sí valen.' },
+      { question: '¿Son precisas las marcas de tiempo?', answer: 'Los subtítulos se agrupan en pasajes de unos 30 segundos y la marca apunta al principio del pasaje, así que llegas justo antes de la idea y no a mitad de frase.' },
+      { question: '¿Y los vídeos en otros idiomas?', answer: 'Sí, siempre que existan subtítulos. Si no están en el idioma que pediste, el mapa se traduce y las notas lo indican.' },
+      { question: '¿Y los vídeos muy largos?', answer: 'Funcionan, pero consumen más créditos y se aplican los límites de caracteres de tu plan igual que con los documentos.' },
+    ],
+  },
   'docx-to-mind-map': {
     eyebrow: 'Herramienta de estructuración de documentos con IA',
     title: 'Documento de Word a mapa mental',
