@@ -31,6 +31,16 @@ export interface GenerateOptions {
   purpose: Purpose;
   tier: ModelTier;
   signal?: AbortSignal;
+  /**
+   * 边生成边回调，让前端能一个节点一个节点地画出来。
+   *
+   * 只有单遍路径会调用它。map-reduce 走的是「多块并发出局部大纲、最后合并重组」，
+   * 最终结构在 reduce 完成前根本不存在 —— 硬要流，用户会看到节点冒出来又被推翻，
+   * 那比转圈更让人不信任。长文档就老实转圈。
+   *
+   * 不传这个回调时，整条链路和以前逐字节相同。
+   */
+  onPartial?: (map: MindMap) => void;
 }
 
 export interface GenerateResult {
@@ -43,6 +53,39 @@ export interface GenerateResult {
 /** 单次调用的最大输出：一行大纲约 40 token。思维链已关闭，不再需要额外预留 */
 function maxOutputTokens(depth: Depth): number {
   return Math.min(8000, DEPTH_BUDGET[depth].maxNodes * 40 + 500);
+}
+
+
+/**
+ * 跑一次流式生成，每当出现「新的完整行」就把到目前为止的正文交给回调。
+ *
+ * 只按整行推，不按 token 推：半行会被解析成一个标题被截断的节点，
+ * 下一段又把它改掉 —— 画面上就是节点标题在自己抽搐。等换行符出现再解析，
+ * 每一帧都是一个语义完整的节点。
+ */
+async function streamOutlineText(
+  request: Parameters<typeof streamText>[0],
+  onLine: (textSoFar: string) => void,
+): Promise<{ text: string; inputTokens: number; outputTokens: number }> {
+  const result = streamText(request);
+  let acc = '';
+  let emittedUpTo = 0;
+
+  for await (const delta of result.textStream) {
+    acc += delta;
+    const lastBreak = acc.lastIndexOf('\n');
+    if (lastBreak > emittedUpTo) {
+      emittedUpTo = lastBreak;
+      onLine(acc.slice(0, lastBreak));
+    }
+  }
+
+  const usage = await result.usage;
+  return {
+    text: acc,
+    inputTokens: usage?.inputTokens ?? 0,
+    outputTokens: usage?.outputTokens ?? 0,
+  };
 }
 
 export async function generateMindMap(opts: GenerateOptions): Promise<GenerateResult> {
@@ -59,21 +102,35 @@ export async function generateMindMap(opts: GenerateOptions): Promise<GenerateRe
   let refByLabel = new Map<string, string>();
 
   if (!needsMapReduce(chunks)) {
-    const res = await generateText({
+    const request = {
       model,
       system,
       prompt: buildUserPrompt(chunks, doc.title, language),
       maxOutputTokens: maxOutputTokens(depth),
       abortSignal: signal,
       ...(providerOptions ? { providerOptions } : {}),
-    });
-    outline = res.text;
-    if (res.finishReason === 'length' && !outline.trim()) {
-      throw new Error('output budget exhausted before any text was produced');
+    };
+
+    if (opts.onPartial) {
+      const streamed = await streamOutlineText(request, (text) => {
+        const partial = buildMindMap(text, { language, depth, purpose, fallbackTitle: doc.title, chunkIndex });
+        // 只有根节点时别推：一张只有标题的图闪一下没有信息量，反而像出错了
+        if (partial.map.nodes.length > 1) opts.onPartial?.(partial.map);
+      });
+      outline = streamed.text;
+      usage.calls = 1;
+      usage.inputTokens += streamed.inputTokens;
+      usage.outputTokens += streamed.outputTokens;
+    } else {
+      const res = await generateText(request);
+      outline = res.text;
+      if (res.finishReason === 'length' && !outline.trim()) {
+        throw new Error('output budget exhausted before any text was produced');
+      }
+      usage.calls = 1;
+      usage.inputTokens += res.usage?.inputTokens ?? 0;
+      usage.outputTokens += res.usage?.outputTokens ?? 0;
     }
-    usage.calls = 1;
-    usage.inputTokens += res.usage?.inputTokens ?? 0;
-    usage.outputTokens += res.usage?.outputTokens ?? 0;
   } else {
     const groups = groupChunks(chunks);
     // map 阶段并发：长文档的墙钟时间几乎全在这里

@@ -15,6 +15,7 @@ import type { MindMap } from '@/lib/mindmap/schema';
 import { useT } from '@/lib/i18n/context';
 import type { MessageKey } from '@/lib/i18n/messages';
 import { useEditor } from '@/store/editor';
+import { readNdjson } from '@/lib/http/read-ndjson';
 
 interface GenerateResponse {
   map: MindMap;
@@ -37,11 +38,23 @@ export interface WorkspaceProps {
   extensionToken?: string;
 }
 
+type StreamEvent =
+  | { type: 'partial'; map: MindMap }
+  | ({ type: 'done' } & GenerateResponse & { savedId?: string; saveFailed?: string })
+  | { type: 'error'; code: string; message: string };
+
 export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, copy, plan = null, extensionToken }: WorkspaceProps) {
   const router = useRouter();
   const map = useEditor((s) => s.map);
   const dirty = useEditor((s) => s.dirty);
   const load = useEditor((s) => s.load);
+  /**
+   * 流式请求的中止句柄。没有它的话，用户点「新建」清空之后，
+   * 还在跑的流会继续 streamPatch，被清掉的图自己又长回来。
+   */
+  const runRef = useRef<AbortController | null>(null);
+  const streamPatch = useEditor((s) => s.streamPatch);
+  const finishStream = useEditor((s) => s.finishStream);
   const markSaved = useEditor((s) => s.markSaved);
 
   const [busy, setBusy] = useState(false);
@@ -104,6 +117,9 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
       setBusy(true);
       setError(null);
       setNotes([]);
+      runRef.current?.abort();
+      const controller = new AbortController();
+      runRef.current = controller;
       try {
         let res: Response;
         if (params.file) {
@@ -112,13 +128,52 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
           for (const [k, v] of Object.entries(params)) {
             if (k !== 'file' && typeof v === 'string') form.set(k, v);
           }
-          res = await fetch('/api/generate', { method: 'POST', body: form });
+          res = await fetch('/api/generate', { method: 'POST', body: form, signal: controller.signal });
         } else {
           res = await fetch('/api/generate', {
             method: 'POST',
             headers: { 'content-type': 'application/json' },
-            body: JSON.stringify(params),
+            // 文件上传那条路还是一次性 JSON：FormData 分支不带这个标志
+            body: JSON.stringify({ ...params, stream: true }),
+            signal: controller.signal,
           });
+        }
+
+        // 流式：一帧帧地把中途的图画上去，最后一帧是权威版本
+        if (res.ok && res.headers.get('content-type')?.includes('ndjson')) {
+          let finished: (GenerateResponse & { savedId?: string; saveFailed?: string }) | null = null;
+          for await (const event of readNdjson<StreamEvent>(res)) {
+            if (event.type === 'partial') streamPatch(event.map);
+            else if (event.type === 'done') finished = event;
+            else if (event.type === 'error') {
+              trackEvent('mindmap_generation_failed', { input_type: inputType, error_code: event.code });
+              // 中途已经画了一些节点，得收干净，否则半张图会留在画布上
+              useEditor.setState({ map: null, streaming: false, revealAt: null });
+              if (event.code !== 'aborted') setError(localizedError(t, event.code, event.message));
+              return;
+            }
+          }
+          if (!finished) {
+            setError(t('error.network'));
+            return;
+          }
+          trackEvent('mindmap_generation_completed', {
+            input_type: inputType,
+            depth: params.depth,
+            language: params.language,
+            credits_charged: finished.creditsCharged,
+            node_count: finished.map.nodes.length,
+          });
+          finishStream(finished.map);
+          setFormatOpen(false);
+          router.refresh();
+          setNotes([...finished.notes, ...finished.warnings.slice(0, 2)]);
+          setSourceKind(inputType === 'document' ? 'text' : inputType);
+          setSavedId(finished.savedId ?? null);
+          if (finished.savedId) markSaved();
+          if (finished.saveFailed === 'limit_reached') setError(t('error.saveLimit', { n: 100 }));
+          setShareUrl(null);
+          return;
         }
 
         // Workers 的类型定义里 json() 返回 unknown，比浏览器的 any 严格，这里显式收窄
@@ -151,14 +206,17 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
         // 撞到上限必须说出来 —— 用户以为都存好了而实际没存，比不自动保存更糟
         if (body.saveFailed === 'limit_reached') setError(t('error.saveLimit', { n: 100 }));
         setShareUrl(null);
-      } catch {
+      } catch (thrown) {
+        // 主动中止不是故障：积分由服务端在自己的 catch 里退回
+        if ((thrown as { name?: string })?.name === 'AbortError') return;
         trackEvent('mindmap_generation_failed', { input_type: inputType, error_code: 'network_error' });
         setError(t('error.network'));
       } finally {
+        if (runRef.current === controller) runRef.current = null;
         setBusy(false);
       }
     },
-    [load, router, t, markSaved],
+    [load, streamPatch, finishStream, router, t, markSaved],
   );
 
   const save = useCallback(async (): Promise<string | null> => {
@@ -270,8 +328,9 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
           onShare={share}
           onReset={() => {
             if (dirty && !confirm(t('workspace.confirmNew'))) return;
+            runRef.current?.abort();
             setFormatOpen(false);
-            useEditor.setState({ map: null, dirty: false, selectedId: null, editingId: null });
+            useEditor.setState({ map: null, dirty: false, selectedId: null, editingId: null, streaming: false, revealAt: null });
           }}
           saving={saving}
           shareUrl={shareUrl}

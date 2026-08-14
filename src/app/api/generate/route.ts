@@ -13,7 +13,8 @@ import { record as recordJob } from '@/lib/db/repositories/jobs';
 import { autoSaveMap } from '@/lib/maps/autosave';
 import { resolveLanguage } from '@/lib/mindmap/detect-language';
 import { generateMindMap, type ModelTier } from '@/lib/mindmap/generate';
-import { DEPTHS, PURPOSES, type Depth, type Purpose } from '@/lib/mindmap/schema';
+import { streamRun, type StreamRunResult } from '@/lib/http/stream-run';
+import { DEPTHS, PURPOSES, type Depth, type MindMap, type Purpose } from '@/lib/mindmap/schema';
 import { rateLimitRequest } from '@/lib/rate-limit';
 import { RequestBodyTooLargeError, readBodyBytesLimited, readJsonLimited } from '@/lib/http/body-limit';
 
@@ -33,6 +34,8 @@ const paramsSchema = z.object({
   depth: z.enum(DEPTHS).default('standard'),
   purpose: z.enum(PURPOSES).default('general'),
   tier: z.enum(['fast', 'quality']).default('fast'),
+  // 流式：边生成边把中间的图推给前端。插件不带这个字段，走的还是原来的一次性 JSON。
+  stream: z.boolean().default(false),
 });
 
 export async function POST(req: Request) {
@@ -143,6 +146,73 @@ export async function POST(req: Request) {
     }
 
     // ── 生成 ──
+    // 记账、入库、响应体三条路共用；流式和一次性只是把同一份结果送出去的方式不同
+    const finish = async (map: MindMap, warnings: string[], usage: StreamRunResult['usage']) => {
+      await recordJobSafely({
+        userId: user?.id ?? null,
+        status: 'succeeded',
+        sourceKind: kind,
+        sourceUrl: doc?.url ?? null,
+        sourceChars: chars,
+        modelTier: effectiveTier,
+        inputTokens: usage.inputTokens,
+        outputTokens: usage.outputTokens,
+        creditsCharged: cost,
+        warnings,
+        durationMs: Date.now() - started,
+      });
+      // 生成成功即入库，失败不影响本次返回
+      const saved = await autoSaveMap(user.id, {
+        map,
+        sourceKind: kind,
+        ...(doc?.url ? { sourceUrl: doc.url } : {}),
+      });
+      return {
+        map,
+        warnings,
+        notes: doc?.notes ?? [],
+        usage,
+        creditsCharged: cost,
+        ...(saved.saved ? { savedId: saved.id } : { saveFailed: saved.reason }),
+      };
+    };
+
+    if (params.stream) {
+      /*
+       * 到这里为止的错误（鉴权、配额、提取）都还能返回正确的 HTTP 状态码。
+       * 一旦开始写流，状态码就定死是 200 了，所以生成阶段的失败只能走带内事件，
+       * 退积分也必须在流里做。
+       */
+      const runId = reserved;
+      reserved = null; // 已交给流内的 catch 负责，外层不要重复退款
+      return streamRun({
+        run: (onPartial) =>
+          generateMindMap({
+            doc: doc!,
+            language,
+            depth: params.depth as Depth,
+            purpose: params.purpose as Purpose,
+            tier: effectiveTier,
+            signal: req.signal,
+            onPartial,
+          }),
+        finish,
+        onFailure: async (code, message) => {
+          if (runId) await refundCredits(runId.userId, runId.amount).catch(() => undefined);
+          await recordJobSafely({
+            userId: jobUserId,
+            status: 'failed',
+            sourceKind: kind,
+            sourceUrl: doc?.url ?? null,
+            sourceChars: chars,
+            durationMs: Date.now() - started,
+            errorCode: code,
+            errorMessage: message,
+          });
+        },
+      });
+    }
+
     const { map, warnings, usage } = await generateMindMap({
       doc,
       language,
@@ -152,37 +222,8 @@ export async function POST(req: Request) {
       signal: req.signal,
     });
 
-    // ── 记账 ──
     reserved = null;
-    await recordJobSafely({
-      userId: user?.id ?? null,
-      status: 'succeeded',
-      sourceKind: kind,
-      sourceUrl: doc.url ?? null,
-      sourceChars: chars,
-      modelTier: effectiveTier,
-      inputTokens: usage.inputTokens,
-      outputTokens: usage.outputTokens,
-      creditsCharged: cost,
-      warnings,
-      durationMs: Date.now() - started,
-    });
-
-    // 生成成功即入库，失败不影响本次返回
-    const saved = await autoSaveMap(user.id, {
-      map,
-      sourceKind: kind,
-      ...(doc.url ? { sourceUrl: doc.url } : {}),
-    });
-
-    return NextResponse.json({
-      map,
-      warnings,
-      notes: doc.notes,
-      usage,
-      creditsCharged: cost,
-      ...(saved.saved ? { savedId: saved.id } : { saveFailed: saved.reason }),
-    });
+    return NextResponse.json(await finish(map, warnings, usage));
   } catch (err) {
     const { status, code, message } = describeError(err);
     if (reserved) await refundCredits(reserved.userId, reserved.amount).catch(() => undefined);

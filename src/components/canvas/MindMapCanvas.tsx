@@ -92,16 +92,18 @@ export function MindMapCanvas({ readOnly = false }: { readOnly?: boolean }) {
   const toggleCollapse = useEditor((s) => s.toggleCollapse);
 
   const revealAt = useEditor((s) => s.revealAt);
+  const streaming = useEditor((s) => s.streaming);
 
-  // 揭示是一次性的：预算走完就关掉，之后的编辑/折叠都按静态渲染，不再重播
+  // 揭示是一次性的：预算走完就关掉，之后的编辑/折叠都按静态渲染，不再重播。
+  // 流式期间不计时 —— 那边的节点由服务端一帧帧送来，什么时候结束由流说了算
   useEffect(() => {
-    if (revealAt === null) return;
+    if (revealAt === null || streaming) return;
     const timer = window.setTimeout(
       () => useEditor.setState({ revealAt: null }),
       REVEAL_BUDGET_MS + 600,
     );
     return () => window.clearTimeout(timer);
-  }, [revealAt]);
+  }, [revealAt, streaming]);
 
   const { fitView } = useReactFlow();
   const fittedMapRef = useRef<string | null>(null);
@@ -132,12 +134,20 @@ export function MindMapCanvas({ readOnly = false }: { readOnly?: boolean }) {
     const colors = branchColorMap(map);
     const format = formatOf(map);
     const levelsOf = (id: string) => levels.get(id) ?? 0;
-    const delays = revealAt
-      ? revealDelays(shown.flatMap((n) => {
-          const pos = positions.get(n.id);
-          return pos ? [{ id: n.id, level: levelsOf(n.id), y: pos.y }] : [];
-        }))
-      : null;
+    /*
+     * 两种揭示：
+     *   流式  —— 延迟一律 0。节点本来就是一帧帧到的，错开时间等于二次延迟；
+     *            已经在画面上的节点不会重新挂载，所以不会重播。
+     *   一次性 —— 整张图同时到达，靠计算出来的延迟排出先后。
+     */
+    const delays = streaming
+      ? new Map(shown.map((n) => [n.id, 0] as const))
+      : revealAt
+        ? revealDelays(shown.flatMap((n) => {
+            const pos = positions.get(n.id);
+            return pos ? [{ id: n.id, level: levelsOf(n.id), y: pos.y }] : [];
+          }))
+        : null;
     const numbers = format.numbering ? numberMap(map) : new Map<string, string>();
 
     const rfNodes: Node[] = shown.flatMap((n) => {
@@ -196,7 +206,7 @@ export function MindMapCanvas({ readOnly = false }: { readOnly?: boolean }) {
     return { nodes: rfNodes, edges: rfEdges };
     // revealAt 必须在依赖里：揭示结束翻成 null 时要重算一遍，把动画 class 摘掉，
     // 否则之后展开折叠节点会带着过期的延迟重新入场
-  }, [map, positions, collapsed, selectedId, revealAt]);
+  }, [map, positions, collapsed, selectedId, revealAt, streaming]);
 
   // 每张图只在首次打开时适配一次。新增、删除、折叠节点只重排节点，绝不改用户当前视口。
   const rootId = map?.nodes.find((node) => node.parentId === null)?.id ?? '';

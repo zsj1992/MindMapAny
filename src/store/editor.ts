@@ -24,6 +24,12 @@ interface EditorState {
    * 只有 load 会设它——编辑、折叠、改格式都不该让整张图重播一次动画。
    */
   revealAt: number | null;
+  /** 流式生成进行中：新节点各自淡入，但不重播整张图的逐层揭示 */
+  streaming: boolean;
+  /** 流式中途的一帧。保留折叠和选中状态，否则每来一帧用户的操作都被抹掉 */
+  streamPatch: (map: MindMap) => void;
+  /** 流结束：交出权威版本，并退出揭示态 */
+  finishStream: (map: MindMap) => void;
   select: (id: string | null) => void;
   beginEdit: (id: string | null) => void;
   toggleCollapse: (id: string) => void;
@@ -73,6 +79,15 @@ export const useEditor = create<EditorState>((set, get) => ({
   dirty: false,
 
   revealAt: null,
+  streaming: false,
+  streamPatch: (map) =>
+    set((state) => ({
+      map,
+      dirty: false,
+      // 首帧才起揭示态：每帧都刷新时间戳的话，自动关闭的定时器永远等不到头
+      ...(state.streaming ? {} : { streaming: true, revealAt: Date.now(), collapsed: new Set<string>(), levelLimit: 99 }),
+    })),
+  finishStream: (map) => set({ map, streaming: false, revealAt: null, dirty: false }),
   load: (map) =>
     set({ map, collapsed: new Set(), levelLimit: 99, selectedId: null, editingId: null, dirty: false, revealAt: Date.now() }),
   select: (id) => set({ selectedId: id }),
