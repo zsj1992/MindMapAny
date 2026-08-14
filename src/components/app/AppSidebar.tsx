@@ -108,7 +108,6 @@ const GROUPS = [
     items: [
       { key: 'nav.longText', icon: ICONS.text, href: '/app/text' },
       { key: 'nav.webArticle', icon: ICONS.web, href: '/app/web' },
-      { key: 'nav.youtube', icon: ICONS.video, href: '/app/youtube' },
     ],
   },
 ] satisfies Array<{ key: MessageKey; items: Array<{ key: MessageKey; icon: ReactNode; href: string }> }>;

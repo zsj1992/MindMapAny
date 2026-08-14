@@ -1,14 +1,17 @@
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
-import { TOOL_PAGES } from '../content';
+import { ALL_TOOL_PAGES } from '../content';
 import { TOOL_COPY } from './registry';
 
 /**
- * 每种语言的工具页文案必须覆盖全部 6 个 slug。
+ * 每种语言的工具页文案必须覆盖全部 slug。
  * 漏一个不会报错 —— localizedToolPage 会静默回退英文，
  * 结果是一个 lang="ja" 的页面上躺着英文正文。
+ *
+ * 这里比的是未过滤的全量列表，不是当前对外可见的那份：被功能开关暂时藏起来的页面
+ * 同样要求译文齐全，否则开关一翻，线上立刻多出几个半英文的页面。
  */
-const slugs = TOOL_PAGES.map((tool) => tool.slug);
+const slugs = ALL_TOOL_PAGES.map((tool) => tool.slug);
 
 for (const [locale, copy] of Object.entries(TOOL_COPY)) {
   for (const slug of slugs) {

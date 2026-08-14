@@ -18,7 +18,6 @@ const INPUT_HREFS = [
   '/tools/epub-to-mind-map',
   '/tools/pptx-to-mind-map',
   '/tools/webpage-to-mind-map',
-  '/tools/youtube-to-mind-map',
 ];
 
 const EXTENSION_CTA: Record<Locale, string> = {

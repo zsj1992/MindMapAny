@@ -25,7 +25,6 @@ const TOOL_PAGES_PATHS = [
   '/tools/pptx-to-mind-map',
   '/tools/text-to-mind-map',
   '/tools/webpage-to-mind-map',
-  '/tools/youtube-to-mind-map',
 ];
 
 /**
