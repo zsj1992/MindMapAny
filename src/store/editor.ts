@@ -19,6 +19,11 @@ interface EditorState {
   dirty: boolean;
 
   load: (map: MindMap) => void;
+  /**
+   * 刚载入一张新图的时间戳，null 表示不在揭示阶段。
+   * 只有 load 会设它——编辑、折叠、改格式都不该让整张图重播一次动画。
+   */
+  revealAt: number | null;
   select: (id: string | null) => void;
   beginEdit: (id: string | null) => void;
   toggleCollapse: (id: string) => void;
@@ -67,7 +72,9 @@ export const useEditor = create<EditorState>((set, get) => ({
   editingId: null,
   dirty: false,
 
-  load: (map) => set({ map, collapsed: new Set(), levelLimit: 99, selectedId: null, editingId: null, dirty: false }),
+  revealAt: null,
+  load: (map) =>
+    set({ map, collapsed: new Set(), levelLimit: 99, selectedId: null, editingId: null, dirty: false, revealAt: Date.now() }),
   select: (id) => set({ selectedId: id }),
   beginEdit: (id) => set({ editingId: id, ...(id ? { selectedId: id } : {}) }),
 

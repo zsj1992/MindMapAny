@@ -280,3 +280,50 @@
 .react-flow__attribution a {
   color: var(--text-subtle) !important;
 }
+
+/*
+ * 生成后逐个揭示节点。
+ *
+ * 位置由布局一次算定，动画只改可见性——如果每加一个节点就重排一次，
+ * 整张图会在揭示过程中不停抖动，那比直接出现还糟。
+ *
+ * backwards 填充很关键：延迟期间元素必须保持起始态（透明），
+ * 否则所有节点会先闪一下完整形态，再各自开始动画。
+ */
+@keyframes mm-node-in {
+  from {
+    opacity: 0;
+    transform: scale(0.82);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.mm-reveal-node {
+  animation: mm-node-in 260ms cubic-bezier(0.34, 1.32, 0.64, 1) backwards;
+}
+
+@keyframes mm-edge-in {
+  from { opacity: 0; }
+  to { opacity: 0.75; }
+}
+
+/*
+ * React Flow 把 className 挂在 <g> 上，但动画只能加在里面的 path：
+ * 两层都动的话 opacity 会相乘，连线在入场那 220ms 里会明显偏暗。
+ * 延迟写在 <g> 的行内样式上，path 用 inherit 取过来。
+ */
+.mm-reveal-edge .react-flow__edge-path {
+  animation: mm-edge-in 220ms ease-out backwards;
+  animation-delay: inherit;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .mm-reveal-node,
+  .mm-reveal-edge,
+  .mm-reveal-edge .react-flow__edge-path {
+    animation: none;
+  }
+}

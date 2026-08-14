@@ -58,6 +58,28 @@ function numberMap(map: MindMap): Map<string, string> {
 }
 
 /** 注意：调用方需要自己包 <ReactFlowProvider>，因为 Toolbar 也要用同一个实例的 useReactFlow */
+
+/**
+ * 逐个揭示的节奏。
+ *
+ * 总时长固定在 1.4 秒左右，而不是「每个节点固定 40ms」——后者在 120 个节点的图上
+ * 要放十几秒，用户只会觉得卡。节点越多，单个间隔越短，整体观感一致。
+ *
+ * 顺序按「层级 → 纵向位置」：先根、再一级分支、再往下，同层从上到下。
+ * 这和人读一张脑图的顺序一致，也正好是它被生成出来的顺序。
+ */
+const REVEAL_BUDGET_MS = 1400;
+const REVEAL_MAX_STEP = 45;
+const REVEAL_MIN_STEP = 10;
+
+function revealDelays(
+  ids: { id: string; level: number; y: number }[],
+): Map<string, number> {
+  const step = Math.min(REVEAL_MAX_STEP, Math.max(REVEAL_MIN_STEP, REVEAL_BUDGET_MS / Math.max(1, ids.length)));
+  const ordered = [...ids].sort((a, b) => a.level - b.level || a.y - b.y);
+  return new Map(ordered.map((n, i) => [n.id, Math.round(i * step)]));
+}
+
 export function MindMapCanvas({ readOnly = false }: { readOnly?: boolean }) {
   const map = useEditor((s) => s.map);
   const collapsed = useEditor((s) => s.collapsed);
@@ -68,6 +90,18 @@ export function MindMapCanvas({ readOnly = false }: { readOnly?: boolean }) {
   const addSibling = useEditor((s) => s.addSibling);
   const deleteNode = useEditor((s) => s.deleteNode);
   const toggleCollapse = useEditor((s) => s.toggleCollapse);
+
+  const revealAt = useEditor((s) => s.revealAt);
+
+  // 揭示是一次性的：预算走完就关掉，之后的编辑/折叠都按静态渲染，不再重播
+  useEffect(() => {
+    if (revealAt === null) return;
+    const timer = window.setTimeout(
+      () => useEditor.setState({ revealAt: null }),
+      REVEAL_BUDGET_MS + 600,
+    );
+    return () => window.clearTimeout(timer);
+  }, [revealAt]);
 
   const { fitView } = useReactFlow();
   const fittedMapRef = useRef<string | null>(null);
@@ -97,6 +131,13 @@ export function MindMapCanvas({ readOnly = false }: { readOnly?: boolean }) {
 
     const colors = branchColorMap(map);
     const format = formatOf(map);
+    const levelsOf = (id: string) => levels.get(id) ?? 0;
+    const delays = revealAt
+      ? revealDelays(shown.flatMap((n) => {
+          const pos = positions.get(n.id);
+          return pos ? [{ id: n.id, level: levelsOf(n.id), y: pos.y }] : [];
+        }))
+      : null;
     const numbers = format.numbering ? numberMap(map) : new Map<string, string>();
 
     const rfNodes: Node[] = shown.flatMap((n) => {
@@ -113,6 +154,7 @@ export function MindMapCanvas({ readOnly = false }: { readOnly?: boolean }) {
         ...(numbers.has(n.id) ? { numberPrefix: numbers.get(n.id) } : {}),
         ...(n.summary ? { summary: n.summary } : {}),
         ...(n.source ? { source: n.source } : {}),
+        ...(delays ? { revealDelay: delays.get(n.id) ?? 0 } : {}),
       };
       return [
         {
@@ -138,7 +180,11 @@ export function MindMapCanvas({ readOnly = false }: { readOnly?: boolean }) {
           target: n.id,
           sourceHandle: side === 'left' ? 'l' : 'r',
           targetHandle: side === 'left' ? 'r' : 'l',
+          // 连线比它指向的节点稍早一点出现，线先到、节点落上去，像是被"画"出来的；
+          // 反过来（节点先出现、线后补）看着像连接失败又重连
+          ...(delays ? { className: 'mm-reveal-edge' } : {}),
           style: {
+            ...(delays ? { animationDelay: `${Math.max(0, (delays.get(n.id) ?? 0) - 40)}ms` } : {}),
             stroke: colors.get(n.id) ?? 'var(--border-strong)',
             // 越靠近根越粗，视觉上自然形成主干与分枝
             strokeWidth: Math.max(1.2, 3.4 - level * 0.7),
@@ -148,7 +194,9 @@ export function MindMapCanvas({ readOnly = false }: { readOnly?: boolean }) {
       });
 
     return { nodes: rfNodes, edges: rfEdges };
-  }, [map, positions, collapsed, selectedId]);
+    // revealAt 必须在依赖里：揭示结束翻成 null 时要重算一遍，把动画 class 摘掉，
+    // 否则之后展开折叠节点会带着过期的延迟重新入场
+  }, [map, positions, collapsed, selectedId, revealAt]);
 
   // 每张图只在首次打开时适配一次。新增、删除、折叠节点只重排节点，绝不改用户当前视口。
   const rootId = map?.nodes.find((node) => node.parentId === null)?.id ?? '';

@@ -18,6 +18,8 @@ export interface MindMapNodeData extends Record<string, unknown> {
   color: string;
   format: MindMapFormat;
   numberPrefix?: string;
+  /** 逐个揭示时该节点的入场延迟（毫秒）；不在揭示阶段时不存在 */
+  revealDelay?: number;
 }
 
 function sourceLabel(source: SourceRef): string {
@@ -118,8 +120,14 @@ export function MindMapNodeCard({ id, data, selected }: NodeProps & { data: Mind
 
   return (
     <div
-      className={`${base} ${shell} ${selected ? 'ring-2 ring-offset-2 ring-offset-[var(--bg-subtle)]' : ''}`}
-      style={{ ...style, ...(selected ? { ['--tw-ring-color' as string]: data.color } : {}) }}
+      className={`${base} ${shell} ${selected ? 'ring-2 ring-offset-2 ring-offset-[var(--bg-subtle)]' : ''} ${
+        data.revealDelay !== undefined ? 'mm-reveal-node' : ''
+      }`}
+      style={{
+        ...style,
+        ...(data.revealDelay !== undefined ? { animationDelay: `${data.revealDelay}ms` } : {}),
+        ...(selected ? { ['--tw-ring-color' as string]: data.color } : {}),
+      }}
       onDoubleClick={(e) => {
         e.stopPropagation();
         beginEdit(id);
