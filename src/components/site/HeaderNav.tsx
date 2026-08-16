@@ -128,8 +128,9 @@ export function HeaderNav({ locale }: { locale: Locale }) {
 }
 
 /** 面板最大宽度。JS 定位要用到它，所以不能只写在 class 里 */
-const PANEL_MAX = 880;
+const PANEL_MAX = 768;
 const VIEWPORT_MARGIN = 16;
+const TOOL_LINK_CLASS = 'flex items-center gap-2.5 rounded-lg px-2 py-1.5 text-[13px] text-text-muted transition-colors hover:bg-bg-subtle hover:text-text';
 
 function ToolsMenu({ locale }: { locale: Locale }) {
   const copy = marketingCopy(locale).nav;
@@ -140,7 +141,7 @@ function ToolsMenu({ locale }: { locale: Locale }) {
   /**
    * 面板左边缘对齐触发器左边缘，宽度不够时再往左收，始终留 16px 边距。
    *
-   * 为什么要用 JS 量而不是纯 CSS：三列面板宽 55rem，而 Tools 距左边只有 ~240px。
+   * 为什么要用 JS 量而不是纯 CSS：三列面板宽 48rem，而 Tools 距左边只有 ~240px。
    * 以触发器为中心会有一半掉到视口外（实测左侧整列被裁）；改成页头居中又会让
    * 面板离触发器一百多像素，鼠标斜着移过去会穿过空白区把菜单关掉。
    * 只有「左对齐触发器 + 溢出时夹紧」两条同时成立，才在各种宽度下都对。
@@ -186,13 +187,13 @@ function ToolsMenu({ locale }: { locale: Locale }) {
           style={{ left: panelLeft, width: panelWidth }}
         >
           <div
-            className="overflow-hidden rounded-2xl border bg-surface p-5 shadow-[0_24px_70px_rgb(18_48_78/0.18)]"
+            className="overflow-hidden rounded-2xl border bg-surface p-4 shadow-[0_24px_70px_rgb(18_48_78/0.18)]"
             style={{ borderColor: 'var(--border-strong)' }}
           >
-            <div className="grid grid-cols-3 gap-x-5 gap-y-5">
+            <div className="grid grid-cols-3 gap-x-4 gap-y-4">
               <section>
-                <p className="mb-2 px-2 text-[10px] font-bold uppercase tracking-[0.1em] text-text-subtle">{POPULAR_LABEL[locale]}</p>
-                <div className="space-y-1">
+                <p className="mb-1.5 px-2 text-[10px] font-bold uppercase tracking-[0.1em] text-text-subtle">{POPULAR_LABEL[locale]}</p>
+                <div className="space-y-0.5">
                   {[
                     { href: GROUP_HREFS[0][0], icon: GROUP_ICONS[0][0], label: copy.toolLabels[0] },
                     { href: GROUP_HREFS[1][0], icon: GROUP_ICONS[1][0], label: copy.toolLabels[4] },
@@ -203,7 +204,7 @@ function ToolsMenu({ locale }: { locale: Locale }) {
                       eventName="popular_tool_clicked"
                       eventParameters={{ page: 'header', placement: 'tools-menu', tool: item.href.split('/').at(-1) ?? item.href, locale }}
                       onClick={() => setOpen(false)}
-                      className="flex items-center gap-2.5 rounded-lg border border-brand-100 bg-brand-50/70 px-2.5 py-2.5 text-[13px] font-semibold text-text transition-colors hover:border-brand-300 hover:bg-brand-100/70 dark:border-brand-900 dark:bg-brand-900/20 dark:hover:border-brand-700"
+                      className={TOOL_LINK_CLASS}
                     >
                       {item.icon}
                       {item.label}
@@ -214,14 +215,14 @@ function ToolsMenu({ locale }: { locale: Locale }) {
 
               {[copy.toolsGroups.documents, copy.toolsGroups.textWeb].map((groupTitle, groupIndex) => (
                 <section key={groupTitle}>
-                  <p className="mb-2 px-2 text-[10px] font-bold uppercase tracking-[0.1em] text-text-subtle">{groupTitle}</p>
+                  <p className="mb-1.5 px-2 text-[10px] font-bold uppercase tracking-[0.1em] text-text-subtle">{groupTitle}</p>
                   <div className="space-y-0.5">
                     {GROUP_HREFS[groupIndex].map((href, itemIndex) => (
                       <Link
                         key={href}
                         href={localizedPath(href, locale)}
                         onClick={() => setOpen(false)}
-                        className="flex items-center gap-2.5 rounded-lg px-2 py-2 text-[13px] text-text-muted transition-colors hover:bg-bg-subtle hover:text-text"
+                        className={TOOL_LINK_CLASS}
                       >
                         {GROUP_ICONS[groupIndex][itemIndex]}
                         {copy.toolLabels[GROUP_LABEL_OFFSET[groupIndex] + itemIndex]}
@@ -232,7 +233,7 @@ function ToolsMenu({ locale }: { locale: Locale }) {
               ))}
             </div>
 
-            <div className="mt-4 grid grid-cols-2 gap-2 border-t pt-4" style={{ borderColor: 'var(--border)' }}>
+            <div className="mt-3 grid grid-cols-2 gap-2 border-t pt-3" style={{ borderColor: 'var(--border)' }}>
               {[
                 { href: '/app/research', icon: RESEARCH_ICON, label: copy.deepResearch, hint: copy.deepResearchHint },
                 { href: '/tools', icon: ALL_TOOLS_ICON, label: copy.allTools, hint: copy.allToolsHint },
