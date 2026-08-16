@@ -1,4 +1,3 @@
-import { YOUTUBE_INPUT_LIVE } from '@/lib/features';
 import type { Locale } from '@/lib/i18n/locales';
 import { TOOL_COPY } from './tools/registry';
 export const SITE_URL = process.env.SITE_URL ?? 'https://mindmapany.com';
@@ -271,11 +270,7 @@ export const ALL_TOOL_PAGES: ToolPage[] = [
   },
 ];
 
-// 文案留在上面不删：拿到 Supadata 密钥后把 YOUTUBE_INPUT_LIVE 翻成 true 即可全量恢复，
-// 不需要再写一遍七种语言
-export const TOOL_PAGES: ToolPage[] = ALL_TOOL_PAGES.filter(
-  (page) => YOUTUBE_INPUT_LIVE || page.slug !== 'youtube-to-mind-map',
-);
+export const TOOL_PAGES: ToolPage[] = ALL_TOOL_PAGES;
 
 export interface BlogSection {
   id: string;
