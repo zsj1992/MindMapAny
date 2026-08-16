@@ -5,21 +5,30 @@
   "targetUrl": "https://mindmapany.com/tools/text-to-mind-map",
   "targetKeyword": "text to mind map",
   "market": "Google US, split by device",
-  "hypothesis": "Putting the real paste-to-editable-map workflow and three reproducible text examples on the ranking URL will improve search-intent satisfaction and rankings for transactional Text queries.",
-  "variableGroup": "On-page task completion and reproducible examples",
+  "hypothesis": "A complete upgrade of the ranking URL—real paste-to-map workflow, reproducible examples, stronger metadata and comprehensive task-focused guidance—will improve relevance, search-intent satisfaction and rankings for transactional Text queries.",
+  "variableGroup": "Comprehensive on-page relevance and task completion",
   "changesAllowed": [
     "Embedded text input and generation flow on the target URL",
     "Three fixed public examples: product notes, meeting minutes and study notes",
     "Sign-in resume within browser session",
-    "Funnel events that record no pasted text or generated content"
+    "Funnel events that record no pasted text or generated content",
+    "Title and meta description",
+    "Task-focused explanatory content and review checklist",
+    "Expanded visible FAQ and matching FAQPage data",
+    "Contextual links to relevant guides, pricing and privacy"
   ],
   "changesFrozen": [
-    "Title, meta description, H1 and body content",
-    "Canonical, hreflang and schema",
-    "New internal-link campaign",
+    "Target URL, canonical and hreflang",
+    "Sitewide navigation or template changes",
     "External-link acquisition",
     "New synonym landing pages"
   ],
+  "metadataChange": {
+    "beforeTitle": "Text to Mind Map — AI that builds multi-level maps automatically | MindMapAny",
+    "afterTitle": "Text to Mind Map: Free AI Generator | MindMapAny",
+    "beforeDescription": "Try our free text to mind map tool. Paste long text, notes or meeting minutes and the AI categorises them into an editable, exportable multi-level map.",
+    "afterDescription": "Paste notes, articles or meeting minutes into our free text to mind map generator. Create an editable multi-level map you can refine, share and export."
+  },
   "baseline": {
     "dataThrough": "2026-08-13",
     "gitCommit": "01799f4",
@@ -53,7 +62,7 @@
   "stoppingRule": "After deployment, observe for at least 28 days and until the Text cluster gains at least 50 new impressions, using the later condition. Treat exact-query evidence as directional until it gains at least 30 new impressions.",
   "controlUrl": "https://mindmapany.com/tools/webpage-to-mind-map",
   "concurrentExperiment": "PDF-EXP-001",
-  "attributionLimitation": "Both target pages are planned for the same deployment window. Page-specific effects can be compared, but shared site-level or algorithmic movement cannot be fully attributed to either intervention without the frozen control page.",
+  "attributionLimitation": "This is a bundled on-page upgrade and runs in the same deployment window as PDF-EXP-001. It can test whether the complete Text page upgrade works, but cannot isolate the effect of metadata, content depth, embedded workflow or shared site-level movement individually.",
   "evaluationSchedule": {
     "day0": "Record deployment ID and capture after-deployment snapshots",
     "day7": "Check crawl/indexation, page ownership and funnel leading indicators; do not decide ranking outcome",

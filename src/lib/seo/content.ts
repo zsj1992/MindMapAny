@@ -58,9 +58,9 @@ export const ALL_TOOL_PAGES: ToolPage[] = [
     title: 'Text to mind map',
     description:
       'Paste an article, your notes or meeting minutes, and the AI groups themes into levels, turning linear text into an editable knowledge structure.',
-    seoTitle: 'Text to Mind Map — AI that builds multi-level maps automatically',
+    seoTitle: 'Text to Mind Map: Free AI Generator',
     seoDescription:
-      'Try our free text to mind map tool. Paste long text, notes or meeting minutes and the AI categorises them into an editable, exportable multi-level map.',
+      'Paste notes, articles or meeting minutes into our free text to mind map generator. Create an editable multi-level map you can refine, share and export.',
     primaryKeyword: 'text to mind map',
     relatedKeywords: ['text mind map generator', 'AI mind map generator', 'notes to mind map', 'meeting minutes mind map'],
     benefits: [
@@ -78,6 +78,10 @@ export const ALL_TOOL_PAGES: ToolPage[] = [
       { question: 'How much text can I paste at once?', answer: 'The limit depends on your plan and the generation depth you choose — see the pricing page for the exact character allowance. Longer content costs more credits.' },
       { question: 'Does it handle text that mixes languages?', answer: 'Yes. You can specify the output language separately and the node language will be made consistent.' },
       { question: 'Can I add child nodes afterwards?', answer: 'Yes. Select a node and press Tab for a child node, or Enter for a sibling.' },
+      { question: 'Can I turn a single paragraph into a mind map?', answer: 'Yes. A focused paragraph can become a small map, although inputs with several distinct ideas usually produce a more useful hierarchy. The input needs at least 21 characters.' },
+      { question: 'Is this different from a normal AI summary?', answer: 'Yes. A summary returns another linear passage. This tool returns parent topics, child ideas and supporting details that you can collapse, rearrange and edit on a canvas.' },
+      { question: 'What can I do with the map after it is generated?', answer: 'You can rename nodes, add or remove branches, change the visual format, save or share the map, and export it as PNG, SVG or Markdown.' },
+      { question: 'Is the text I paste sent to analytics?', answer: 'No. Analytics records workflow events such as starting or completing a generation and broad character-count bands, but it does not include the pasted text or generated node content.' },
     ],
   },
   {

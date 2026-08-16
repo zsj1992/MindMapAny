@@ -9,6 +9,7 @@ import type { Locale } from '@/lib/i18n/locales';
 import { TrackedLink } from '@/components/analytics/TrackedLink';
 import { PdfLandingTool } from '@/components/site/PdfLandingTool';
 import { TextLandingTool } from '@/components/site/TextLandingTool';
+import { TextPageGuide } from '@/components/site/TextPageGuide';
 
 /* 工具详情页正文。中英共用；tool 已经由调用方按语言取好。 */
 
@@ -92,6 +93,7 @@ export function ToolPageContent({ tool, locale }: { tool: ToolPage; locale: Loca
         </section>
 
         {isEnglishPdf && <PdfEvidence />}
+        {isEnglishText && <TextPageGuide />}
 
         <section className="border-y bg-surface" style={{ borderColor: 'var(--border)' }}>
           <div className="mx-auto max-w-5xl px-5 py-16 lg:px-8">

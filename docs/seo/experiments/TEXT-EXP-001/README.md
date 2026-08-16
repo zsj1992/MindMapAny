@@ -1,6 +1,6 @@
 # TEXT-EXP-001 execution log
 
-This experiment tests an embedded paste-to-editable-map workflow for `text to mind map`. It is planned for the same deployment window as PDF-EXP-001, so the frozen webpage tool control must be used to distinguish page-specific movement from site-wide movement.
+This experiment tests a bundled upgrade for `text to mind map`: embedded paste-to-map workflow, reproducible examples, metadata, task-focused guidance, expanded FAQ and contextual internal links. It cannot attribute movement to one element inside that bundle. It is planned for the same deployment window as PDF-EXP-001, so the frozen webpage tool control must be used to distinguish page-specific movement from site-wide movement.
 
 ## Weekly sequence
 
