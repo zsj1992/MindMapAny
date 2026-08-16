@@ -201,6 +201,29 @@ export function HomeContent({ locale }: { locale: Locale }) {
             </TrackedLink>
           </div>
         </section>
+
+        {locale === 'en' ? (
+          <section className="px-5 pb-12" aria-label="Independent product recognition">
+            <div className="mx-auto flex max-w-7xl justify-center">
+              <a
+                href="https://theresanaiforthat.com/ai/mindmapany/?ref=featured&v=11693340"
+                target="_blank"
+                rel="nofollow"
+                className="inline-flex rounded-xl border bg-surface px-5 py-3 shadow-sm transition-transform hover:-translate-y-0.5"
+                style={{ borderColor: 'var(--border)' }}
+              >
+                {/* Keep TAAFT's supplied image URL intact so its verification crawler can identify the badge. */}
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  width="300"
+                  src="https://media.theresanaiforthat.com/featured-on-taaft.png?width=600"
+                  alt="Featured on There's An AI For That"
+                  className="h-auto w-[220px] max-w-full"
+                />
+              </a>
+            </div>
+          </section>
+        ) : null}
       </main>
       <Footer locale={locale} />
     </>
