@@ -2,10 +2,9 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Workspace } from '@/components/Workspace';
 import { useSession } from '@/lib/auth/client';
-import type { Plan } from '@/lib/credits';
 import { trackEvent } from '@/lib/analytics';
+import { storePendingInput } from '@/components/PendingInputStarter';
 import { useEditor } from '@/store/editor';
 
 const PENDING_TEXT_KEY = 'text-landing-input';
@@ -30,31 +29,10 @@ export function TextLandingTool() {
   const { data: session } = useSession();
   const router = useRouter();
   const [text, setText] = useState('');
-  const [started, setStarted] = useState(false);
-  const [plan, setPlan] = useState<Plan | null>(null);
-  const [profileReady, setProfileReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const inputTracked = useRef(false);
   const resumed = useRef(false);
 
-  useEffect(() => {
-    if (!session?.user) return;
-    let active = true;
-    fetch('/api/extension/session', { cache: 'no-store' })
-      .then((response) => response.json() as Promise<{ signedIn?: boolean; plan?: Plan }>)
-      .then((result) => {
-        if (active) setPlan(result.signedIn ? (result.plan ?? null) : null);
-      })
-      .catch(() => {
-        if (active) setPlan(null);
-      })
-      .finally(() => {
-        if (active) setProfileReady(true);
-      });
-    return () => {
-      active = false;
-    };
-  }, [session?.user]);
 
   useEffect(() => {
     if (!session?.user || resumed.current) return;
@@ -67,12 +45,12 @@ export function TextLandingTool() {
     if (!pending) return;
     const resumeTimer = window.setTimeout(() => {
       resetLandingEditor();
-      setText(pending);
-      setStarted(true);
       trackEvent('text_landing_input_resumed', { source: 'sign_in', character_band: characterBand(pending.length) });
+      if (storePendingInput({ kind: 'text', value: pending })) router.push('/app/text');
+      else setText(pending);
     }, 0);
     return () => window.clearTimeout(resumeTimer);
-  }, [session?.user]);
+  }, [session?.user, router]);
 
   const updateText = (value: string, source: 'typed' | 'example') => {
     setText(value);
@@ -93,10 +71,14 @@ export function TextLandingTool() {
       signed_in: Boolean(session?.user),
       character_band: characterBand(value.length),
     });
+    // 收完正文交给工作台，不在落地页里生成 —— 详见 YoutubeLandingTool 里的说明
     if (session?.user) {
       resetLandingEditor();
-      setText(value);
-      setStarted(true);
+      if (!storePendingInput({ kind: 'text', value })) {
+        setError('This browser blocked session storage. Open the workbench and paste the text there.');
+        return;
+      }
+      router.push('/app/text');
       return;
     }
     try {
@@ -108,31 +90,6 @@ export function TextLandingTool() {
     }
   };
 
-  if (started && session?.user) {
-    return (
-      <div id="text-converter" className="scroll-mt-24 overflow-hidden rounded-[1.8rem] border bg-bg" style={{ borderColor: 'var(--border)' }}>
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b bg-surface px-5 py-3 text-xs text-text-muted" style={{ borderColor: 'var(--border)' }}>
-          <span><strong className="text-text">Your text is ready.</strong> Choose the map depth and purpose, then generate without leaving this page.</span>
-          <button type="button" className="font-semibold text-brand-600 hover:underline" onClick={() => {
-            resetLandingEditor();
-            setStarted(false);
-          }}>Replace the text</button>
-        </div>
-        {/*
-          必须是确定高度，不能只给 min-height。Workspace 内部用 h-full（百分比高度），
-          而百分比无法从 min-height 解析 —— 父元素高度算作 auto，画布那个
-          flex-1 min-h-0 的子项就塌成 0，节点全部渲染在可视区之外，看起来是一片空白。
-        */}
-        <div className="h-[42rem] sm:h-[48rem]">
-          {profileReady ? (
-            <Workspace mode="text" plan={plan} initialText={text} />
-          ) : (
-            <div className="flex min-h-[31rem] items-center justify-center text-sm text-text-muted">Loading your account…</div>
-          )}
-        </div>
-      </div>
-    );
-  }
 
   return (
     <section id="text-converter" className="scroll-mt-24 rounded-[1.8rem] border bg-surface p-4 shadow-xl shadow-brand-900/10 sm:p-6" style={{ borderColor: 'var(--border)' }}>

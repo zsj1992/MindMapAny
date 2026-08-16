@@ -2,46 +2,21 @@
 
 import { useEffect, useRef, useState, type DragEvent } from 'react';
 import { useRouter } from 'next/navigation';
-import { Workspace } from '@/components/Workspace';
 import { useSession } from '@/lib/auth/client';
-import type { Plan } from '@/lib/credits';
 import { trackEvent } from '@/lib/analytics';
+import { savePendingPdf, takePendingPdf } from '@/lib/pending-file';
 import { useEditor } from '@/store/editor';
 
 const MAX_PDF_BYTES = 20 * 1024 * 1024;
-const DB_NAME = 'mindmapany-pending-input';
-const STORE_NAME = 'files';
-const PENDING_PDF_KEY = 'pdf-landing-upload';
 
 export function PdfLandingTool() {
   const { data: session } = useSession();
   const router = useRouter();
-  const [file, setFile] = useState<File | null>(null);
-  const [plan, setPlan] = useState<Plan | null>(null);
-  const [profileReady, setProfileReady] = useState(false);
   const [dragging, setDragging] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const fileRef = useRef<HTMLInputElement>(null);
   const resumed = useRef(false);
 
-  useEffect(() => {
-    if (!session?.user) return;
-    let active = true;
-    fetch('/api/extension/session', { cache: 'no-store' })
-      .then((response) => response.json() as Promise<{ signedIn?: boolean; plan?: Plan }>)
-      .then((result: { signedIn?: boolean; plan?: Plan }) => {
-        if (active) setPlan(result.signedIn ? (result.plan ?? null) : null);
-      })
-      .catch(() => {
-        if (active) setPlan(null);
-      })
-      .finally(() => {
-        if (active) setProfileReady(true);
-      });
-    return () => {
-      active = false;
-    };
-  }, [session?.user]);
 
   useEffect(() => {
     if (!session?.user || resumed.current) return;
@@ -52,13 +27,13 @@ export function PdfLandingTool() {
       .then((pending) => {
         if (pending) {
           resetLandingEditor();
-          setFile(pending);
+        void savePendingPdf(pending).then(() => router.push('/app/pdf'));
           trackEvent('pdf_landing_upload_resumed', { source: 'sign_in' });
         }
       })
       .catch(() => setError('Your saved PDF could not be restored. Please choose it again.'))
       .finally(() => window.history.replaceState(null, '', window.location.pathname));
-  }, [session?.user]);
+  }, [session?.user, router]);
 
   const choose = async (selected: File | null) => {
     const validationError = validatePdf(selected);
@@ -73,9 +48,15 @@ export function PdfLandingTool() {
       size_band: pdf.size < 1024 * 1024 ? 'under_1mb' : pdf.size < 10 * 1024 * 1024 ? '1_to_10mb' : '10_to_20mb',
     });
 
+    // 收下文件就交给工作台 —— 和链接、正文走同一条路，落地页不再内嵌画布
     if (session?.user) {
       resetLandingEditor();
-      setFile(pdf);
+      try {
+        await savePendingPdf(pdf);
+        router.push('/app/pdf');
+      } catch {
+        setError('We could not hand the PDF to the workbench. Open it there and choose the file again.');
+      }
       return;
     }
 
@@ -88,31 +69,6 @@ export function PdfLandingTool() {
     }
   };
 
-  if (file && session?.user) {
-    return (
-      <div id="pdf-converter" className="scroll-mt-24 overflow-hidden rounded-[1.8rem] border bg-bg" style={{ borderColor: 'var(--border)' }}>
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b bg-surface px-5 py-3 text-xs text-text-muted" style={{ borderColor: 'var(--border)' }}>
-          <span><strong className="text-text">Your PDF is ready.</strong> Choose the map depth, then generate without leaving this page.</span>
-          <button type="button" className="font-semibold text-brand-600 hover:underline" onClick={() => {
-            resetLandingEditor();
-            setFile(null);
-          }}>Choose another file</button>
-        </div>
-        {/*
-          必须是确定高度，不能只给 min-height。Workspace 内部用 h-full（百分比高度），
-          而百分比无法从 min-height 解析 —— 父元素高度算作 auto，画布那个
-          flex-1 min-h-0 的子项就塌成 0，节点全部渲染在可视区之外，看起来是一片空白。
-        */}
-        <div className="h-[42rem] sm:h-[48rem]">
-          {profileReady ? (
-            <Workspace mode="pdf" plan={plan} initialFile={file} />
-          ) : (
-            <div className="flex min-h-[31rem] items-center justify-center text-sm text-text-muted">Loading your account…</div>
-          )}
-        </div>
-      </div>
-    );
-  }
 
   return (
     <section id="pdf-converter" className="scroll-mt-24 rounded-[1.8rem] border bg-surface p-4 shadow-xl shadow-brand-900/10 sm:p-6" style={{ borderColor: 'var(--border)' }}>
@@ -158,41 +114,3 @@ function validatePdf(file: File | null): string | null {
   return null;
 }
 
-function openPendingDb(): Promise<IDBDatabase> {
-  return new Promise((resolve, reject) => {
-    const request = indexedDB.open(DB_NAME, 1);
-    request.onupgradeneeded = () => {
-      if (!request.result.objectStoreNames.contains(STORE_NAME)) request.result.createObjectStore(STORE_NAME);
-    };
-    request.onsuccess = () => resolve(request.result);
-    request.onerror = () => reject(request.error);
-  });
-}
-
-async function savePendingPdf(file: File): Promise<void> {
-  const db = await openPendingDb();
-  await new Promise<void>((resolve, reject) => {
-    const transaction = db.transaction(STORE_NAME, 'readwrite');
-    transaction.objectStore(STORE_NAME).put(file, PENDING_PDF_KEY);
-    transaction.oncomplete = () => resolve();
-    transaction.onerror = () => reject(transaction.error);
-  });
-  db.close();
-}
-
-async function takePendingPdf(): Promise<File | null> {
-  const db = await openPendingDb();
-  const file = await new Promise<File | null>((resolve, reject) => {
-    const transaction = db.transaction(STORE_NAME, 'readwrite');
-    const store = transaction.objectStore(STORE_NAME);
-    const request = store.get(PENDING_PDF_KEY);
-    request.onsuccess = () => {
-      const result = request.result;
-      store.delete(PENDING_PDF_KEY);
-      resolve(result instanceof File ? result : null);
-    };
-    request.onerror = () => reject(request.error);
-  });
-  db.close();
-  return file;
-}

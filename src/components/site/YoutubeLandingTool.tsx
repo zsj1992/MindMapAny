@@ -2,9 +2,7 @@
 
 import { useEffect, useRef, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Workspace } from '@/components/Workspace';
 import { useSession } from '@/lib/auth/client';
-import type { Plan } from '@/lib/credits';
 import { trackEvent } from '@/lib/analytics';
 import { parseVideoId } from '@/lib/extract/youtube';
 import { storePendingInput } from '@/components/PendingInputStarter';
@@ -33,31 +31,10 @@ export function YoutubeLandingTool() {
   const { data: session } = useSession();
   const router = useRouter();
   const [url, setUrl] = useState('');
-  const [started, setStarted] = useState(false);
-  const [plan, setPlan] = useState<Plan | null>(null);
-  const [profileReady, setProfileReady] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const inputTracked = useRef(false);
   const resumed = useRef(false);
 
-  useEffect(() => {
-    if (!session?.user) return;
-    let active = true;
-    fetch('/api/extension/session', { cache: 'no-store' })
-      .then((response) => response.json() as Promise<{ signedIn?: boolean; plan?: Plan }>)
-      .then((result) => {
-        if (active) setPlan(result.signedIn ? (result.plan ?? null) : null);
-      })
-      .catch(() => {
-        if (active) setPlan(null);
-      })
-      .finally(() => {
-        if (active) setProfileReady(true);
-      });
-    return () => {
-      active = false;
-    };
-  }, [session?.user]);
 
   // 登录回来后把存着的链接接上
   useEffect(() => {
@@ -122,39 +99,6 @@ export function YoutubeLandingTool() {
     }
   };
 
-  if (started && session?.user) {
-    return (
-      <div id="youtube-converter" className="scroll-mt-24 overflow-hidden rounded-[1.8rem] border bg-bg" style={{ borderColor: 'var(--border)' }}>
-        <div className="flex flex-wrap items-center justify-between gap-3 border-b bg-surface px-5 py-3 text-xs text-text-muted" style={{ borderColor: 'var(--border)' }}>
-          <span>
-            <strong className="text-text">Your video is ready.</strong> Choose the map depth and purpose, then generate without leaving this page.
-          </span>
-          <button
-            type="button"
-            className="font-semibold text-brand-600 hover:underline"
-            onClick={() => {
-              resetLandingEditor();
-              setStarted(false);
-            }}
-          >
-            Use a different video
-          </button>
-        </div>
-        {/*
-          必须是确定高度，不能只给 min-height。Workspace 内部用 h-full（百分比高度），
-          而百分比无法从 min-height 解析 —— 父元素高度算作 auto，画布那个
-          flex-1 min-h-0 的子项就塌成 0，节点全部渲染在可视区之外，看起来是一片空白。
-        */}
-        <div className="h-[42rem] sm:h-[48rem]">
-          {profileReady ? (
-            <Workspace mode="youtube" plan={plan} initialUrl={url} />
-          ) : (
-            <div className="flex min-h-[31rem] items-center justify-center text-sm text-text-muted">Loading your account…</div>
-          )}
-        </div>
-      </div>
-    );
-  }
 
   return (
     <section

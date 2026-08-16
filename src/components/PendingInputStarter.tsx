@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { Workspace } from '@/components/Workspace';
 import type { Plan } from '@/lib/credits';
 import type { InputMode, InputPanelCopy } from '@/components/InputPanel';
+import { takePendingPdf } from '@/lib/pending-file';
 
 /**
  * 接住落地页交过来的输入，进工作台直接开始生成。
@@ -40,6 +41,7 @@ export function PendingInputStarter(props: {
   copy: InputPanelCopy;
 }) {
   const [pending, setPending] = useState<PendingInput | null>(null);
+  const [file, setFile] = useState<File | null>(null);
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -53,7 +55,13 @@ export function PendingInputStarter(props: {
       } catch {
         // 读不到就当作正常进入工作台
       }
-      setReady(true);
+      // 文件走 IndexedDB：sessionStorage 存不下二进制
+      void takePendingPdf()
+        .then((found) => {
+          if (found) setFile(found);
+        })
+        .catch(() => undefined)
+        .finally(() => setReady(true));
     }, 0);
     return () => window.clearTimeout(timer);
   }, []);
@@ -71,7 +79,8 @@ export function PendingInputStarter(props: {
       copy={props.copy}
       {...(pending?.kind === 'text' ? { initialText: pending.value } : {})}
       {...(pending?.kind === 'url' ? { initialUrl: pending.value } : {})}
-      {...(pending ? { autoStart: true } : {})}
+      {...(file ? { initialFile: file } : {})}
+      {...(pending || file ? { autoStart: true } : {})}
     />
   );
 }

@@ -268,13 +268,14 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
   const autoStarted = useRef(false);
   useEffect(() => {
     if (!autoStart || autoStarted.current) return;
-    if (!initialText && !initialUrl) return;
+    if (!initialText && !initialUrl && !initialFile) return;
     autoStarted.current = true;
     // 同上：generate 内部会立刻 setBusy，同步调用会触发级联渲染
     const timer = window.setTimeout(() => {
       void generate({
         ...(initialUrl ? { url: initialUrl } : {}),
         ...(initialText ? { text: initialText } : {}),
+        ...(initialFile ? { file: initialFile } : {}),
         language: 'auto',
         depth: 'standard',
         purpose: 'general',
@@ -282,7 +283,7 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
       });
     }, 0);
     return () => window.clearTimeout(timer);
-  }, [autoStart, initialText, initialUrl, generate]);
+  }, [autoStart, initialText, initialUrl, initialFile, generate]);
 
   const share = useCallback(async () => {
     const id = savedId ?? (await save());
