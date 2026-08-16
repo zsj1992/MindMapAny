@@ -153,6 +153,10 @@ export const ALL_TOOL_PAGES: ToolPage[] = [
       { question: 'Do Shorts and youtu.be links work?', answer: 'Yes. Normal watch links, youtu.be short links and Shorts URLs are all accepted, as long as the video has captions.' },
       { question: 'Why did my video fail?', answer: 'Almost always because it has no captions at all. We read captions rather than listening to the audio, so a video with none cannot be mapped — the error says so explicitly rather than returning a map built on nothing.' },
       { question: 'Can I edit the map afterwards?', answer: 'Yes. Rename and restructure nodes directly, or describe the change in plain language, and the timestamps survive the rewrite. Export to PNG, SVG or Markdown, or share a link.' },
+      { question: 'How is this different from a written summary of the video?', answer: 'A summary asks you to accept its judgement about what mattered. A map shows you the shape of the argument and lets you disagree with it: if a branch looks thin or wrong, the timestamp takes you to the moment it came from and you decide. It is also reusable — you can keep editing it as you learn more about the topic, which a paragraph of prose is not built for.' },
+      { question: 'Are auto-generated captions good enough?', answer: 'Usually yes for clearly spoken material, and they are what most videos have. They do struggle with proper nouns, technical terms and heavy accents, which is exactly why every node keeps its timestamp: a term that reads oddly takes one click to check against what was actually said.' },
+      { question: 'Does this work on private or age-restricted videos?', answer: 'No. Only publicly accessible videos can be read. Private, unlisted-with-restrictions and age-gated videos will fail, and so will anything that requires signing in to watch.' },
+      { question: 'Is the video downloaded or stored?', answer: 'No. Only the caption text is fetched, and only to build your map. We do not download the audio or video, and the transcript is not published anywhere — the map is yours and stays private unless you choose to share it.' },
     ],
   },
   {
