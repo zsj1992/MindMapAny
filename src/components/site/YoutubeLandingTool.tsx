@@ -127,7 +127,12 @@ export function YoutubeLandingTool() {
             Use a different video
           </button>
         </div>
-        <div className="min-h-[31rem]">
+        {/*
+          必须是确定高度，不能只给 min-height。Workspace 内部用 h-full（百分比高度），
+          而百分比无法从 min-height 解析 —— 父元素高度算作 auto，画布那个
+          flex-1 min-h-0 的子项就塌成 0，节点全部渲染在可视区之外，看起来是一片空白。
+        */}
+        <div className="h-[42rem] sm:h-[48rem]">
           {profileReady ? (
             <Workspace mode="youtube" plan={plan} initialUrl={url} />
           ) : (

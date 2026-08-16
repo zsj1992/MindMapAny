@@ -105,7 +105,7 @@ export function MindMapCanvas({ readOnly = false }: { readOnly?: boolean }) {
     return () => window.clearTimeout(timer);
   }, [revealAt, streaming]);
 
-  const { fitView } = useReactFlow();
+  const { setViewport } = useReactFlow();
   const fittedMapRef = useRef<string | null>(null);
 
   // 结构变化才重排；只改标题不动布局，避免打字时画布乱跳
@@ -209,26 +209,77 @@ export function MindMapCanvas({ readOnly = false }: { readOnly?: boolean }) {
   }, [map, positions, collapsed, selectedId, revealAt, streaming]);
 
   /*
-   * 每张图只在首次打开时适配一次 —— 新增、删除、折叠节点都不该动用户当前视口。
+   * 视口适配。
    *
-   * 但流式是例外：节点是一帧帧到的，只按第一帧适配的话，视口会停在那一两个
-   * 节点的范围里，后面几十个铺到视口外，用户看到的是一片空白。所以流式期间
-   * 每帧都重新适配，让画面跟着长出来的树走；流一结束就恢复「只适配一次」。
+   * 自己算，不用 fitView。
    *
-   * 判据不能用 createdAt：它是毫秒精度，相邻帧常常相同，根节点 id 又恒为 n1，
-   * 于是整条流的 identity 都不变 —— 这正是之前画布全白的原因。
+   * fitView 依赖 React Flow 内部量到的节点尺寸，而在落地页嵌入这种场景里它
+   * 始终拿不到 —— 实测：36 个节点、DOM 里都有真实高度、缩放和平移都正常，
+   * 唯独 fitView（包括画布自带的适配按钮）调了完全没有反应。这和本项目早先
+   * 那个「导出图片被裁切」是同一类根因：布局尺寸只存在于它的内部结构里。
+   *
+   * 而我们本来就有精确边界 —— layoutMindMap 给的每个 PositionedNode 都带
+   * width/height，是布局算出来的，不依赖任何测量。直接据此设视口更可靠，
+   * 也不会再因为对方内部时序而失效。
    */
+  const flowRef = useRef<HTMLDivElement>(null);
   const rootId = map?.nodes.find((node) => node.parentId === null)?.id ?? '';
   const mapIdentity = map ? `${map.createdAt}:${rootId}` : '';
+  const nodeCount = nodes.length;
+
+  const fitToPositions = useCallback(
+    (animate: boolean) => {
+      const host = flowRef.current;
+      if (!host || !positions.size) return;
+      const { width: hostW, height: hostH } = host.getBoundingClientRect();
+      if (hostW < 40 || hostH < 40) return;
+
+      let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+      for (const p of positions.values()) {
+        minX = Math.min(minX, p.x);
+        minY = Math.min(minY, p.y);
+        maxX = Math.max(maxX, p.x + p.width);
+        maxY = Math.max(maxY, p.y + p.height);
+      }
+      const treeW = maxX - minX;
+      const treeH = maxY - minY;
+      if (treeW <= 0 || treeH <= 0) return;
+
+      const PADDING = 0.12;
+      const ideal = Math.min(hostW / (treeW * (1 + PADDING)), hostH / (treeH * (1 + PADDING)));
+
+      /*
+       * 缩放下限。把一棵大树硬塞进一个矮容器，算出来会是 0.12 这种倍率 ——
+       * 节点全在画面里，但一个字都读不出来，等于给了张缩略图。
+       * 宁可只显示看得清的一部分，让用户自己平移：读得懂的局部比读不懂的全景有用。
+       */
+      const READABLE_MIN_ZOOM = 0.42;
+      const zoom = Math.min(2.5, Math.max(READABLE_MIN_ZOOM, ideal));
+
+      // 整棵树放不下时，把根节点靠左居中 —— 脑图是从根往外读的，
+      // 停在中心会让人一上来就落在某根枝条中间，不知道自己在哪
+      const root = rootId ? positions.get(rootId) : undefined;
+      const anchorX = ideal < READABLE_MIN_ZOOM && root ? root.x + root.width / 2 : minX + treeW / 2;
+      const anchorY = ideal < READABLE_MIN_ZOOM && root ? root.y + root.height / 2 : minY + treeH / 2;
+
+      setViewport(
+        { x: hostW / 2 - anchorX * zoom, y: hostH / 2 - anchorY * zoom, zoom },
+        animate ? { duration: 220 } : undefined,
+      );
+    },
+    [positions, rootId, setViewport],
+  );
+
   useEffect(() => {
-    if (!nodes.length) return;
-    if (!streaming && (!mapIdentity || fittedMapRef.current === mapIdentity)) return;
-    if (!streaming) fittedMapRef.current = mapIdentity;
-    const frame = requestAnimationFrame(() =>
-      fitView({ padding: 0.15, duration: streaming ? 0 : 200 }),
-    );
-    return () => cancelAnimationFrame(frame);
-  }, [fitView, mapIdentity, nodes.length, streaming]);
+    if (!nodeCount) return;
+    // 流式期间跟着树长；结束后每张图只适配一次，之后绝不再动用户调好的视口
+    if (!streaming && mapIdentity && fittedMapRef.current === mapIdentity) return;
+    const timer = window.setTimeout(() => {
+      fitToPositions(!streaming);
+      if (!streaming && mapIdentity) fittedMapRef.current = mapIdentity;
+    }, streaming ? 90 : 140);
+    return () => window.clearTimeout(timer);
+  }, [fitToPositions, mapIdentity, nodeCount, streaming]);
 
   const onNodeClick: NodeMouseHandler = useCallback((_, node) => select(node.id), [select]);
 
@@ -256,7 +307,7 @@ export function MindMapCanvas({ readOnly = false }: { readOnly?: boolean }) {
   );
 
   return (
-    <div className="surface-grid h-full w-full bg-bg-subtle/60 outline-none" tabIndex={0} onKeyDown={onKeyDown}>
+    <div ref={flowRef} className="surface-grid h-full w-full bg-bg-subtle/60 outline-none" tabIndex={0} onKeyDown={onKeyDown}>
       <ReactFlow
         nodes={nodes}
         edges={edges}

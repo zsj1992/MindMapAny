@@ -341,7 +341,11 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
 
   return (
     <ReactFlowProvider>
-      <div ref={shellRef} className="flex h-full min-h-[calc(100vh-4rem)] scroll-mt-16 flex-col bg-bg">
+      {/* 嵌入落地页时不能再要求满屏高：容器给多少用多少，否则画布会被顶出去 */}
+      <div
+        ref={shellRef}
+        className={`flex h-full scroll-mt-16 flex-col bg-bg ${title ? 'min-h-[calc(100vh-4rem)]' : ''}`}
+      >
         <Toolbar
           onSave={save}
           onShare={share}
