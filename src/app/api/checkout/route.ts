@@ -2,6 +2,7 @@ import { NextResponse } from 'next/server';
 import { z } from 'zod';
 import { getCurrentUser } from '@/lib/auth/session';
 import { paymentLinkFor, productIdFor } from '@/lib/billing/creem';
+import { recordAttempt } from '@/lib/db/repositories/checkout-attempts';
 
 const querySchema = z.object({
   plan: z.enum(['basic', 'pro', 'unlimited']),
@@ -18,6 +19,9 @@ export async function GET(req: Request) {
     const next = `/api/checkout?plan=${parsed.data.plan}&period=${parsed.data.period}`;
     return NextResponse.redirect(new URL(`/login?next=${encodeURIComponent(next)}`, url.origin));
   }
+
+  // 记在跳转之前：跳走之后这个请求就结束了，没有第二次机会
+  await recordAttempt({ userId: user.id, plan: parsed.data.plan, period: parsed.data.period });
 
   const productId = productIdFor(parsed.data.plan, parsed.data.period);
   const bindingSecret = process.env.BETTER_AUTH_SECRET;
