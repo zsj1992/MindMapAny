@@ -33,7 +33,7 @@ const DOC_ICON = icon(
 
 const GROUP_HREFS = [
   ['/tools/pdf-to-mind-map', '/tools/docx-to-mind-map', '/tools/pptx-to-mind-map', '/tools/epub-to-mind-map'],
-  ['/tools/text-to-mind-map', '/tools/webpage-to-mind-map'],
+  ['/tools/text-to-mind-map', '/tools/webpage-to-mind-map', '/tools/youtube-to-mind-map'],
 ];
 
 const GROUP_ICONS = [
@@ -63,10 +63,16 @@ const GROUP_ICONS = [
         <path d="M3 12h18M12 3a15 15 0 010 18a15 15 0 010-18z" />
       </>,
     ),
+    icon(
+      <>
+        <rect x="3" y="5" width="18" height="14" rx="3" />
+        <path strokeLinejoin="round" d="M11 9.5l4 2.5-4 2.5v-5z" />
+      </>,
+    ),
   ],
 ];
 
-/** toolLabels 是扁平的 6 条，这里给出每组的起始下标 */
+/** toolLabels 是扁平的一维数组，这里给出每组的起始下标 */
 const GROUP_LABEL_OFFSET = [0, 4];
 
 const POPULAR_LABEL: Record<Locale, string> = {
