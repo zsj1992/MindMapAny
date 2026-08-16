@@ -208,15 +208,27 @@ export function MindMapCanvas({ readOnly = false }: { readOnly?: boolean }) {
     // 否则之后展开折叠节点会带着过期的延迟重新入场
   }, [map, positions, collapsed, selectedId, revealAt, streaming]);
 
-  // 每张图只在首次打开时适配一次。新增、删除、折叠节点只重排节点，绝不改用户当前视口。
+  /*
+   * 每张图只在首次打开时适配一次 —— 新增、删除、折叠节点都不该动用户当前视口。
+   *
+   * 但流式是例外：节点是一帧帧到的，只按第一帧适配的话，视口会停在那一两个
+   * 节点的范围里，后面几十个铺到视口外，用户看到的是一片空白。所以流式期间
+   * 每帧都重新适配，让画面跟着长出来的树走；流一结束就恢复「只适配一次」。
+   *
+   * 判据不能用 createdAt：它是毫秒精度，相邻帧常常相同，根节点 id 又恒为 n1，
+   * 于是整条流的 identity 都不变 —— 这正是之前画布全白的原因。
+   */
   const rootId = map?.nodes.find((node) => node.parentId === null)?.id ?? '';
   const mapIdentity = map ? `${map.createdAt}:${rootId}` : '';
   useEffect(() => {
-    if (!nodes.length || !mapIdentity || fittedMapRef.current === mapIdentity) return;
-    fittedMapRef.current = mapIdentity;
-    const frame = requestAnimationFrame(() => fitView({ padding: 0.15, duration: 200 }));
+    if (!nodes.length) return;
+    if (!streaming && (!mapIdentity || fittedMapRef.current === mapIdentity)) return;
+    if (!streaming) fittedMapRef.current = mapIdentity;
+    const frame = requestAnimationFrame(() =>
+      fitView({ padding: 0.15, duration: streaming ? 0 : 200 }),
+    );
     return () => cancelAnimationFrame(frame);
-  }, [fitView, mapIdentity, nodes.length]);
+  }, [fitView, mapIdentity, nodes.length, streaming]);
 
   const onNodeClick: NodeMouseHandler = useCallback((_, node) => select(node.id), [select]);
 

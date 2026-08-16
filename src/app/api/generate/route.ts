@@ -81,9 +81,17 @@ export async function POST(req: Request) {
       const url = params.url.trim();
       if (isYoutubeUrl(url)) {
         kind = 'youtube';
-        // 字幕语言跟随请求的输出语言：想要中文图就优先取中文字幕，
-        // 取不到时 provider 会回退到视频原生语言并在 notes 里说明。
-        doc = await extractYoutube(url, params.language === 'auto' ? 'en' : params.language);
+        /*
+         * 不指定字幕语言，取视频原生的那一条。
+         *
+         * 之前这里在 language 为 auto 时硬要 'en'，于是一个中文视频会被要求
+         * 提供英文字幕 —— provider 只能去做翻译，返回 202 异步任务，而我们
+         * 把空 content 读成了「这个视频没有字幕」。视频明明有 1462 条中文字幕。
+         *
+         * 输出语言不该在这一步决定：下面的 resolveLanguage 会从正文判断，
+         * 生成阶段自然会产出用户要的语言。取原生字幕既快又准。
+         */
+        doc = await extractYoutube(url);
       } else if (params.sourceType === 'pdf') {
         kind = 'pdf';
         const fetched = await safeFetchPdf(url);

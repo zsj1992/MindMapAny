@@ -275,7 +275,18 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
   if (!map) {
     return (
       <div className="workspace-stage h-full min-h-0 overflow-y-auto px-4 py-8 sm:px-7 lg:overflow-hidden lg:px-10 lg:py-6">
-        <div className="mx-auto grid min-h-full w-full max-w-6xl items-center gap-9 lg:grid-cols-[minmax(15rem,0.72fr)_minmax(32rem,1.45fr)] lg:gap-12 xl:gap-16">
+        {/*
+          两列只在有标题时才成立。嵌入落地页时不传 title，左侧那一栏整个不渲染，
+          输入面板就会落进网格的第一列 —— 也就是最窄的 15rem 那列，
+          于是标签叠在一起、按钮被切掉。没有标题时用单列全宽。
+        */}
+        <div
+          className={
+            title
+              ? 'mx-auto grid min-h-full w-full max-w-6xl items-center gap-9 lg:grid-cols-[minmax(15rem,0.72fr)_minmax(32rem,1.45fr)] lg:gap-12 xl:gap-16'
+              : 'mx-auto flex min-h-full w-full max-w-4xl items-center'
+          }
+        >
           {title && (
             <section className="max-w-xl lg:max-w-sm">
               <p className="flex items-center gap-3 text-[11px] font-semibold tracking-[0.14em] text-brand-600 dark:text-brand-300">

@@ -32,7 +32,7 @@ export function isYoutubeUrl(url: string): boolean {
   return parseVideoId(url) !== null;
 }
 
-export async function extractYoutube(url: string, preferredLang = 'en'): Promise<ExtractedDoc> {
+export async function extractYoutube(url: string, preferredLang?: string): Promise<ExtractedDoc> {
   const videoId = parseVideoId(url);
   if (!videoId) throw new ExtractError('unsupported', 'That YouTube link could not be recognised');
 
@@ -82,7 +82,7 @@ interface TranscriptResult {
   note?: string;
 }
 
-async function fetchTranscript(videoId: string, lang: string): Promise<TranscriptResult> {
+async function fetchTranscript(videoId: string, lang?: string): Promise<TranscriptResult> {
   const key = process.env.YOUTUBE_TRANSCRIPT_API_KEY;
   if (key) return fetchViaSupadata(videoId, lang, key);
 
@@ -92,19 +92,30 @@ async function fetchTranscript(videoId: string, lang: string): Promise<Transcrip
       'The YouTube caption service is not configured (YOUTUBE_TRANSCRIPT_API_KEY is missing)',
     );
   }
-  const result = await fetchDirect(videoId, lang);
+  const result = await fetchDirect(videoId, lang ?? 'en');
   return { ...result, note: 'Captions were fetched directly; production needs the caption API configured' };
 }
 
 /** Supadata：/v1/transcript 返回 { content: [{ text, offset(ms), duration }], lang } */
-async function fetchViaSupadata(videoId: string, lang: string, key: string): Promise<TranscriptResult> {
+async function fetchViaSupadata(videoId: string, lang: string | undefined, key: string): Promise<TranscriptResult> {
   const endpoint = new URL(process.env.YOUTUBE_TRANSCRIPT_API_URL ?? 'https://api.supadata.ai/v1/transcript');
   endpoint.searchParams.set('url', `https://www.youtube.com/watch?v=${videoId}`);
-  endpoint.searchParams.set('lang', lang);
+  // 只在调用方明确要求某种字幕时才带上；不带 = 取原生，同步返回
+  if (lang) endpoint.searchParams.set('lang', lang);
 
   const res = await fetch(endpoint, { headers: { 'x-api-key': key } });
   if (res.status === 404 || res.status === 206) {
     throw new ExtractError('no_transcript', 'This video has no captions available');
+  }
+  /*
+   * 202 = 转成了异步任务（通常是要翻译或需要 AI 转写）。它属于 res.ok，
+   * 之前直接往下走，读到空的 content，最后报成「没有字幕」—— 一个有字幕的
+   * 视频被判了死刑。必须单独处理。
+   */
+  if (res.status === 202) {
+    const { jobId } = (await res.json()) as { jobId?: string };
+    if (!jobId) throw new ExtractError('fetch_failed', 'The caption service queued the request but returned no job id');
+    return pollSupadataJob(jobId, key);
   }
   if (!res.ok) {
     throw new ExtractError('fetch_failed', `The caption service returned ${res.status}`);
@@ -116,8 +127,49 @@ async function fetchViaSupadata(videoId: string, lang: string, key: string): Pro
     lang?: string;
   };
   const cues = (data.content ?? []).map((c) => ({ text: c.text, startSec: c.offset / 1000 }));
-  const note = data.lang && !data.lang.startsWith(lang) ? `Captions are in ${data.lang} and will be translated` : undefined;
+  // 没指定语言时拿到什么就是什么，只记一笔字幕语种；指定了才谈得上「会被翻译」
+  const note = !data.lang
+    ? undefined
+    : lang && !data.lang.startsWith(lang)
+      ? `Captions are in ${data.lang} and will be translated`
+      : `Captions are in ${data.lang}`;
   return { cues, title: data.title, ...(note ? { note } : {}) };
+}
+
+
+/**
+ * 轮询异步字幕任务。
+ *
+ * 只等有限的时间：整个生成本来就要几十秒，字幕再等一分钟用户就该以为卡死了。
+ * 等不到就明确说「还在处理，请稍后重试」，而不是含糊地说没有字幕 ——
+ * 后者会让用户以为这个视频永远做不了，其实过一会儿就好了。
+ */
+const JOB_POLL_INTERVAL_MS = 1500;
+const JOB_POLL_MAX_MS = 45_000;
+
+async function pollSupadataJob(jobId: string, key: string): Promise<TranscriptResult> {
+  const deadline = Date.now() + JOB_POLL_MAX_MS;
+  while (Date.now() < deadline) {
+    await new Promise((resolve) => setTimeout(resolve, JOB_POLL_INTERVAL_MS));
+    const res = await fetch(`https://api.supadata.ai/v1/transcript/${jobId}`, { headers: { 'x-api-key': key } });
+    if (!res.ok) continue;
+    const data = (await res.json()) as {
+      status?: string;
+      content?: { text: string; offset: number }[];
+      lang?: string;
+      error?: string;
+    };
+    if (data.status === 'failed' || data.error) {
+      throw new ExtractError('no_transcript', 'The captions for this video could not be retrieved');
+    }
+    if (data.content?.length) {
+      return {
+        cues: data.content.map((c) => ({ text: c.text, startSec: c.offset / 1000 })),
+        ...(data.lang ? { note: `Captions are in ${data.lang}` } : {}),
+      };
+    }
+  }
+  throw new ExtractError('fetch_failed', 'The captions are still being prepared. Please try again in a moment.');
 }
 
 /** 本地兜底：从播放页拿 captionTracks，线上大概率被 YouTube 拒绝 */
