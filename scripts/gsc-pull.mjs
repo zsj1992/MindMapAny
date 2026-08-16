@@ -16,7 +16,7 @@
  *     refresh token 七天就失效，定时任务会莫名其妙断掉。
  */
 import { createSign } from 'node:crypto';
-import { mkdir, writeFile } from 'node:fs/promises';
+import { chmod, mkdir, readFile, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 import process from 'node:process';
 import { accessTokenFromRefresh, authorize } from './lib/google-oauth.mjs';
@@ -30,13 +30,31 @@ const PAGE_SIZE = 25_000;
 const days = Number(argValue('--days') ?? 28);
 const email = process.env.GSC_SA_EMAIL;
 const privateKey = process.env.GSC_SA_PRIVATE_KEY?.replace(/\\n/g, '\n');
-const { GSC_CLIENT_ID: clientId, GSC_CLIENT_SECRET: clientSecret, GSC_REFRESH_TOKEN: refreshToken } = process.env;
+let { GSC_CLIENT_ID: clientId, GSC_CLIENT_SECRET: clientSecret, GSC_REFRESH_TOKEN: refreshToken } = process.env;
+
+const clientJsonPath = argValue('--client-json');
+if (clientJsonPath) {
+  const credentials = JSON.parse(await readFile(clientJsonPath, 'utf8'));
+  const client = credentials.installed ?? credentials.web;
+  if (!client?.client_id || !client?.client_secret) die('OAuth 客户端 JSON 缺少 client_id / client_secret');
+  clientId = client.client_id;
+  clientSecret = client.client_secret;
+}
 
 if (process.argv[2] === 'auth') {
   if (!clientId || !clientSecret) die('缺少 GSC_CLIENT_ID / GSC_CLIENT_SECRET');
   const issued = await authorize({ clientId, clientSecret, scope: SCOPE });
-  console.log('\n把这行加进 .env.local：\n');
-  console.log(`GSC_REFRESH_TOKEN=${issued}\n`);
+  if (process.argv.includes('--write-env')) {
+    await upsertEnv('.env.local', {
+      GSC_CLIENT_ID: clientId,
+      GSC_CLIENT_SECRET: clientSecret,
+      GSC_REFRESH_TOKEN: issued,
+    });
+    console.log('\nOAuth 凭据已安全写入 .env.local。\n');
+  } else {
+    console.log('\n把这行加进 .env.local：\n');
+    console.log(`GSC_REFRESH_TOKEN=${issued}\n`);
+  }
   process.exit(0);
 }
 
@@ -54,10 +72,11 @@ console.log(`拿到 ${rows.length} 行`);
 
 await mkdir(OUT_DIR, { recursive: true });
 const stamp = end;
-await writeFile(join(OUT_DIR, `gsc-${stamp}.json`), JSON.stringify({ site, start, end, rows }, null, 2));
-await writeFile(join(OUT_DIR, `gsc-${stamp}.csv`), toCsv(rows));
-await writeFile(join(OUT_DIR, `gsc-${stamp}.md`), report(rows, site, start, end));
-console.log(`\n写入 docs/seo/data/gsc-${stamp}.{json,csv,md}`);
+const basename = `gsc-${days}d-${stamp}`;
+await writeFile(join(OUT_DIR, `${basename}.json`), JSON.stringify({ site, start, end, days, rows }, null, 2));
+await writeFile(join(OUT_DIR, `${basename}.csv`), toCsv(rows));
+await writeFile(join(OUT_DIR, `${basename}.md`), report(rows, site, start, end));
+console.log(`\n写入 docs/seo/data/${basename}.{json,csv,md}`);
 
 // ── 认证 ──
 
@@ -253,6 +272,24 @@ function daysAgo(n) {
 function argValue(flag) {
   const index = process.argv.indexOf(flag);
   return index >= 0 ? process.argv[index + 1] : undefined;
+}
+
+async function upsertEnv(path, values) {
+  let source = '';
+  try {
+    source = await readFile(path, 'utf8');
+  } catch (error) {
+    if (error.code !== 'ENOENT') throw error;
+  }
+  const lines = source.split(/\r?\n/);
+  for (const [key, value] of Object.entries(values)) {
+    const encoded = JSON.stringify(value);
+    const index = lines.findIndex((line) => line.startsWith(`${key}=`));
+    if (index >= 0) lines[index] = `${key}=${encoded}`;
+    else lines.push(`${key}=${encoded}`);
+  }
+  await writeFile(path, `${lines.filter(Boolean).join('\n')}\n`, { mode: 0o600 });
+  await chmod(path, 0o600);
 }
 
 function die(message) {

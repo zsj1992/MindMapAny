@@ -53,13 +53,13 @@ npm run gsc              # 最近 28 天
 npm run gsc -- --days 90 # 最近 90 天
 ```
 
-产出三个文件在 `docs/seo/data/`：
+产出三个文件在 `docs/seo/data/`。文件名包含统计窗口，28 天与 90 天的结果不会互相覆盖：
 
 | 文件 | 用途 |
 |---|---|
-| `gsc-<日期>.md` | 人看的报告，见下 |
-| `gsc-<日期>.csv` | query × page × country × device 明细，回填母表用 |
-| `gsc-<日期>.json` | 原始快照（不进 git） |
+| `gsc-<天数>d-<日期>.md` | 人看的报告，见下 |
+| `gsc-<天数>d-<日期>.csv` | query × page × country × device 明细，回填母表用 |
+| `gsc-<天数>d-<日期>.json` | 原始快照（不进 git） |
 
 ## 报告里真正有用的是后两节
 
@@ -81,12 +81,12 @@ npm run gsc -- --days 90 # 最近 90 天
 
 1. GCP「凭证 → 创建凭据 → OAuth 客户端 ID」，类型选**桌面应用**
 2. **同意屏必须发布为「生产」**。留在「测试」状态的话 refresh token **七天就失效**，定时任务会莫名其妙断掉 —— 这是这条路唯一真正的坑
-3. 填进 `.env.local`：
+3. 下载桌面 OAuth 客户端 JSON，然后运行：
+   ```bash
+   npm run gsc:auth -- --client-json /绝对路径/client_secret.json --write-env
    ```
-   GSC_CLIENT_ID=xxx.apps.googleusercontent.com
-   GSC_CLIENT_SECRET=xxx
-   ```
-4. 跑 `npm run gsc:auth`，浏览器里点一次「允许」，把输出的 `GSC_REFRESH_TOKEN=...` 也贴进 `.env.local`
+   浏览器里点一次「允许」。脚本会把客户端 ID、客户端密钥和 refresh token 直接写进 `.env.local`，不会把 token 打印到终端。
+4. 授权完成后删除下载的客户端 JSON；脚本会把 `.env.local` 权限收紧为仅当前用户可读写（`0600`）。
 
 授权时要用**拥有 mindmapany.com 那个 Search Console 属性的 Google 账号**。这条路不需要在 GSC 里添加任何用户 —— 你本来就是所有者。
 

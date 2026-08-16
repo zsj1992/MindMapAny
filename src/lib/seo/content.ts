@@ -365,7 +365,7 @@ export const BLOG_POSTS: BlogPost[] = [
     updatedAt: '2026-08-08',
     readingMinutes: 6,
     author: 'The MindMapAny team',
-    primaryKeyword: 'PDF to mind map',
+    primaryKeyword: 'how to convert PDF to mind map',
     relatedTool: '/tools/pdf-to-mind-map',
     sections: [
       {
