@@ -119,13 +119,13 @@ export const ALL_TOOL_PAGES: ToolPage[] = [
     title: 'YouTube video to mind map',
     description:
       'Paste a video link. We read its captions and lay out the argument as a map where every node carries the timestamp it came from — click one and the video opens at that second.',
-    seoTitle: 'YouTube to Mind Map — turn a video into a map you can check',
+    seoTitle: 'YouTube to Mind Map — Free AI Video Summarizer',
     seoDescription:
-      'Paste a YouTube link and get an editable mind map built from the video captions. Every node keeps a timestamp that jumps straight back to that moment, so nothing has to be taken on trust.',
+      'Turn any YouTube video into a mind map. Every node carries a timestamp that jumps back to that second, so you can check it against the video.',
     primaryKeyword: 'youtube to mind map',
     relatedKeywords: ['youtube video summary', 'summarize youtube video', 'video to mind map', 'youtube transcript summary'],
     benefits: [
-      { title: 'Every node jumps back to the second', description: 'Timestamps are not decoration — click one and the video opens at that moment, so you can check what was actually said.' },
+      { title: 'A YouTube to mind map tool that shows its working', description: 'Timestamps are not decoration — click one and the video opens at that moment, so you can check what was actually said.' },
       { title: 'An hour of talk, laid out flat', description: 'Long lectures and conference talks become a structure you can scan, instead of a progress bar you have to scrub through.' },
       { title: 'Find the part you actually need', description: 'Read the map first, then watch only the sections that matter to you.' },
     ],
@@ -140,6 +140,9 @@ export const ALL_TOOL_PAGES: ToolPage[] = [
       { question: 'How accurate are the timestamps?', answer: 'Captions are grouped into roughly 30-second passages and the timestamp points at the start of the passage, so you land just before the point is made rather than in the middle of it.' },
       { question: 'Can it handle videos in other languages?', answer: 'Yes, wherever captions exist. If the captions are not in the language you asked for, the map is translated and the map notes say so.' },
       { question: 'What about very long videos?', answer: 'Long videos work but cost more credits, and the character limits of your plan apply the same way they do to documents.' },
+      { question: 'Do Shorts and youtu.be links work?', answer: 'Yes. Normal watch links, youtu.be short links and Shorts URLs are all accepted, as long as the video has captions.' },
+      { question: 'Why did my video fail?', answer: 'Almost always because it has no captions at all. We read captions rather than listening to the audio, so a video with none cannot be mapped — the error says so explicitly rather than returning a map built on nothing.' },
+      { question: 'Can I edit the map afterwards?', answer: 'Yes. Rename and restructure nodes directly, or describe the change in plain language, and the timestamps survive the rewrite. Export to PNG, SVG or Markdown, or share a link.' },
     ],
   },
   {
