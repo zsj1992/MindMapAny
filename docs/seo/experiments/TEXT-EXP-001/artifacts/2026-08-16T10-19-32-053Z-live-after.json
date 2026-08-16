@@ -1,0 +1,52 @@
+{
+  "experimentId": "TEXT-EXP-001",
+  "kind": "after",
+  "label": "live-after",
+  "capturedAt": "2026-08-16T10:19:32.053Z",
+  "url": "https://mindmapany.com/tools/text-to-mind-map",
+  "statusCode": 200,
+  "git": {
+    "commit": "b36d9b52fe7638bb16f1c53461ca17b7812ed179",
+    "branch": "main",
+    "dirtyFiles": [
+      "M docs/seo/experiments/PDF-EXP-001/events.ndjson",
+      " M docs/seo/experiments/TEXT-EXP-001/events.ndjson",
+      "?? docs/seo/experiments/PDF-EXP-001/artifacts/",
+      "?? docs/seo/experiments/TEXT-EXP-001/artifacts/2026-08-16T10-19-32-053Z-live-after.png"
+    ]
+  },
+  "deploymentId": "5c141ce5-aa33-433e-bfc1-b4132ac60148",
+  "artifacts": {
+    "html": "2026-08-16T10-19-32-053Z-live-after.html",
+    "screenshot": "2026-08-16T10-19-32-053Z-live-after.png"
+  },
+  "hashes": {
+    "htmlSha256": "5f76296b2bd2640bce60582ada901f55c76996afcf9b9c5d288c42a6ac3959eb",
+    "schemaSha256": "5e08c535f46be76053c45489fb2b7b3f57bb1d911351db974024b080697bf1fb"
+  },
+  "seo": {
+    "title": "Text to Mind Map: Free AI Generator | MindMapAny",
+    "metaDescription": "Paste notes, articles or meeting minutes into our free text to mind map generator. Create an editable multi-level map you can refine, share and export.",
+    "canonical": "https://mindmapany.com/tools/text-to-mind-map",
+    "robots": null,
+    "h1": [
+      "Text to mind map"
+    ],
+    "h2": [
+      "Paste text and build the mind map here",
+      "Not just a summary — a structure you can keep using",
+      "What a text to mind map generator actually changes",
+      "How to prepare text before generating",
+      "How to check an AI-generated mind map",
+      "Mind map versus text summary",
+      "What happens after you paste text",
+      "Three steps",
+      "Frequently asked questions",
+      "Turn your content into a clear map",
+      "Related guides"
+    ],
+    "schema": [
+      "[{\"@context\":\"https://schema.org\",\"@type\":\"SoftwareApplication\",\"name\":\"Text to mind map\",\"applicationCategory\":\"ProductivityApplication\",\"operatingSystem\":\"Web\",\"url\":\"https://mindmapany.com/tools/text-to-mind-map\",\"description\":\"Paste notes, articles or meeting minutes into our free text to mind map generator. Create an editable multi-level map you can refine, share and export.\",\"offers\":{\"@type\":\"Offer\",\"price\":\"0\",\"priceCurrency\":\"USD\",\"description\":\"Free trial\"}},{\"@context\":\"https://schema.org\",\"@type\":\"BreadcrumbList\",\"itemListElement\":[{\"@type\":\"ListItem\",\"position\":1,\"name\":\"Home\",\"item\":\"https://mindmapany.com/\"},{\"@type\":\"ListItem\",\"position\":2,\"name\":\"Tools\",\"item\":\"https://mindmapany.com/tools\"},{\"@type\":\"ListItem\",\"position\":3,\"name\":\"Text to mind map\",\"item\":\"https://mindmapany.com/tools/text-to-mind-map\"}]},{\"@context\":\"https://schema.org\",\"@type\":\"FAQPage\",\"mainEntity\":[{\"@type\":\"Question\",\"name\":\"How much text can I paste at once?\",\"acceptedAnswer\":{\"@type\":\"Answer\",\"text\":\"The limit depends on your plan and the generation depth you choose — see the pricing page for the exact character allowance. Longer content costs more credits.\"}},{\"@type\":\"Question\",\"name\":\"Does it handle text that mixes languages?\",\"acceptedAnswer\":{\"@type\":\"Answer\",\"text\":\"Yes. You can specify the output language separately and the node language will be made consistent.\"}},{\"@type\":\"Question\",\"name\":\"Can I add child nodes afterwards?\",\"acceptedAnswer\":{\"@type\":\"Answer\",\"text\":\"Yes. Select a node and press Tab for a child node, or Enter for a sibling.\"}},{\"@type\":\"Question\",\"name\":\"Can I turn a single paragraph into a mind map?\",\"acceptedAnswer\":{\"@type\":\"Answer\",\"text\":\"Yes. A focused paragraph can become a small map, although inputs with several distinct ideas usually produce a more useful hierarchy. The input needs at least 21 characters.\"}},{\"@type\":\"Question\",\"name\":\"Is this different from a normal AI summary?\",\"acceptedAnswer\":{\"@type\":\"Answer\",\"text\":\"Yes. A summary returns another linear passage. This tool returns parent topics, child ideas and supporting details that you can collapse, rearrange and edit on a canvas.\"}},{\"@type\":\"Question\",\"name\":\"What can I do with the map after it is generated?\",\"acceptedAnswer\":{\"@type\":\"Answer\",\"text\":\"You can rename nodes, add or remove branches, change the visual format, save or share the map, and export it as PNG, SVG or Markdown.\"}},{\"@type\":\"Question\",\"name\":\"Is the text I paste sent to analytics?\",\"acceptedAnswer\":{\"@type\":\"Answer\",\"text\":\"No. Analytics records workflow events such as starting or completing a generation and broad character-count bands, but it does not include the pasted text or generated node content.\"}}]}]"
+    ]
+  }
+}

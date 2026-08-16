@@ -1,6 +1,6 @@
 {
   "id": "TEXT-EXP-001",
-  "status": "implementation",
+  "status": "observing",
   "createdAt": "2026-08-16T00:00:00+08:00",
   "targetUrl": "https://mindmapany.com/tools/text-to-mind-map",
   "targetKeyword": "text to mind map",
@@ -70,7 +70,12 @@
     "day28OrLater": "Earliest keep/rollback decision, only after at least 50 new cluster impressions"
   },
   "interventionBlockedBy": null,
-  "nextAction": "Deploy the embedded Text workflow with PDF round 1, record the deployment ID, and begin the 28-day/50-impression observation window.",
-  "deployment": null,
+  "nextAction": "Check crawl/indexation and funnel health on day 7; make no additional Text on-page changes before the 28-day/50-impression stopping rule.",
+  "deployment": {
+    "provider": "Cloudflare Workers",
+    "versionId": "5c141ce5-aa33-433e-bfc1-b4132ac60148",
+    "gitCommit": "b36d9b52fe7638bb16f1c53461ca17b7812ed179",
+    "deployedAt": "2026-08-16T10:19:25.052Z"
+  },
   "decision": null
 }

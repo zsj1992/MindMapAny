@@ -1,0 +1,47 @@
+{
+  "experimentId": "PDF-EXP-001",
+  "kind": "after",
+  "label": "live-after",
+  "capturedAt": "2026-08-16T10:19:25.238Z",
+  "url": "https://mindmapany.com/tools/pdf-to-mind-map",
+  "statusCode": 200,
+  "git": {
+    "commit": "b36d9b52fe7638bb16f1c53461ca17b7812ed179",
+    "branch": "main",
+    "dirtyFiles": [
+      "M docs/seo/experiments/PDF-EXP-001/events.ndjson",
+      " M docs/seo/experiments/TEXT-EXP-001/events.ndjson",
+      "?? docs/seo/experiments/PDF-EXP-001/artifacts/"
+    ]
+  },
+  "deploymentId": "5c141ce5-aa33-433e-bfc1-b4132ac60148",
+  "artifacts": {
+    "html": "2026-08-16T10-19-25-238Z-live-after.html",
+    "screenshot": "2026-08-16T10-19-25-238Z-live-after.png"
+  },
+  "hashes": {
+    "htmlSha256": "f820cf0ce51e0c6fd92d6d0afcb4582abb17e1e15e690cea9a20b4e0b60dff6f",
+    "schemaSha256": "01a156139ec14c87f1b00d5d0c07830692ea1fc5be19e9c30c8f820329ddf8ce"
+  },
+  "seo": {
+    "title": "PDF to Mind Map — AI that extracts structure and key points | MindMapAny",
+    "metaDescription": "Try our free AI PDF to mind map tool. Upload a paper, report or ebook and get a multi-level map whose nodes keep their source page numbers, with PNG, SVG and Markdown export.",
+    "canonical": "https://mindmapany.com/tools/pdf-to-mind-map",
+    "robots": null,
+    "h1": [
+      "PDF to mind map"
+    ],
+    "h2": [
+      "Upload a PDF and build the map here",
+      "Not just a summary — a structure you can keep using",
+      "Check the map against the PDF, page by page",
+      "Three steps",
+      "Frequently asked questions",
+      "Turn your content into a clear map",
+      "Related guides"
+    ],
+    "schema": [
+      "[{\"@context\":\"https://schema.org\",\"@type\":\"SoftwareApplication\",\"name\":\"PDF to mind map\",\"applicationCategory\":\"ProductivityApplication\",\"operatingSystem\":\"Web\",\"url\":\"https://mindmapany.com/tools/pdf-to-mind-map\",\"description\":\"Try our free AI PDF to mind map tool. Upload a paper, report or ebook and get a multi-level map whose nodes keep their source page numbers, with PNG, SVG and Markdown export.\",\"offers\":{\"@type\":\"Offer\",\"price\":\"0\",\"priceCurrency\":\"USD\",\"description\":\"Free trial\"}},{\"@context\":\"https://schema.org\",\"@type\":\"BreadcrumbList\",\"itemListElement\":[{\"@type\":\"ListItem\",\"position\":1,\"name\":\"Home\",\"item\":\"https://mindmapany.com/\"},{\"@type\":\"ListItem\",\"position\":2,\"name\":\"Tools\",\"item\":\"https://mindmapany.com/tools\"},{\"@type\":\"ListItem\",\"position\":3,\"name\":\"PDF to mind map\",\"item\":\"https://mindmapany.com/tools/pdf-to-mind-map\"}]},{\"@context\":\"https://schema.org\",\"@type\":\"FAQPage\",\"mainEntity\":[{\"@type\":\"Question\",\"name\":\"Can scanned PDFs be turned into mind maps?\",\"acceptedAnswer\":{\"@type\":\"Answer\",\"text\":\"The current version supports PDFs whose text can be selected and copied. OCR for scanned documents is planned for a future release.\"}},{\"@type\":\"Question\",\"name\":\"Why do the nodes carry page numbers?\",\"acceptedAnswer\":{\"@type\":\"Answer\",\"text\":\"Page numbers are recorded while the document is being chunked. The model only references chunks that already exist, so each node can be resolved back to its page.\"}},{\"@type\":\"Question\",\"name\":\"Is my PDF stored permanently?\",\"acceptedAnswer\":{\"@type\":\"Answer\",\"text\":\"The uploaded PDF is read to process the request and is not kept as a file. The generated structured map is automatically saved to your personal map library so you can edit it later.\"}},{\"@type\":\"Question\",\"name\":\"What are the PDF size and page limits?\",\"acceptedAnswer\":{\"@type\":\"Answer\",\"text\":\"Uploads can be up to 20MB, and the parser processes up to 200 pages from a text-based PDF.\"}},{\"@type\":\"Question\",\"name\":\"Can I edit and export the generated map?\",\"acceptedAnswer\":{\"@type\":\"Answer\",\"text\":\"Yes. Rename or add nodes, collapse branches, and export the finished map as PNG, SVG or Markdown.\"}}]}]"
+    ]
+  }
+}
