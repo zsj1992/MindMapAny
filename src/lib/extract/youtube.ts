@@ -100,7 +100,11 @@ async function fetchTranscript(videoId: string, lang?: string): Promise<Transcri
 async function fetchViaSupadata(videoId: string, lang: string | undefined, key: string): Promise<TranscriptResult> {
   const endpoint = new URL(process.env.YOUTUBE_TRANSCRIPT_API_URL ?? 'https://api.supadata.ai/v1/transcript');
   endpoint.searchParams.set('url', `https://www.youtube.com/watch?v=${videoId}`);
-  // 只在调用方明确要求某种字幕时才带上；不带 = 取原生，同步返回
+  /*
+   * 带上首选语言。不带的话对方返回的是按字母序排在最前的那条轨 ——
+   * 一个英文视频挂着三十多条翻译字幕时，拿回来的会是阿拉伯语。
+   * 要不到就退回原生（见上面 202 的处理），不会卡住。
+   */
   if (lang) endpoint.searchParams.set('lang', lang);
 
   const res = await fetch(endpoint, { headers: { 'x-api-key': key } });
@@ -112,7 +116,15 @@ async function fetchViaSupadata(videoId: string, lang: string | undefined, key: 
    * 之前直接往下走，读到空的 content，最后报成「没有字幕」—— 一个有字幕的
    * 视频被判了死刑。必须单独处理。
    */
+  /*
+   * 202 = 转成了异步任务，意味着我们要的那种语言的字幕不存在，对方打算去翻译。
+   *
+   * 不等它：翻译要排队，而视频原生字幕是现成的，我们本来也不需要它翻 ——
+   * 输出语言由生成阶段决定，取到什么语种的原文都能出目标语言的图。
+   * 所以直接改成不指定语言再取一次，拿原生轨，快且准。
+   */
   if (res.status === 202) {
+    if (lang) return fetchViaSupadata(videoId, undefined, key);
     const { jobId } = (await res.json()) as { jobId?: string };
     if (!jobId) throw new ExtractError('fetch_failed', 'The caption service queued the request but returned no job id');
     return pollSupadataJob(jobId, key);

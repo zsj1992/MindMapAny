@@ -82,7 +82,7 @@ export async function POST(req: Request) {
       if (isYoutubeUrl(url)) {
         kind = 'youtube';
         /*
-         * 不指定字幕语言，取视频原生的那一条。
+         * 首选和输出语言一致的字幕；没有就退回视频原生的那条。
          *
          * 之前这里在 language 为 auto 时硬要 'en'，于是一个中文视频会被要求
          * 提供英文字幕 —— provider 只能去做翻译，返回 202 异步任务，而我们
@@ -91,7 +91,7 @@ export async function POST(req: Request) {
          * 输出语言不该在这一步决定：下面的 resolveLanguage 会从正文判断，
          * 生成阶段自然会产出用户要的语言。取原生字幕既快又准。
          */
-        doc = await extractYoutube(url);
+        doc = await extractYoutube(url, params.language === 'auto' ? 'en' : params.language);
       } else if (params.sourceType === 'pdf') {
         kind = 'pdf';
         const fetched = await safeFetchPdf(url);
