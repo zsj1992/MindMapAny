@@ -12,4 +12,4 @@
  * 这是个手动开关，而手动开关会烂 —— 上一个（CHROME_EXTENSION_PUBLIC）就因为
  * 条件早已满足却没人去翻，把插件入口藏了好几天。所以条件写在上面，别只写「TODO」。
  */
-export const YOUTUBE_INPUT_LIVE = false;
+export const YOUTUBE_INPUT_LIVE = true;
