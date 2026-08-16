@@ -5,6 +5,7 @@ import { localizedToolPage, SITE_URL, TOOL_PAGES } from '@/lib/seo/content';
 import { marketingCopy } from '@/lib/i18n/marketing';
 import { localizedPath } from '@/lib/i18n/routes';
 import type { Locale } from '@/lib/i18n/locales';
+import { PopularTools } from '@/components/site/PopularTools';
 
 /* 工具索引页正文。中英共用，只有 locale 不同。 */
 
@@ -38,6 +39,8 @@ export function ToolsIndexContent({ locale }: { locale: Locale }) {
             <p className="mx-auto mt-5 max-w-2xl text-base leading-8 text-text-muted">{copy.lede}</p>
           </div>
         </section>
+
+        <PopularTools locale={locale} placement="tools-index" />
 
         <section className="mx-auto grid max-w-6xl gap-5 px-5 py-14 md:grid-cols-2 lg:px-8 lg:py-20">
           {tools.map((tool) => (

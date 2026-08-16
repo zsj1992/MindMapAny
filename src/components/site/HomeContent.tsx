@@ -8,6 +8,7 @@ import { marketingCopy } from '@/lib/i18n/marketing';
 import { absoluteUrl, HTML_LANG, localizedPath } from '@/lib/i18n/routes';
 import type { Locale } from '@/lib/i18n/locales';
 import { TrackedLink } from '@/components/analytics/TrackedLink';
+import { PopularTools } from '@/components/site/PopularTools';
 
 /* 首页正文。中英两条路由共用，唯一差别是 locale。 */
 
@@ -177,6 +178,7 @@ export function HomeContent({ locale }: { locale: Locale }) {
           </div>
         </section>
 
+        <PopularTools locale={locale} placement="home" />
         <Features locale={locale} />
         <InputTypes locale={locale} />
         <HowItWorks locale={locale} />
