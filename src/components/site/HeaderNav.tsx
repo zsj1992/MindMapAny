@@ -195,8 +195,8 @@ function ToolsMenu({ locale }: { locale: Locale }) {
                 <p className="mb-1.5 px-2 text-[10px] font-bold uppercase tracking-[0.1em] text-text-subtle">{POPULAR_LABEL[locale]}</p>
                 <div className="space-y-0.5">
                   {[
-                    { href: GROUP_HREFS[0][0], icon: GROUP_ICONS[0][0], label: copy.toolLabels[0] },
                     { href: GROUP_HREFS[1][0], icon: GROUP_ICONS[1][0], label: copy.toolLabels[4] },
+                    { href: GROUP_HREFS[0][0], icon: GROUP_ICONS[0][0], label: copy.toolLabels[0] },
                   ].map((item) => (
                     <TrackedLink
                       key={item.href}
