@@ -9,6 +9,7 @@ import type { Locale } from '@/lib/i18n/locales';
 import { TrackedLink } from '@/components/analytics/TrackedLink';
 import { PdfLandingTool } from '@/components/site/PdfLandingTool';
 import { TextLandingTool } from '@/components/site/TextLandingTool';
+import { YoutubeLandingTool } from '@/components/site/YoutubeLandingTool';
 import { TextPageGuide } from '@/components/site/TextPageGuide';
 
 /* 工具详情页正文。中英共用；tool 已经由调用方按语言取好。 */
@@ -19,7 +20,14 @@ export function ToolPageContent({ tool, locale }: { tool: ToolPage; locale: Loca
   const relatedPosts = BLOG_POSTS.filter((post) => post.relatedTool === `/tools/${tool.slug}`);
   const isEnglishPdf = locale === 'en' && tool.slug === 'pdf-to-mind-map';
   const isEnglishText = locale === 'en' && tool.slug === 'text-to-mind-map';
-  const embeddedToolAnchor = isEnglishPdf ? '#pdf-converter' : isEnglishText ? '#text-converter' : null;
+  const isEnglishYoutube = locale === 'en' && tool.slug === 'youtube-to-mind-map';
+  const embeddedToolAnchor = isEnglishPdf
+    ? '#pdf-converter'
+    : isEnglishText
+      ? '#text-converter'
+      : isEnglishYoutube
+        ? '#youtube-converter'
+        : null;
   const jsonLd = [
     {
       '@context': 'https://schema.org',
@@ -84,6 +92,7 @@ export function ToolPageContent({ tool, locale }: { tool: ToolPage; locale: Loca
             </div>
             {isEnglishPdf && <div className="mt-10"><PdfLandingTool /></div>}
             {isEnglishText && <div className="mt-10"><TextLandingTool /></div>}
+            {isEnglishYoutube && <div className="mt-10"><YoutubeLandingTool /></div>}
           </div>
         </section>
 

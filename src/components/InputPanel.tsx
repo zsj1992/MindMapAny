@@ -111,6 +111,7 @@ export function InputPanel({
   extensionToken,
   initialFile,
   initialText,
+  initialUrl,
 }: {
   onGenerate: (params: GenerateParams) => void;
   busy: boolean;
@@ -121,10 +122,11 @@ export function InputPanel({
   extensionToken?: string;
   initialFile?: File | null;
   initialText?: string;
+  initialUrl?: string;
 }) {
   const [tab, setTab] = useState<Tab>(mode === 'all' ? 'text' : MODE_TAB[mode]);
   const [text, setText] = useState(initialText ?? '');
-  const [url, setUrl] = useState('');
+  const [url, setUrl] = useState(initialUrl ?? '');
   const [file, setFile] = useState<File | null>(initialFile ?? null);
   const [dragging, setDragging] = useState(false);
   const [language, setLanguage] = useState('auto');
