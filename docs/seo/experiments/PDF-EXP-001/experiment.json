@@ -1,0 +1,63 @@
+{
+  "id": "PDF-EXP-001",
+  "status": "implementation",
+  "createdAt": "2026-08-16T00:00:00+08:00",
+  "targetUrl": "https://mindmapany.com/tools/pdf-to-mind-map",
+  "targetKeyword": "pdf to mind map",
+  "market": "Google US, split by device",
+  "hypothesis": "Putting the real PDF upload-to-editable-map flow and a page-verifiable fixed sample on the ranking URL will improve search-intent satisfaction and make the tool page, rather than the tutorial, Google's preferred page for transactional PDF queries.",
+  "variableGroup": "On-page task completion and verifiable product evidence",
+  "changesAllowed": [
+    "Embedded PDF selection and generation flow on the target URL",
+    "Fixed public PDF sample and page-reference verification section",
+    "Truthful limits, editing/export proof and method comparison",
+    "Funnel events required to measure the same experience"
+  ],
+  "changesFrozen": [
+    "Title and meta description",
+    "Target URL, canonical and hreflang",
+    "New internal-link campaign",
+    "External-link acquisition",
+    "New synonym landing pages"
+  ],
+  "baseline": {
+    "dataThrough": "2026-08-13",
+    "gitCommit": "01799f4",
+    "gscFile": "../../data/gsc-28d-2026-08-13.csv",
+    "toolPageImpressions": 4,
+    "toolPageAveragePosition": 80.8,
+    "exactQueryImpressions": 2,
+    "exactQueryAveragePosition": 91.5,
+    "exactQuerySelectedPage": "/blog/how-to-convert-pdf-to-mind-map"
+  },
+  "primaryMetrics": [
+    "Target page impressions for the PDF transactional query cluster",
+    "Average and median position by query, page, country and device",
+    "Google-selected page for the exact query"
+  ],
+  "leadingIndicators": [
+    "pdf_landing_file_selected",
+    "pdf_landing_upload_resumed",
+    "mindmap_generation_started with input_type=pdf",
+    "mindmap_generation_completed with input_type=pdf"
+  ],
+  "guardrails": [
+    "PDF generation success rate",
+    "No canonical, robots, hreflang or schema regression",
+    "No material LCP or INP regression",
+    "No user document content, file name or PII in analytics"
+  ],
+  "stoppingRule": "Observe for at least 21 days and until the PDF cluster gains at least 50 new impressions, using the later condition.",
+  "controlUrl": "https://mindmapany.com/tools/webpage-to-mind-map",
+  "concurrentExperiment": "TEXT-EXP-001",
+  "attributionLimitation": "Both target pages are planned for the same deployment window. Page-specific effects can be compared, but shared site-level or algorithmic movement cannot be fully attributed to either intervention without the frozen control page.",
+  "evaluationSchedule": {
+    "day0": "Record deployment ID and capture after-deployment snapshots",
+    "day7": "Check crawl/indexation, page ownership and funnel leading indicators; do not decide ranking outcome",
+    "day21": "Earliest directional ranking review if the PDF cluster has at least 50 new impressions",
+    "day28OrLater": "Preferred keep/rollback decision when page ownership and guardrails are stable"
+  },
+  "nextAction": "Deploy round 1, record the deployment ID, then begin the 21-day/50-impression observation window.",
+  "deployment": null,
+  "decision": null
+}

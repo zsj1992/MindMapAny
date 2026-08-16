@@ -109,6 +109,8 @@ export function InputPanel({
   copy,
   plan = null,
   extensionToken,
+  initialFile,
+  initialText,
 }: {
   onGenerate: (params: GenerateParams) => void;
   busy: boolean;
@@ -117,11 +119,13 @@ export function InputPanel({
   copy?: InputPanelCopy;
   plan?: Plan | null;
   extensionToken?: string;
+  initialFile?: File | null;
+  initialText?: string;
 }) {
   const [tab, setTab] = useState<Tab>(mode === 'all' ? 'text' : MODE_TAB[mode]);
-  const [text, setText] = useState('');
+  const [text, setText] = useState(initialText ?? '');
   const [url, setUrl] = useState('');
-  const [file, setFile] = useState<File | null>(null);
+  const [file, setFile] = useState<File | null>(initialFile ?? null);
   const [dragging, setDragging] = useState(false);
   const [language, setLanguage] = useState('auto');
   const [depth, setDepth] = useState<Depth>('standard');

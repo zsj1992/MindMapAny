@@ -36,6 +36,10 @@ export interface WorkspaceProps {
   plan?: Plan | null;
   /** Single-use chrome.storage payload token supplied by the browser extension. */
   extensionToken?: string;
+  /** A file selected on a public landing page and resumed after sign-in. */
+  initialFile?: File | null;
+  /** Text entered on a public landing page and resumed after sign-in. */
+  initialText?: string;
 }
 
 type StreamEvent =
@@ -43,7 +47,7 @@ type StreamEvent =
   | ({ type: 'done' } & GenerateResponse & { savedId?: string; saveFailed?: string })
   | { type: 'error'; code: string; message: string };
 
-export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, copy, plan = null, extensionToken }: WorkspaceProps) {
+export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, copy, plan = null, extensionToken, initialFile, initialText }: WorkspaceProps) {
   const router = useRouter();
   const map = useEditor((s) => s.map);
   const dirty = useEditor((s) => s.dirty);
@@ -312,6 +316,8 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
                 copy={copy}
                 plan={plan}
                 extensionToken={extensionToken}
+                initialFile={initialFile}
+                initialText={initialText}
               />
             )}
           </div>

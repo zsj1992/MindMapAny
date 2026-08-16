@@ -1,0 +1,55 @@
+{
+  "experimentId": "TEXT-EXP-001",
+  "kind": "before",
+  "label": "live-baseline",
+  "capturedAt": "2026-08-16T09:52:00.852Z",
+  "url": "https://mindmapany.com/tools/text-to-mind-map",
+  "statusCode": 200,
+  "git": {
+    "commit": "01799f498380165421757669be2a20534df85cdc",
+    "branch": "main",
+    "dirtyFiles": [
+      "M docs/seo/PDF-TO-MIND-MAP-RANKING-EXPERIMENT.md",
+      " M package.json",
+      " M src/components/InputPanel.tsx",
+      " M src/components/Workspace.tsx",
+      " M src/components/site/ToolPageContent.tsx",
+      " M src/lib/seo/content.ts",
+      "?? docs/seo/EXPERIMENT-REGISTRY.md",
+      "?? docs/seo/TEXT-TO-MIND-MAP-RANKING-EXPERIMENT.md",
+      "?? docs/seo/experiments/",
+      "?? public/samples/",
+      "?? scripts/create-pdf-seo-sample.py",
+      "?? scripts/seo-experiment.mjs",
+      "?? src/components/site/PdfLandingTool.tsx"
+    ]
+  },
+  "deploymentId": null,
+  "artifacts": {
+    "html": "2026-08-16T09-52-00-852Z-live-baseline.html",
+    "screenshot": "2026-08-16T09-52-00-852Z-live-baseline.png"
+  },
+  "hashes": {
+    "htmlSha256": "29d0cfebef81d7a1a32144126885e94346bd6e0a9f9eddcfb96a9f18fa26c52a",
+    "schemaSha256": "0ac75ebc2dbce0d18bbc7a3e36111b2622499fa6ed56514987bc4208d63a5d37"
+  },
+  "seo": {
+    "title": "Text to Mind Map — AI that builds multi-level maps automatically | MindMapAny",
+    "metaDescription": "Try our free text to mind map tool. Paste long text, notes or meeting minutes and the AI categorises them into an editable, exportable multi-level map.",
+    "canonical": "https://mindmapany.com/tools/text-to-mind-map",
+    "robots": null,
+    "h1": [
+      "Text to mind map"
+    ],
+    "h2": [
+      "Not just a summary — a structure you can keep using",
+      "Three steps",
+      "Frequently asked questions",
+      "Turn your content into a clear map",
+      "Related guides"
+    ],
+    "schema": [
+      "[{\"@context\":\"https://schema.org\",\"@type\":\"SoftwareApplication\",\"name\":\"Text to mind map\",\"applicationCategory\":\"ProductivityApplication\",\"operatingSystem\":\"Web\",\"url\":\"https://mindmapany.com/tools/text-to-mind-map\",\"description\":\"Try our free text to mind map tool. Paste long text, notes or meeting minutes and the AI categorises them into an editable, exportable multi-level map.\",\"offers\":{\"@type\":\"Offer\",\"price\":\"0\",\"priceCurrency\":\"USD\",\"description\":\"Free trial\"}},{\"@context\":\"https://schema.org\",\"@type\":\"BreadcrumbList\",\"itemListElement\":[{\"@type\":\"ListItem\",\"position\":1,\"name\":\"Home\",\"item\":\"https://mindmapany.com/\"},{\"@type\":\"ListItem\",\"position\":2,\"name\":\"Tools\",\"item\":\"https://mindmapany.com/tools\"},{\"@type\":\"ListItem\",\"position\":3,\"name\":\"Text to mind map\",\"item\":\"https://mindmapany.com/tools/text-to-mind-map\"}]},{\"@context\":\"https://schema.org\",\"@type\":\"FAQPage\",\"mainEntity\":[{\"@type\":\"Question\",\"name\":\"How much text can I paste at once?\",\"acceptedAnswer\":{\"@type\":\"Answer\",\"text\":\"The limit depends on your plan and the generation depth you choose — see the pricing page for the exact character allowance. Longer content costs more credits.\"}},{\"@type\":\"Question\",\"name\":\"Does it handle text that mixes languages?\",\"acceptedAnswer\":{\"@type\":\"Answer\",\"text\":\"Yes. You can specify the output language separately and the node language will be made consistent.\"}},{\"@type\":\"Question\",\"name\":\"Can I add child nodes afterwards?\",\"acceptedAnswer\":{\"@type\":\"Answer\",\"text\":\"Yes. Select a node and press Tab for a child node, or Enter for a sibling.\"}}]}]"
+    ]
+  }
+}

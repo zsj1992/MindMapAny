@@ -46,7 +46,9 @@ export const ALL_TOOL_PAGES: ToolPage[] = [
     faq: [
       { question: 'Can scanned PDFs be turned into mind maps?', answer: 'The current version supports PDFs whose text can be selected and copied. OCR for scanned documents is planned for a future release.' },
       { question: 'Why do the nodes carry page numbers?', answer: 'Page numbers are recorded while the document is being chunked. The model only references chunks that already exist, so each node can be resolved back to its page.' },
-      { question: 'Is my PDF stored permanently?', answer: 'The generation pipeline reads the file only to process your request. The structured result enters your personal map library only when you choose to save the map.' },
+      { question: 'Is my PDF stored permanently?', answer: 'The uploaded PDF is read to process the request and is not kept as a file. The generated structured map is automatically saved to your personal map library so you can edit it later.' },
+      { question: 'What are the PDF size and page limits?', answer: 'Uploads can be up to 20MB, and the parser processes up to 200 pages from a text-based PDF.' },
+      { question: 'Can I edit and export the generated map?', answer: 'Yes. Rename or add nodes, collapse branches, and export the finished map as PNG, SVG or Markdown.' },
     ],
   },
   {

@@ -17,6 +17,8 @@
     "extension:test": "node scripts/test-extension.mjs",
     "gsc": "node --env-file-if-exists=.env.local scripts/gsc-pull.mjs",
     "gsc:auth": "node --env-file-if-exists=.env.local scripts/gsc-pull.mjs auth",
+    "seo:experiment": "node scripts/seo-experiment.mjs",
+    "seo:pdf-sample": "uv run --with reportlab --with pypdf --with pdfplumber python scripts/create-pdf-seo-sample.py",
     "extension:auth": "node --env-file-if-exists=.env.local scripts/publish-extension.mjs auth",
     "extension:publish": "node --env-file-if-exists=.env.local scripts/publish-extension.mjs publish"
   },
