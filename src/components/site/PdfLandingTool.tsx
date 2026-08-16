@@ -138,7 +138,7 @@ export function PdfLandingTool() {
         </div>
         <h2 className="mt-4 text-xl font-bold tracking-tight">Upload a PDF and build the map here</h2>
         <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-text-muted">Drop a text-based PDF or choose one from your device. After generation, you can inspect page references, edit branches, collapse levels and export the result.</p>
-        <button type="button" className="btn btn-primary mt-5 h-11 px-6" onClick={() => fileRef.current?.click()}>Choose PDF</button>
+        <button type="button" className="btn btn-primary mt-5 h-11 px-6" onClick={() => fileRef.current?.click()}>Convert PDF to mind map <span aria-hidden="true">→</span></button>
         <p className="mt-3 text-xs text-text-subtle">Up to 20MB and 200 pages · scanned PDFs need OCR and are not supported yet</p>
         {!session?.user && <p className="mt-2 text-xs text-text-subtle">A free account is required to control model costs. If you choose a file first, it stays in this browser while you sign in.</p>}
       </div>

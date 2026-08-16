@@ -1,6 +1,6 @@
 import type { Metadata } from 'next';
 import { notFound } from 'next/navigation';
-import { Workspace } from '@/components/Workspace';
+import { PendingInputStarter } from '@/components/PendingInputStarter';
 import { requireUser } from '@/lib/auth/require-user';
 import { appLocale } from '@/lib/i18n/server';
 import { localizedSourceCopy, SOURCE_COPY, SOURCE_SLUGS, type SourceCopy } from '@/lib/sources';
@@ -41,7 +41,7 @@ export default async function SourcePage({ params }: Props) {
   const copy = localizedSourceCopy(found, await appLocale());
 
   return (
-    <Workspace
+    <PendingInputStarter
       plan={plan}
       mode={copy.slug}
       title={copy.title}

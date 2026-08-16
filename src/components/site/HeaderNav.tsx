@@ -203,6 +203,7 @@ function ToolsMenu({ locale }: { locale: Locale }) {
                   {[
                     { href: GROUP_HREFS[1][0], icon: GROUP_ICONS[1][0], label: copy.toolLabels[4] },
                     { href: GROUP_HREFS[0][0], icon: GROUP_ICONS[0][0], label: copy.toolLabels[0] },
+                    { href: GROUP_HREFS[1][2], icon: GROUP_ICONS[1][2], label: copy.toolLabels[6] },
                   ].map((item) => (
                     <TrackedLink
                       key={item.href}

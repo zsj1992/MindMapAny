@@ -41,6 +41,8 @@ export interface WorkspaceProps {
   /** Text entered on a public landing page and resumed after sign-in. */
   initialText?: string;
   initialUrl?: string;
+  /** 带着输入进来时直接开跑，不再要求用户在工作台里第二次点生成 */
+  autoStart?: boolean;
 }
 
 type StreamEvent =
@@ -48,7 +50,7 @@ type StreamEvent =
   | ({ type: 'done' } & GenerateResponse & { savedId?: string; saveFailed?: string })
   | { type: 'error'; code: string; message: string };
 
-export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, copy, plan = null, extensionToken, initialFile, initialText, initialUrl }: WorkspaceProps) {
+export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, copy, plan = null, extensionToken, initialFile, initialText, initialUrl, autoStart }: WorkspaceProps) {
   const router = useRouter();
   const map = useEditor((s) => s.map);
   const dirty = useEditor((s) => s.dirty);
@@ -254,6 +256,33 @@ export function Workspace({ initialMap, mapId, mode = 'all', title, subtitle, co
       setSaving(false);
     }
   }, [map, savedId, sourceKind, markSaved, t]);
+
+  /*
+   * 从落地页带着输入跳进来时，直接开始生成。
+   *
+   * 没有这一步的话，用户在落地页点了「转成思维导图」，到了工作台还得再点一次
+   * 「生成」—— 同一个意图被要求确认两次，中间还隔着一屏空白。
+   *
+   * 只跑一次：ref 而不是 state，避免任何重渲染导致重复扣费。
+   */
+  const autoStarted = useRef(false);
+  useEffect(() => {
+    if (!autoStart || autoStarted.current) return;
+    if (!initialText && !initialUrl) return;
+    autoStarted.current = true;
+    // 同上：generate 内部会立刻 setBusy，同步调用会触发级联渲染
+    const timer = window.setTimeout(() => {
+      void generate({
+        ...(initialUrl ? { url: initialUrl } : {}),
+        ...(initialText ? { text: initialText } : {}),
+        language: 'auto',
+        depth: 'standard',
+        purpose: 'general',
+        tier: 'fast',
+      });
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, [autoStart, initialText, initialUrl, generate]);
 
   const share = useCallback(async () => {
     const id = savedId ?? (await save());

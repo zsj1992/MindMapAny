@@ -7,6 +7,7 @@ import { useSession } from '@/lib/auth/client';
 import type { Plan } from '@/lib/credits';
 import { trackEvent } from '@/lib/analytics';
 import { parseVideoId } from '@/lib/extract/youtube';
+import { storePendingInput } from '@/components/PendingInputStarter';
 import { useEditor } from '@/store/editor';
 
 /**
@@ -70,12 +71,12 @@ export function YoutubeLandingTool() {
     if (!pending) return;
     const timer = window.setTimeout(() => {
       resetLandingEditor();
-      setUrl(pending);
-      setStarted(true);
       trackEvent('youtube_landing_input_resumed', { source: 'sign_in' });
+      if (storePendingInput({ kind: 'url', value: pending })) router.push('/app/youtube');
+      else setUrl(pending);
     }, 0);
     return () => window.clearTimeout(timer);
-  }, [session?.user]);
+  }, [session?.user, router]);
 
   const updateUrl = (value: string, source: 'typed' | 'example') => {
     setUrl(value);
@@ -94,12 +95,24 @@ export function YoutubeLandingTool() {
       return;
     }
     trackEvent('youtube_landing_generate_clicked', { signed_in: Boolean(session?.user) });
+
+    /*
+     * 收完链接就交给工作台，不在落地页里生成。
+     *
+     * 之前是把整个工作台嵌进这张页面，结果它自带的输入界面又要求点一次生成 ——
+     * 一个意图两次点击，中间还隔着一屏空画布。而那个嵌入的画布本身也一直有问题：
+     * 容器高度、视口适配都得单独修一套，而全屏工作台那条路每天都有人走。
+     */
     if (session?.user) {
       resetLandingEditor();
-      setUrl(value);
-      setStarted(true);
+      if (!storePendingInput({ kind: 'url', value })) {
+        setError('This browser blocked session storage. Open the workbench and paste the link there.');
+        return;
+      }
+      router.push('/app/youtube');
       return;
     }
+    // 未登录：先存下来，登录后回到这里自动继续，链接不用重打一遍
     try {
       window.sessionStorage.setItem(PENDING_URL_KEY, value);
       trackEvent('youtube_landing_auth_required', { pending_url_saved: true });
@@ -194,7 +207,7 @@ export function YoutubeLandingTool() {
             session while you sign in.
           </p>
           <button type="button" className="btn btn-primary h-11 px-6" onClick={continueToGenerator}>
-            Build my mind map <span aria-hidden="true">→</span>
+            Convert YouTube to mind map <span aria-hidden="true">→</span>
           </button>
         </div>
       </div>

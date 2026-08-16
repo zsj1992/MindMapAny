@@ -164,7 +164,7 @@ export function TextLandingTool() {
         </div>
         <div className="mt-5 flex flex-wrap items-center justify-between gap-3 border-t pt-5" style={{ borderColor: 'var(--border)' }}>
           <p className="max-w-2xl text-xs leading-5 text-text-subtle">A free account is required to control model costs. If you paste first, the text stays only in this browser session while you sign in.</p>
-          <button type="button" className="btn btn-primary h-11 px-6" onClick={continueToGenerator}>Build my mind map <span aria-hidden="true">→</span></button>
+          <button type="button" className="btn btn-primary h-11 px-6" onClick={continueToGenerator}>Convert text to mind map <span aria-hidden="true">→</span></button>
         </div>
       </div>
       {error && <p role="alert" className="mt-3 rounded-lg bg-red-50 px-3 py-2 text-xs text-red-700 dark:bg-red-950/40 dark:text-red-300">{error}</p>}
