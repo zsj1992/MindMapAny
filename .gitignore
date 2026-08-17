@@ -53,3 +53,4 @@ next-env.d.ts
 
 # GSC 原始快照：可由 npm run gsc 重新生成，行数多，不进版本库
 docs/seo/data/*.json
+

@@ -47,11 +47,26 @@ export function waffoProductIdFor(plan: Exclude<Plan, 'free'>, period: 'monthly'
 
 let cached: WaffoPancake | null = null;
 
+/**
+ * 按环境取私钥。
+ *
+ * 两把密钥各存各的，由 WAFFO_ENV 决定用哪把 —— 切换环境只改一个变量。
+ * 之前测试和生产共用一个 WAFFO_PRIVATE_KEY，结果出现过「生产密钥配着测试
+ * 环境」的错配：密钥换了、环境忘了换，创建会话直接 403。两个变量必须
+ * 同步修改的设计，迟早会被人只改一半。
+ *
+ * 仍然认单个 WAFFO_PRIVATE_KEY，作为尚未拆分时的兼容路径。
+ */
+function privateKeyForEnv(): string | undefined {
+  const specific = waffoTestMode() ? process.env.WAFFO_PRIVATE_KEY_TEST : process.env.WAFFO_PRIVATE_KEY_PROD;
+  return specific || process.env.WAFFO_PRIVATE_KEY;
+}
+
 /** 私钥缺失时返回 null，让调用方回退到 Creem，而不是把结账整个打挂 */
 export function waffoClient(): WaffoPancake | null {
   if (cached) return cached;
   const merchantId = process.env.WAFFO_MERCHANT_ID;
-  const privateKey = process.env.WAFFO_PRIVATE_KEY;
+  const privateKey = privateKeyForEnv();
   if (!merchantId || !privateKey) return null;
   try {
     cached = new WaffoPancake({ merchantId, privateKey });
