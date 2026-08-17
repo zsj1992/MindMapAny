@@ -30,8 +30,14 @@ interface WaffoWebhookEvent {
     orderId?: string;
     buyerEmail?: string;
     productName?: string;
+    /**
+     * 实际投递里叫 orderMetadata，不是文档写的 metadata。
+     * 两个都读：文档和实现哪天对齐了也不会再坏一次。
+     */
+    orderMetadata?: Record<string, string>;
     metadata?: Record<string, string>;
     orderMerchantExternalId?: string;
+    merchantProvidedBuyerIdentity?: string;
   };
   metadata?: Record<string, string>;
 }
@@ -71,13 +77,13 @@ export async function POST(req: Request) {
   }
 
   try {
-    const meta = event.data?.metadata ?? event.metadata ?? {};
+    const meta = event.data?.orderMetadata ?? event.data?.metadata ?? event.metadata ?? {};
     // 创建会话时两条线索都写了；metadata 丢了还有订单侧的 external id
     const userId = meta.userId ?? event.data?.orderMerchantExternalId ?? null;
     const plan = normalisePlan(meta.plan);
     const details = {
       userId,
-      email: event.data?.buyerEmail ?? null,
+      email: event.data?.buyerEmail ?? event.data?.merchantProvidedBuyerIdentity ?? null,
       customerId: null,
       subscriptionId: event.data?.orderId ?? null,
       productId: null,
