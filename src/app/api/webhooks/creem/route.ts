@@ -53,7 +53,7 @@ export async function POST(req: Request) {
       const plan = trustedDetails.productId ? planForProduct(trustedDetails.productId) : null;
       if (!plan) return await unresolvedGrant(event.id, event.eventType, 'unknown_product', trustedDetails);
       const granted = await grantSubscription({ ...trustedDetails, plan, status: event.eventType });
-      if (!granted) return await unresolvedGrant(event.id, event.eventType, 'profile_not_found', trustedDetails);
+      if (!granted.ok) return await unresolvedGrant(event.id, event.eventType, 'profile_not_found', trustedDetails);
     } else if (action === 'revoke') {
       const revoked = await revokeSubscription({ ...trustedDetails, status: event.eventType });
       if (!revoked) {

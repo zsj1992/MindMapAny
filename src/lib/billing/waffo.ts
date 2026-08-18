@@ -109,3 +109,27 @@ export async function createWaffoCheckout(opts: {
 
   return { url: session.checkoutUrl, sessionId: session.sessionId };
 }
+
+/**
+ * 取消一笔订阅订单。
+ *
+ * Waffo 对已激活的订阅返回 `canceling` 而不是 `canceled` —— 意思是
+ * 「本期结束后不再续费」，用户已经付过的这个周期照常能用。真正的
+ * `subscription.canceled` 事件要等周期结束才发过来，降级由那条 webhook
+ * 负责。所以这里**不能**顺手把套餐改成 free：那等于用户付了钱、
+ * 点一下取消就立刻失去剩下的服务。
+ *
+ * 取消失败返回 false 而不抛错：调用方（升级换挡、用户自助退订）各有各的
+ * 补救方式，不该被一个第三方请求的失败连带打挂。
+ */
+export async function cancelWaffoSubscription(orderId: string): Promise<'canceled' | 'canceling' | null> {
+  const client = waffoClient();
+  if (!client) return null;
+  try {
+    const result = await client.orders.cancelSubscription({ orderId });
+    return result.status === 'canceled' ? 'canceled' : 'canceling';
+  } catch (error) {
+    console.error('[waffo] cancel_failed', { orderId, error });
+    return null;
+  }
+}

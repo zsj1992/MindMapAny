@@ -1,4 +1,5 @@
 import Link from 'next/link';
+import { SubscriptionPanel } from '@/components/site/SubscriptionPanel';
 import { marketingCopy } from '@/lib/i18n/marketing';
 import { localizedPath } from '@/lib/i18n/routes';
 import type { Locale } from '@/lib/i18n/locales';
@@ -15,20 +16,22 @@ export function BillingContent({ locale }: { locale: Locale }) {
           <h1 className="mt-4 text-3xl font-bold tracking-[-0.03em] sm:text-4xl">{copy.heading}</h1>
           <p className="mt-4 text-base leading-8 text-text-muted">{copy.intro}</p>
 
-          <div className="mt-7 rounded-2xl border bg-bg-subtle p-5">
-            <ol className="space-y-3 text-sm leading-6 text-text-muted">
-              {copy.steps.map((step, index) => (
-                <li key={step}>
-                  <strong className="text-text">{index + 1}.</strong> {step}
-                </li>
-              ))}
-            </ol>
-          </div>
+          {/* 登录的人直接看到自己的套餐和取消按钮；游客看到的还是这份说明。
+              说明本身作为 children 交给面板，由它决定还显不显示 —— 已经登录的人
+              不需要再读一遍「怎么登录」。 */}
+          <SubscriptionPanel locale={locale}>
+            <div className="mt-7 rounded-2xl border bg-bg-subtle p-5">
+              <ol className="space-y-3 text-sm leading-6 text-text-muted">
+                {copy.steps.map((step, index) => (
+                  <li key={step}>
+                    <strong className="text-text">{index + 1}.</strong> {step}
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </SubscriptionPanel>
 
-          <div className="mt-7 flex flex-col gap-3 sm:flex-row">
-            <a href="https://creem.io/my-orders/login" target="_blank" rel="noopener noreferrer" className="btn btn-primary h-12 px-6">
-              {copy.openPortal} <span aria-hidden="true">↗</span>
-            </a>
+          <div className="mt-7">
             <a href="mailto:support@mindmapany.com?subject=MindMapAny%20subscription%20support" className="btn btn-secondary h-12 px-6">
               {copy.contactBilling}
             </a>

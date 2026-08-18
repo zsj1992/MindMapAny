@@ -138,11 +138,26 @@ export interface MarketingCopy {
     heading: string;
     intro: string;
     steps: string[];
-    openPortal: string;
     contactBilling: string;
     afterCancel: string;
     refundLink: string;
     refundTail: string;
+    /** 登录后才出现的真实订阅面板 */
+    manage: {
+      signedOutHint: string;
+      signInAction: string;
+      freeState: string;
+      freeAction: string;
+      planLabel: string;
+      statusActive: string;
+      statusCanceling: string;
+      cancelAction: string;
+      cancelBusy: string;
+      cancelConfirm: string;
+      cancelDone: string;
+      cancelFailed: string;
+      keepAction: string;
+    };
   };
   pricing: {
     metaTitle: string;
@@ -152,6 +167,11 @@ export interface MarketingCopy {
     intro: string;
     badge: string;
     mostPopular: string;
+    /** 登录后才会出现的套餐状态文案 */
+    currentPlan: string;
+    currentPlanNote: string;
+    switchNote: string;
+    manageAction: string;
     /** 顶部计费周期切换 */
     toggleMonthly: string;
     toggleAnnual: string;
@@ -190,25 +210,39 @@ const en: MarketingCopy = {
     ],
     sendEmail: 'Send email',
     manageHeading: 'Manage or cancel your subscription',
-    manageBody: 'Use your purchase email to open the secure Creem Customer Portal — no waiting on a human.',
+    manageBody: 'Sign in and cancel in one click on your subscription page — no portal, no waiting on a human.',
     manageAction: 'Go to subscription management',
   },
   billing: {
     metaTitle: 'Subscription management',
-    metaDescription: 'Open the Creem Customer Portal to manage your MindMapAny subscription, payment method, invoices and cancellation.',
+    metaDescription: 'Manage your MindMapAny subscription: check your plan and cancel at any time, in one click.',
     eyebrow: 'Secure self-service',
     heading: 'Manage your subscription',
-    intro: 'The Creem Customer Portal lets you view orders and invoices, update your payment method, and cancel at any time. Use the email you entered when you purchased MindMapAny to get a secure sign-in link.',
+    intro: 'Sign in with the account you subscribed with. Your plan and a cancel button appear right here — no portal, no waiting on a human. Cancelling always keeps your access until the end of the period you have already paid for.',
     steps: [
-      'Click the button below to open the Creem Customer Portal',
-      'Enter the email you used at purchase',
-      'Use the secure link in your inbox to manage or cancel the subscription',
+      'Sign in with the account you subscribed with',
+      'Your current plan appears on this page',
+      'Cancel in one click, or write to us if anything looks wrong',
     ],
-    openPortal: 'Open Creem Customer Portal',
     contactBilling: 'Contact billing support',
     afterCancel: 'After cancelling you normally keep access until the end of the period you have already paid for. See our',
     refundLink: 'Refund & Cancellation Policy',
     refundTail: 'for refund terms.',
+    manage: {
+      signedOutHint: 'Sign in to see your plan and cancel.',
+      signInAction: 'Sign in',
+      freeState: 'You are on the Free plan, so there is nothing to cancel.',
+      freeAction: 'See plans',
+      planLabel: 'Your plan',
+      statusActive: 'Renews automatically at the end of each billing period.',
+      statusCanceling: 'Cancelled. You keep full access until the end of the period you have already paid for, then the account returns to Free.',
+      cancelAction: 'Cancel subscription',
+      cancelBusy: 'Cancelling…',
+      cancelConfirm: 'Cancel your subscription? You keep everything until the end of the period you have already paid for.',
+      cancelDone: 'Cancelled. You keep full access until the end of the current period.',
+      cancelFailed: 'We could not cancel it automatically. Email support@mindmapany.com and we will do it for you — nothing will be charged in the meantime.',
+      keepAction: 'Keep my plan',
+    },
   },
 
   toolPage: {
@@ -279,7 +313,7 @@ const en: MarketingCopy = {
         labels: ['Contact support', 'Manage subscription', 'Privacy Policy', 'Terms of Service', 'Refunds & cancellation'],
       },
     ],
-    legal: 'Payments processed by Creem as Merchant of Record',
+    legal: 'Payments processed by Waffo as Merchant of Record',
   },
   home: {
     metaTitle: 'MindMapAny — Turn any content into a clear, traceable mind map',
@@ -462,6 +496,10 @@ const en: MarketingCopy = {
       'All prices are in USD. Pay monthly to stay flexible, or pay annually and save 40%. Taxes are shown clearly before checkout.',
     badge: '30 free credits on signup — try every available input type',
     mostPopular: 'MOST POPULAR',
+    currentPlan: 'Your current plan',
+    currentPlanNote: 'Renews automatically. You can cancel any time.',
+    switchNote: 'Switching cancels your current plan automatically — you are never billed for two.',
+    manageAction: 'Manage subscription',
     toggleMonthly: 'Monthly',
     toggleAnnual: 'Annual',
     saveBadge: 'SAVE {pct}%',
@@ -480,7 +518,7 @@ const en: MarketingCopy = {
     footnoteEmail:
       'Please check out with the same email as your MindMapAny account so your plan activates automatically after payment.',
     footnoteRenewal:
-      'Subscriptions renew automatically for the billing period you choose until you cancel. Payments are processed by Creem as Merchant of Record.',
+      'Subscriptions renew automatically for the billing period you choose until you cancel. Payments are processed by Waffo as Merchant of Record.',
     footnoteCancel: 'You can cancel any time from',
     footnoteRefund: 'Refund & Cancellation Policy',
     plans: {
@@ -534,21 +572,35 @@ const zhCN: MarketingCopy = {
     ],
     sendEmail: '发送邮件',
     manageHeading: '管理或取消订阅',
-    manageBody: '用购买时的邮箱打开 Creem 客户门户，安全自助，不用等人工。',
+    manageBody: '登录后在订阅页一键取消，不用跳门户，也不用等人工。',
     manageAction: '前往订阅管理',
   },
   billing: {
     metaTitle: '订阅管理',
-    metaDescription: '打开 Creem 客户门户，管理 MindMapAny 的订阅、支付方式、发票与取消。',
+    metaDescription: '管理你的 MindMapAny 订阅：查看当前套餐，随时一键取消。',
     eyebrow: '安全自助',
     heading: '管理你的订阅',
-    intro: 'Creem 客户门户可以查看订单和发票、更新支付方式，并随时取消。用你购买 MindMapAny 时填写的邮箱获取安全登录链接。',
-    steps: ['点击下方按钮打开 Creem 客户门户', '输入你购买时使用的邮箱', '用收件箱里的安全链接管理或取消订阅'],
-    openPortal: '打开 Creem 客户门户',
+    intro: '用订阅时的账号登录，当前套餐和取消按钮就直接显示在这个页面上，不用跳门户，也不用等人工。取消后，你已经付过费的这个周期仍然可以正常使用到期末。',
+    steps: ['用订阅时用的账号登录', '当前套餐会显示在本页', '一键取消；如果信息不对，直接写信给我们'],
     contactBilling: '联系账单支持',
     afterCancel: '取消后，通常你仍可使用到已付费周期结束。退款条款见我们的',
     refundLink: '退款与取消政策',
     refundTail: '。',
+    manage: {
+      signedOutHint: '登录后即可查看套餐并取消订阅。',
+      signInAction: '登录',
+      freeState: '你当前是免费版，没有需要取消的订阅。',
+      freeAction: '查看套餐',
+      planLabel: '当前套餐',
+      statusActive: '每个计费周期结束时自动续费。',
+      statusCanceling: '已取消。你已付费的这个周期内一切照常可用，到期后账号回到免费版。',
+      cancelAction: '取消订阅',
+      cancelBusy: '正在取消…',
+      cancelConfirm: '确定取消订阅吗？你已经付费的这个周期内，所有功能都还能正常使用。',
+      cancelDone: '已取消。本计费周期内仍可正常使用全部功能。',
+      cancelFailed: '自动取消没有成功。请写信到 support@mindmapany.com，我们帮你处理；在此期间不会产生新的扣款。',
+      keepAction: '继续保留',
+    },
   },
 
   toolPage: {
@@ -618,7 +670,7 @@ const zhCN: MarketingCopy = {
         labels: ['联系客服', '管理订阅', '隐私政策', '服务条款', '退款与取消'],
       },
     ],
-    legal: '付款由 Creem 作为登记商户（Merchant of Record）处理',
+    legal: '付款由 Waffo 作为登记商户（Merchant of Record）处理',
   },
   home: {
     metaTitle: 'MindMapAny — 把任何内容变成清晰、可溯源的思维导图',
@@ -799,6 +851,10 @@ const zhCN: MarketingCopy = {
     intro: '所有价格均以美元计价。按月付款更灵活，按年付款可省 40%。结账前会明确列出税费。',
     badge: '注册即送 30 积分 —— 所有输入类型都能试',
     mostPopular: '最受欢迎',
+    currentPlan: '你的当前套餐',
+    currentPlanNote: '到期自动续费，随时可以取消。',
+    switchNote: '换套餐时会自动取消当前订阅，不会被重复扣款。',
+    manageAction: '管理订阅',
     toggleMonthly: '月付',
     toggleAnnual: '年付',
     saveBadge: '省 {pct}%',
@@ -815,7 +871,7 @@ const zhCN: MarketingCopy = {
     teamAction: '联系客服',
     footnoteEmail: '请使用与 MindMapAny 账号相同的邮箱结账，付款后套餐才会自动生效。',
     footnoteRenewal:
-      '订阅会按你选择的计费周期自动续费，直到你取消为止。付款由 Creem 作为登记商户（Merchant of Record）处理。',
+      '订阅会按你选择的计费周期自动续费，直到你取消为止。付款由 Waffo 作为登记商户（Merchant of Record）处理。',
     footnoteCancel: '你可以随时在',
     footnoteRefund: '退款与取消政策',
     plans: {
@@ -870,21 +926,35 @@ const ja: MarketingCopy = {
     ],
     sendEmail: 'メールを送る',
     manageHeading: 'サブスクリプションの管理・解約',
-    manageBody: 'ご購入時のメールアドレスで Creem カスタマーポータルを開けます。担当者を待つ必要はありません。',
+    manageBody: 'ログインすれば、サブスクリプションのページからワンクリックで解約できます。担当者を待つ必要はありません。',
     manageAction: 'サブスクリプション管理へ',
   },
   billing: {
     metaTitle: 'サブスクリプション管理',
-    metaDescription: 'Creem カスタマーポータルで MindMapAny のサブスクリプション、支払い方法、請求書、解約を管理できます。',
+    metaDescription: 'MindMapAny のサブスクリプション管理：現在のプランを確認し、いつでもワンクリックで解約できます。',
     eyebrow: '安全なセルフサービス',
     heading: 'サブスクリプションの管理',
-    intro: 'Creem カスタマーポータルでは、注文と請求書の確認、支払い方法の変更、いつでも解約ができます。MindMapAny のご購入時に入力したメールアドレスで安全なログインリンクを受け取ってください。',
-    steps: ['下のボタンから Creem カスタマーポータルを開きます', 'ご購入時に使用したメールアドレスを入力します', '受信したメールの安全なリンクから管理または解約します'],
-    openPortal: 'Creem カスタマーポータルを開く',
+    intro: 'ご登録時のアカウントでログインしてください。現在のプランと解約ボタンがこのページに表示されます。ポータルへの移動も、担当者を待つ必要もありません。解約しても、すでにお支払い済みの期間の終わりまでは引き続きご利用いただけます。',
+    steps: ['ご登録時のアカウントでログイン', '現在のプランがこのページに表示されます', 'ワンクリックで解約。内容に相違があればご連絡ください'],
     contactBilling: '請求サポートに問い合わせる',
     afterCancel: '解約後も、通常はお支払い済みの期間が終わるまでご利用いただけます。返金の条件は',
     refundLink: '返金・キャンセルポリシー',
     refundTail: 'をご覧ください。',
+    manage: {
+      signedOutHint: 'ログインするとプランの確認と解約ができます。',
+      signInAction: 'ログイン',
+      freeState: '現在は無料プランのため、解約するものはありません。',
+      freeAction: 'プランを見る',
+      planLabel: '現在のプラン',
+      statusActive: '各請求期間の終わりに自動更新されます。',
+      statusCanceling: '解約済みです。お支払い済みの期間の終わりまではすべての機能をご利用いただけ、その後は無料プランに戻ります。',
+      cancelAction: 'サブスクリプションを解約',
+      cancelBusy: '解約しています…',
+      cancelConfirm: '解約しますか？すでにお支払い済みの期間の終わりまでは、すべての機能をそのままご利用いただけます。',
+      cancelDone: '解約しました。今の請求期間の終わりまではすべての機能をご利用いただけます。',
+      cancelFailed: '自動での解約ができませんでした。support@mindmapany.com までご連絡ください。こちらで対応いたします。その間、新たな請求は発生しません。',
+      keepAction: 'プランを継続する',
+    },
   },
 
   nav: {
@@ -933,7 +1003,7 @@ const ja: MarketingCopy = {
         labels: ['サポートに問い合わせ', 'サブスクリプション管理', 'プライバシーポリシー', '利用規約', '返金とキャンセル'],
       },
     ],
-    legal: '決済は Merchant of Record である Creem が処理します',
+    legal: '決済は Merchant of Record である Waffo が処理します',
   },
   home: {
     metaTitle: 'MindMapAny — あらゆる内容を、出典まで辿れる明快なマインドマップに',
@@ -1137,6 +1207,10 @@ const ja: MarketingCopy = {
     intro: '価格はすべて米ドル表示です。月払いなら柔軟に、年払いなら 40% お得に。税額は決済前に明示されます。',
     badge: '登録で 30 クレジット — すべての入力形式を試せます',
     mostPopular: '人気',
+    currentPlan: '現在のプラン',
+    currentPlanNote: '自動更新されます。いつでも解約できます。',
+    switchNote: 'プラン変更時に現在のサブスクリプションは自動で解約され、二重請求は発生しません。',
+    manageAction: 'サブスクリプションの管理',
     toggleMonthly: '月払い',
     toggleAnnual: '年払い',
     saveBadge: '{pct}% おトク',
@@ -1153,7 +1227,7 @@ const ja: MarketingCopy = {
     teamAction: 'サポートに問い合わせ',
     footnoteEmail: 'MindMapAny のアカウントと同じメールアドレスで決済してください。支払い後にプランが自動で有効になります。',
     footnoteRenewal:
-      'サブスクリプションは、解約するまで選択した請求期間ごとに自動更新されます。決済は Merchant of Record である Creem が処理します。',
+      'サブスクリプションは、解約するまで選択した請求期間ごとに自動更新されます。決済は Merchant of Record である Waffo が処理します。',
     footnoteCancel: '解約はいつでも',
     footnoteRefund: '返金・キャンセルポリシー',
     plans: {
@@ -1207,21 +1281,35 @@ const ko: MarketingCopy = {
     ],
     sendEmail: '이메일 보내기',
     manageHeading: '구독 관리 또는 해지',
-    manageBody: '구매하실 때 쓴 이메일로 Creem 고객 포털을 여세요. 상담원을 기다릴 필요가 없습니다.',
+    manageBody: '로그인하면 구독 페이지에서 한 번에 해지할 수 있습니다. 상담원을 기다릴 필요가 없습니다.',
     manageAction: '구독 관리로 이동',
   },
   billing: {
     metaTitle: '구독 관리',
-    metaDescription: 'Creem 고객 포털에서 MindMapAny 구독과 결제 수단, 영수증, 해지를 관리하세요.',
+    metaDescription: 'MindMapAny 구독 관리: 현재 플랜을 확인하고 언제든지 한 번에 해지할 수 있습니다.',
     eyebrow: '안전한 셀프 서비스',
     heading: '구독 관리하기',
-    intro: 'Creem 고객 포털에서는 주문과 영수증을 확인하고 결제 수단을 바꾸며 언제든 해지할 수 있습니다. MindMapAny를 구매할 때 입력한 이메일로 안전한 로그인 링크를 받으세요.',
-    steps: ['아래 버튼을 눌러 Creem 고객 포털을 엽니다', '구매할 때 사용한 이메일을 입력합니다', '받은 편지함의 안전한 링크로 관리하거나 해지합니다'],
-    openPortal: 'Creem 고객 포털 열기',
+    intro: '구독하신 계정으로 로그인하세요. 현재 플랜과 해지 버튼이 이 페이지에 바로 표시됩니다. 별도 포털도, 상담원을 기다릴 필요도 없습니다. 해지하더라도 이미 결제하신 기간이 끝날 때까지는 그대로 이용하실 수 있습니다.',
+    steps: ['구독하신 계정으로 로그인', '현재 플랜이 이 페이지에 표시됩니다', '한 번에 해지하거나, 내용이 다르면 저희에게 알려 주세요'],
     contactBilling: '결제 지원 문의',
     afterCancel: '해지한 뒤에도 보통 이미 결제한 기간이 끝날 때까지 이용할 수 있습니다. 환불 조건은',
     refundLink: '환불 및 취소 정책',
     refundTail: '을 참고하세요.',
+    manage: {
+      signedOutHint: '로그인하면 플랜을 확인하고 해지할 수 있습니다.',
+      signInAction: '로그인',
+      freeState: '현재 무료 플랜이므로 해지할 구독이 없습니다.',
+      freeAction: '플랜 보기',
+      planLabel: '현재 플랜',
+      statusActive: '각 결제 주기가 끝날 때 자동으로 갱신됩니다.',
+      statusCanceling: '해지되었습니다. 이미 결제하신 기간이 끝날 때까지는 모든 기능을 그대로 사용하실 수 있으며, 이후 무료 플랜으로 전환됩니다.',
+      cancelAction: '구독 해지',
+      cancelBusy: '해지하는 중…',
+      cancelConfirm: '구독을 해지하시겠습니까? 이미 결제하신 기간이 끝날 때까지는 모든 기능을 그대로 사용하실 수 있습니다.',
+      cancelDone: '해지되었습니다. 이번 결제 주기가 끝날 때까지는 모든 기능을 사용하실 수 있습니다.',
+      cancelFailed: '자동 해지에 실패했습니다. support@mindmapany.com 으로 연락 주시면 대신 처리해 드리며, 그동안 추가 결제는 발생하지 않습니다.',
+      keepAction: '플랜 유지하기',
+    },
   },
 
   nav: {
@@ -1270,7 +1358,7 @@ const ko: MarketingCopy = {
         labels: ['고객지원 문의', '구독 관리', '개인정보 처리방침', '이용약관', '환불 및 취소'],
       },
     ],
-    legal: '결제는 등록 판매자(Merchant of Record)인 Creem이 처리합니다',
+    legal: '결제는 등록 판매자(Merchant of Record)인 Waffo가 처리합니다',
   },
   home: {
     metaTitle: 'MindMapAny — 어떤 내용이든 출처까지 되짚을 수 있는 명확한 마인드맵으로',
@@ -1472,6 +1560,10 @@ const ko: MarketingCopy = {
     intro: '모든 가격은 미국 달러 기준입니다. 월 결제는 유연하게, 연 결제는 40% 절약. 세금은 결제 전에 명확히 표시됩니다.',
     badge: '가입 시 30크레딧 — 모든 입력 형식을 시험해 보세요',
     mostPopular: '인기',
+    currentPlan: '현재 이용 중인 플랜',
+    currentPlanNote: '자동으로 갱신되며 언제든지 해지할 수 있습니다.',
+    switchNote: '플랜을 변경하면 현재 구독이 자동으로 해지되어 이중 청구되지 않습니다.',
+    manageAction: '구독 관리',
     toggleMonthly: '월간',
     toggleAnnual: '연간',
     saveBadge: '{pct}% 할인',
@@ -1488,7 +1580,7 @@ const ko: MarketingCopy = {
     teamAction: '고객지원 문의',
     footnoteEmail: 'MindMapAny 계정과 같은 이메일로 결제해 주세요. 결제 후 플랜이 자동으로 활성화됩니다.',
     footnoteRenewal:
-      '구독은 해지하기 전까지 선택한 결제 주기로 자동 갱신됩니다. 결제는 등록 판매자(Merchant of Record)인 Creem이 처리합니다.',
+      '구독은 해지하기 전까지 선택한 결제 주기로 자동 갱신됩니다. 결제는 등록 판매자(Merchant of Record)인 Waffo가 처리합니다.',
     footnoteCancel: '언제든 해지할 수 있습니다 —',
     footnoteRefund: '환불 및 취소 정책',
     plans: {
@@ -1542,21 +1634,35 @@ const es: MarketingCopy = {
     ],
     sendEmail: 'Enviar correo',
     manageHeading: 'Gestiona o cancela tu suscripción',
-    manageBody: 'Usa el correo de tu compra para abrir el Portal de Clientes de Creem, sin esperar a nadie.',
+    manageBody: 'Inicia sesión y cancela con un clic en tu página de suscripción: sin portales ni esperas.',
     manageAction: 'Ir a la gestión de la suscripción',
   },
   billing: {
     metaTitle: 'Gestión de la suscripción',
-    metaDescription: 'Abre el Portal de Clientes de Creem para gestionar tu suscripción a MindMapAny, el método de pago, las facturas y la cancelación.',
+    metaDescription: 'Gestiona tu suscripción de MindMapAny: consulta tu plan y cancela cuando quieras, con un clic.',
     eyebrow: 'Autogestión segura',
     heading: 'Gestiona tu suscripción',
-    intro: 'El Portal de Clientes de Creem te permite consultar pedidos y facturas, cambiar el método de pago y cancelar cuando quieras. Usa el correo que indicaste al comprar MindMapAny para recibir un enlace de acceso seguro.',
-    steps: ['Pulsa el botón de abajo para abrir el Portal de Clientes de Creem', 'Introduce el correo que usaste al comprar', 'Usa el enlace seguro que recibas para gestionar o cancelar la suscripción'],
-    openPortal: 'Abrir el Portal de Clientes de Creem',
+    intro: 'Inicia sesión con la cuenta con la que te suscribiste. Tu plan y el botón de cancelar aparecen aquí mismo, sin portales ni esperas. Al cancelar conservas el acceso hasta el final del periodo que ya has pagado.',
+    steps: ['Inicia sesión con la cuenta con la que te suscribiste', 'Tu plan actual aparece en esta página', 'Cancela con un clic, o escríbenos si algo no cuadra'],
     contactBilling: 'Contactar con soporte de facturación',
     afterCancel: 'Tras cancelar, normalmente conservas el acceso hasta el final del periodo que ya has pagado. Consulta nuestra',
     refundLink: 'Política de reembolso y cancelación',
     refundTail: 'para conocer las condiciones.',
+    manage: {
+      signedOutHint: 'Inicia sesión para ver tu plan y cancelar.',
+      signInAction: 'Iniciar sesión',
+      freeState: 'Estás en el plan Gratis, así que no hay nada que cancelar.',
+      freeAction: 'Ver planes',
+      planLabel: 'Tu plan',
+      statusActive: 'Se renueva automáticamente al final de cada periodo de facturación.',
+      statusCanceling: 'Cancelado. Conservas el acceso completo hasta el final del periodo que ya has pagado; después la cuenta vuelve a Gratis.',
+      cancelAction: 'Cancelar suscripción',
+      cancelBusy: 'Cancelando…',
+      cancelConfirm: '¿Cancelar tu suscripción? Conservas todo hasta el final del periodo que ya has pagado.',
+      cancelDone: 'Cancelada. Conservas el acceso completo hasta el final del periodo actual.',
+      cancelFailed: 'No hemos podido cancelarla automáticamente. Escribe a support@mindmapany.com y lo haremos por ti; mientras tanto no se cobrará nada.',
+      keepAction: 'Mantener mi plan',
+    },
   },
 
   nav: {
@@ -1605,7 +1711,7 @@ const es: MarketingCopy = {
         labels: ['Contactar con soporte', 'Gestionar suscripción', 'Política de privacidad', 'Términos del servicio', 'Reembolsos y cancelación'],
       },
     ],
-    legal: 'Pagos procesados por Creem como Merchant of Record',
+    legal: 'Pagos procesados por Waffo como Merchant of Record',
   },
   home: {
     metaTitle: 'MindMapAny — Convierte cualquier contenido en un mapa mental claro y verificable',
@@ -1810,6 +1916,10 @@ const es: MarketingCopy = {
       'Todos los precios están en dólares estadounidenses. Paga al mes para tener flexibilidad o al año y ahorra un 40%. Los impuestos se muestran con claridad antes de pagar.',
     badge: '30 créditos gratis al registrarte: prueba todos los tipos de entrada',
     mostPopular: 'MÁS POPULAR',
+    currentPlan: 'Tu plan actual',
+    currentPlanNote: 'Se renueva automáticamente. Puedes cancelar cuando quieras.',
+    switchNote: 'Al cambiar de plan cancelamos el actual automáticamente: nunca se te cobran dos.',
+    manageAction: 'Gestionar suscripción',
     toggleMonthly: 'Mensual',
     toggleAnnual: 'Anual',
     saveBadge: 'AHORRA {pct}%',
@@ -1828,7 +1938,7 @@ const es: MarketingCopy = {
     footnoteEmail:
       'Paga con el mismo correo electrónico de tu cuenta de MindMapAny para que el plan se active automáticamente tras el pago.',
     footnoteRenewal:
-      'Las suscripciones se renuevan automáticamente según el periodo de facturación que elijas hasta que las canceles. Los pagos los procesa Creem como Merchant of Record.',
+      'Las suscripciones se renuevan automáticamente según el periodo de facturación que elijas hasta que las canceles. Los pagos los procesa Waffo como Merchant of Record.',
     footnoteCancel: 'Puedes cancelar cuando quieras desde',
     footnoteRefund: 'Política de reembolso y cancelación',
     plans: {
@@ -1882,21 +1992,35 @@ const de: MarketingCopy = {
     ],
     sendEmail: 'E-Mail senden',
     manageHeading: 'Abonnement verwalten oder kündigen',
-    manageBody: 'Öffnen Sie mit Ihrer Kauf-E-Mail das sichere Creem-Kundenportal — ohne auf jemanden zu warten.',
+    manageBody: 'Melden Sie sich an und kündigen Sie mit einem Klick auf Ihrer Abo-Seite – kein Portal, kein Warten.',
     manageAction: 'Zur Abonnementverwaltung',
   },
   billing: {
     metaTitle: 'Abonnementverwaltung',
-    metaDescription: 'Öffnen Sie das Creem-Kundenportal, um Ihr MindMapAny-Abonnement, die Zahlungsart, Rechnungen und die Kündigung zu verwalten.',
+    metaDescription: 'Verwalten Sie Ihr MindMapAny-Abo: Tarif einsehen und jederzeit mit einem Klick kündigen.',
     eyebrow: 'Sichere Selbstverwaltung',
     heading: 'Ihr Abonnement verwalten',
-    intro: 'Im Creem-Kundenportal sehen Sie Bestellungen und Rechnungen, ändern die Zahlungsart und kündigen jederzeit. Verwenden Sie die beim Kauf von MindMapAny angegebene E-Mail-Adresse, um einen sicheren Anmeldelink zu erhalten.',
-    steps: ['Klicken Sie unten, um das Creem-Kundenportal zu öffnen', 'Geben Sie die beim Kauf verwendete E-Mail-Adresse ein', 'Verwalten oder kündigen Sie über den sicheren Link in Ihrem Postfach'],
-    openPortal: 'Creem-Kundenportal öffnen',
+    intro: 'Melden Sie sich mit dem Konto an, mit dem Sie abonniert haben. Ihr Tarif und die Kündigen-Schaltfläche erscheinen direkt auf dieser Seite – kein Portal, kein Warten auf einen Mitarbeiter. Nach der Kündigung bleibt der Zugang bis zum Ende des bereits bezahlten Zeitraums bestehen.',
+    steps: ['Mit dem Konto anmelden, mit dem Sie abonniert haben', 'Ihr aktueller Tarif erscheint auf dieser Seite', 'Mit einem Klick kündigen – oder schreiben Sie uns, wenn etwas nicht stimmt'],
     contactBilling: 'Support zur Abrechnung kontaktieren',
     afterCancel: 'Nach der Kündigung behalten Sie den Zugang in der Regel bis zum Ende des bereits bezahlten Zeitraums. Die Bedingungen stehen in unserer',
     refundLink: 'Rückerstattungs- und Kündigungsrichtlinie',
     refundTail: '.',
+    manage: {
+      signedOutHint: 'Melden Sie sich an, um Ihren Tarif zu sehen und zu kündigen.',
+      signInAction: 'Anmelden',
+      freeState: 'Sie nutzen den kostenlosen Tarif – es gibt nichts zu kündigen.',
+      freeAction: 'Tarife ansehen',
+      planLabel: 'Ihr Tarif',
+      statusActive: 'Verlängert sich automatisch am Ende jedes Abrechnungszeitraums.',
+      statusCanceling: 'Gekündigt. Bis zum Ende des bereits bezahlten Zeitraums bleibt der volle Zugang bestehen, danach wechselt das Konto zurück auf Kostenlos.',
+      cancelAction: 'Abo kündigen',
+      cancelBusy: 'Wird gekündigt…',
+      cancelConfirm: 'Abo wirklich kündigen? Bis zum Ende des bereits bezahlten Zeitraums bleibt alles erhalten.',
+      cancelDone: 'Gekündigt. Bis zum Ende des laufenden Zeitraums bleibt der volle Zugang bestehen.',
+      cancelFailed: 'Die automatische Kündigung hat nicht geklappt. Schreiben Sie an support@mindmapany.com, wir erledigen es für Sie – bis dahin wird nichts abgebucht.',
+      keepAction: 'Tarif behalten',
+    },
   },
 
   nav: {
@@ -1945,7 +2069,7 @@ const de: MarketingCopy = {
         labels: ['Support kontaktieren', 'Abo verwalten', 'Datenschutzerklärung', 'Nutzungsbedingungen', 'Rückerstattung und Kündigung'],
       },
     ],
-    legal: 'Zahlungen werden von Creem als Merchant of Record abgewickelt',
+    legal: 'Zahlungen werden von Waffo als Merchant of Record abgewickelt',
   },
   home: {
     metaTitle: 'MindMapAny — Aus beliebigen Inhalten eine klare, nachprüfbare Mindmap',
@@ -2150,6 +2274,10 @@ const de: MarketingCopy = {
       'Alle Preise in US-Dollar. Monatlich zahlen bleibt flexibel, jährlich zahlen spart 40%. Steuern werden vor dem Bezahlen klar ausgewiesen.',
     badge: '30 Gratis-Credits bei der Registrierung — testen Sie jedes Eingabeformat',
     mostPopular: 'AM BELIEBTESTEN',
+    currentPlan: 'Ihr aktueller Tarif',
+    currentPlanNote: 'Verlängert sich automatisch. Jederzeit kündbar.',
+    switchNote: 'Beim Wechsel wird Ihr aktueller Tarif automatisch gekündigt – doppelt zahlen Sie nie.',
+    manageAction: 'Abo verwalten',
     toggleMonthly: 'Monatlich',
     toggleAnnual: 'Jährlich',
     saveBadge: '{pct}% SPAREN',
@@ -2168,7 +2296,7 @@ const de: MarketingCopy = {
     footnoteEmail:
       'Bitte mit derselben E-Mail-Adresse bezahlen wie bei Ihrem MindMapAny-Konto, damit der Tarif nach der Zahlung automatisch aktiv wird.',
     footnoteRenewal:
-      'Abonnements verlängern sich automatisch für den gewählten Abrechnungszeitraum, bis Sie kündigen. Zahlungen werden von Creem als Merchant of Record abgewickelt.',
+      'Abonnements verlängern sich automatisch für den gewählten Abrechnungszeitraum, bis Sie kündigen. Zahlungen werden von Waffo als Merchant of Record abgewickelt.',
     footnoteCancel: 'Sie können jederzeit kündigen unter',
     footnoteRefund: 'Rückerstattungs- und Kündigungsrichtlinie',
     plans: {
@@ -2222,21 +2350,35 @@ const fr: MarketingCopy = {
     ],
     sendEmail: 'Envoyer un e-mail',
     manageHeading: 'Gérer ou résilier votre abonnement',
-    manageBody: "Ouvrez le portail client Creem avec l'e-mail de votre achat, sans attendre personne.",
+    manageBody: "Connectez-vous et résiliez en un clic depuis votre page d'abonnement : sans portail ni attente.",
     manageAction: "Aller à la gestion de l'abonnement",
   },
   billing: {
     metaTitle: "Gestion de l'abonnement",
-    metaDescription: "Ouvrez le portail client Creem pour gérer votre abonnement MindMapAny, votre moyen de paiement, vos factures et la résiliation.",
+    metaDescription: "Gérez votre abonnement MindMapAny : consultez votre formule et résiliez à tout moment, en un clic.",
     eyebrow: 'Libre-service sécurisé',
     heading: 'Gérer votre abonnement',
-    intro: "Le portail client Creem permet de consulter commandes et factures, de changer de moyen de paiement et de résilier à tout moment. Utilisez l'adresse e-mail indiquée lors de votre achat pour recevoir un lien de connexion sécurisé.",
-    steps: ['Cliquez sur le bouton ci-dessous pour ouvrir le portail client Creem', "Saisissez l'e-mail utilisé lors de l'achat", 'Utilisez le lien sécurisé reçu pour gérer ou résilier votre abonnement'],
-    openPortal: 'Ouvrir le portail client Creem',
+    intro: "Connectez-vous avec le compte utilisé lors de l'abonnement. Votre formule et le bouton de résiliation s'affichent directement sur cette page, sans portail ni attente. Après résiliation, vous conservez l'accès jusqu'à la fin de la période déjà payée.",
+    steps: ["Connectez-vous avec le compte utilisé lors de l'abonnement", "Votre formule actuelle s'affiche sur cette page", 'Résiliez en un clic, ou écrivez-nous si quelque chose ne va pas'],
     contactBilling: "Contacter l'assistance facturation",
     afterCancel: "Après résiliation, vous conservez normalement l'accès jusqu'à la fin de la période déjà payée. Les conditions figurent dans notre",
     refundLink: 'Politique de remboursement et de résiliation',
     refundTail: '.',
+    manage: {
+      signedOutHint: 'Connectez-vous pour voir votre formule et résilier.',
+      signInAction: 'Se connecter',
+      freeState: 'Vous êtes sur la formule gratuite : il n\'y a rien à résilier.',
+      freeAction: 'Voir les formules',
+      planLabel: 'Votre formule',
+      statusActive: 'Renouvellement automatique à la fin de chaque période de facturation.',
+      statusCanceling: 'Résilié. Vous conservez l\'accès complet jusqu\'à la fin de la période déjà payée, puis le compte repasse en gratuit.',
+      cancelAction: 'Résilier l\'abonnement',
+      cancelBusy: 'Résiliation en cours…',
+      cancelConfirm: 'Résilier votre abonnement ? Vous conservez tout jusqu\'à la fin de la période déjà payée.',
+      cancelDone: 'Résilié. Vous conservez l\'accès complet jusqu\'à la fin de la période en cours.',
+      cancelFailed: 'La résiliation automatique a échoué. Écrivez à support@mindmapany.com et nous nous en chargeons ; aucun prélèvement ne sera effectué entre-temps.',
+      keepAction: 'Conserver ma formule',
+    },
   },
 
   nav: {
@@ -2285,7 +2427,7 @@ const fr: MarketingCopy = {
         labels: ["Contacter l'assistance", "Gérer l'abonnement", 'Politique de confidentialité', "Conditions d'utilisation", 'Remboursement et résiliation'],
       },
     ],
-    legal: 'Paiements traités par Creem en qualité de Merchant of Record',
+    legal: 'Paiements traités par Waffo en qualité de Merchant of Record',
   },
   home: {
     metaTitle: "MindMapAny — Transformez n'importe quel contenu en une carte mentale claire et vérifiable",
@@ -2490,6 +2632,10 @@ const fr: MarketingCopy = {
       "Tous les prix sont en dollars américains. Payez au mois pour rester souple, ou à l'année et économisez 40%. Les taxes sont indiquées clairement avant le paiement.",
     badge: "30 crédits offerts à l'inscription — essayez tous les formats d'entrée",
     mostPopular: 'LE PLUS CHOISI',
+    currentPlan: 'Votre formule actuelle',
+    currentPlanNote: 'Renouvellement automatique. Résiliable à tout moment.',
+    switchNote: 'Changer de formule résilie automatiquement l\'actuelle : vous n\'êtes jamais facturé deux fois.',
+    manageAction: 'Gérer l’abonnement',
     toggleMonthly: 'Mensuel',
     toggleAnnual: 'Annuel',
     saveBadge: 'ÉCONOMISEZ {pct}%',
@@ -2508,7 +2654,7 @@ const fr: MarketingCopy = {
     footnoteEmail:
       "Réglez avec la même adresse e-mail que votre compte MindMapAny afin que la formule s'active automatiquement après le paiement.",
     footnoteRenewal:
-      "Les abonnements se renouvellent automatiquement selon la période de facturation choisie, jusqu'à résiliation. Les paiements sont traités par Creem en qualité de Merchant of Record.",
+      "Les abonnements se renouvellent automatiquement selon la période de facturation choisie, jusqu'à résiliation. Les paiements sont traités par Waffo en qualité de Merchant of Record.",
     footnoteCancel: 'Vous pouvez résilier à tout moment depuis',
     footnoteRefund: 'Politique de remboursement et de résiliation',
     plans: {

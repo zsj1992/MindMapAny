@@ -45,7 +45,7 @@ export interface LegalCopy {
 
 const en: LegalCopy = {
   prevails: null,
-  updated: 'August 9, 2026',
+  updated: 'August 18, 2026',
   terms: {
     metaTitle: 'Terms of Service',
     metaDescription: 'The terms that govern your use of MindMapAny, covering accounts, content, AI output, subscriptions and liability.',
@@ -79,7 +79,7 @@ const en: LegalCopy = {
       },
       {
         heading: '7. Subscriptions and payment',
-        body: ['Paid plans are prepaid monthly or annually and renew automatically until cancelled. The checkout page shows the currency, taxes, billing period and total due before you pay. Creem acts as Merchant of Record and handles payment, billing and applicable taxes. You can cancel at any time from [subscription management](/billing); unless stated otherwise, access continues until the end of the period you have paid for.'],
+        body: ['Paid plans are prepaid monthly or annually and renew automatically until cancelled. The checkout page shows the currency, taxes, billing period and total due before you pay. Waffo acts as Merchant of Record and handles payment, billing and applicable taxes. You can cancel at any time from [subscription management](/billing); unless stated otherwise, access continues until the end of the period you have paid for.'],
       },
       {
         heading: '8. Refunds',
@@ -116,7 +116,7 @@ const en: LegalCopy = {
           { label: 'Account information:', text: 'login email, display name, avatar, and the identifiers needed for authentication.' },
           { label: 'Content you submit:', text: 'text, documents or web links, along with the mind maps generated, edited and saved from them.' },
           { label: 'Usage and device information:', text: 'IP address, browser type, access times, error logs, feature usage and necessary security records.' },
-          { label: 'Transaction information:', text: 'plan, order and subscription status. Full payment card details are handled by payment providers such as Creem; we never store full card numbers.' },
+          { label: 'Transaction information:', text: 'plan, order and subscription status. Full payment card details are handled by our payment provider Waffo; we never store full card numbers.' },
         ],
       },
       {
@@ -158,7 +158,7 @@ const en: LegalCopy = {
     sections: [
       {
         heading: '1. Cancel any time',
-        body: ['You can cancel your subscription at any time from the [subscription management page](/billing) via the Creem Customer Portal. Unless the portal states otherwise, cancellation takes effect at the end of the billing period you have already paid for. You keep access to your plan until then, and you will not be charged again.'],
+        body: ['You can cancel your subscription at any time from the [subscription management page](/billing) — sign in and cancel in one click. Cancellation takes effect at the end of the billing period you have already paid for. You keep access to your plan until then, and you will not be charged again.'],
       },
       {
         heading: '2. Refund windows',
@@ -171,11 +171,11 @@ const en: LegalCopy = {
       },
       {
         heading: '3. How to request a refund',
-        body: ['Email support@mindmapany.com from the address you used at purchase, including your order number, purchase email, the reason for the request, and which transaction you would like refunded. You can also view your orders and request support from the Creem Customer Portal.'],
+        body: ['Email support@mindmapany.com from the address you used at purchase, including your order number, purchase email, the reason for the request, and which transaction you would like refunded. Your current plan and status are always visible on the [subscription management page](/billing).'],
       },
       {
         heading: '4. Processing times',
-        body: ['We usually reply within 3 business days. Approved refunds are processed by Creem back to your original payment method and typically appear within 5–10 business days, depending on your bank, region and payment method.'],
+        body: ['We usually reply within 3 business days. Approved refunds are processed by Waffo back to your original payment method and typically appear within 5–10 business days, depending on your bank, region and payment method.'],
       },
       {
         heading: '5. Plan changes',
@@ -183,7 +183,7 @@ const en: LegalCopy = {
       },
       {
         heading: '6. Payment processor',
-        body: ['Creem acts as Merchant of Record and is responsible for payment processing, billing records and applicable taxes. MindMapAny is responsible for delivering the product, account support, and the initial handling of refund requests.'],
+        body: ['Waffo acts as Merchant of Record and is responsible for payment processing, billing records and applicable taxes. MindMapAny is responsible for delivering the product, account support, and the initial handling of refund requests.'],
       },
     ],
   },
@@ -193,7 +193,7 @@ const en: LegalCopy = {
 const zhCN: LegalCopy = {
   prevails:
     '本页面为英文原版的中文译本，仅供阅读方便。如中英文表述存在任何差异，以英文版本为准。',
-  updated: '2026 年 8 月 9 日',
+  updated: '2026 年 8 月 18 日',
   terms: {
     metaTitle: '服务条款',
     metaDescription: '管辖你使用 MindMapAny 的条款，涵盖账号、内容、AI 输出、订阅与责任限制。',
@@ -227,7 +227,7 @@ const zhCN: LegalCopy = {
       },
       {
         heading: '7. 订阅与付款',
-        body: ['付费套餐按月或按年预付，并在取消前自动续费。结账页面会在付款前显示币种、税费、计费周期和应付总额。Creem 作为登记商户（Merchant of Record）处理付款、账单和适用税费。你可以随时在[订阅管理](/billing)中取消；除非另有说明，你的访问权限将持续到已付费周期结束。'],
+        body: ['付费套餐按月或按年预付，并在取消前自动续费。结账页面会在付款前显示币种、税费、计费周期和应付总额。Waffo 作为登记商户（Merchant of Record）处理付款、账单和适用税费。你可以随时在[订阅管理](/billing)中取消；除非另有说明，你的访问权限将持续到已付费周期结束。'],
       },
       {
         heading: '8. 退款',
@@ -264,7 +264,7 @@ const zhCN: LegalCopy = {
           { label: '账号信息：', text: '登录邮箱、显示名称、头像，以及身份验证所需的标识符。' },
           { label: '你提交的内容：', text: '文本、文档或网页链接，以及由此生成、编辑和保存的脑图。' },
           { label: '使用与设备信息：', text: 'IP 地址、浏览器类型、访问时间、错误日志、功能使用情况和必要的安全记录。' },
-          { label: '交易信息：', text: '套餐、订单和订阅状态。完整的支付卡信息由 Creem 等支付服务商处理，我们从不存储完整卡号。' },
+          { label: '交易信息：', text: '套餐、订单和订阅状态。完整的支付卡信息由支付服务商 Waffo 处理，我们从不存储完整卡号。' },
         ],
       },
       {
@@ -306,7 +306,7 @@ const zhCN: LegalCopy = {
     sections: [
       {
         heading: '1. 随时可以取消',
-        body: ['你可以随时通过 Creem 客户门户，在[订阅管理页面](/billing)取消订阅。除非门户另有说明，取消将在你已付费的计费周期结束时生效。在此之前你仍可使用所购套餐，并且不会再次被扣款。'],
+        body: ['你可以随时在[订阅管理页面](/billing)登录后一键取消订阅。取消将在你已付费的计费周期结束时生效。在此之前你仍可使用所购套餐，并且不会再次被扣款。'],
       },
       {
         heading: '2. 退款时限',
@@ -319,11 +319,11 @@ const zhCN: LegalCopy = {
       },
       {
         heading: '3. 如何申请退款',
-        body: ['请使用购买时的邮箱发送邮件至 support@mindmapany.com，并注明订单号、购买邮箱、申请原因，以及希望退款的具体交易。你也可以在 Creem 客户门户中查看订单并申请支持。'],
+        body: ['请使用购买时的邮箱发送邮件至 support@mindmapany.com，并注明订单号、购买邮箱、申请原因，以及希望退款的具体交易。你的当前套餐和订阅状态始终可以在[订阅管理页面](/billing)查看。'],
       },
       {
         heading: '4. 处理时长',
-        body: ['我们通常在 3 个工作日内回复。获批的退款由 Creem 原路退回你的付款方式，通常在 5 至 10 个工作日内到账，具体取决于你的银行、所在地区和支付方式。'],
+        body: ['我们通常在 3 个工作日内回复。获批的退款由 Waffo 原路退回你的付款方式，通常在 5 至 10 个工作日内到账，具体取决于你的银行、所在地区和支付方式。'],
       },
       {
         heading: '5. 套餐变更',
@@ -331,7 +331,7 @@ const zhCN: LegalCopy = {
       },
       {
         heading: '6. 支付服务商',
-        body: ['Creem 作为登记商户（Merchant of Record），负责支付处理、账单记录和适用税费。MindMapAny 负责交付产品、账号支持，以及退款申请的初步处理。'],
+        body: ['Waffo 作为登记商户（Merchant of Record），负责支付处理、账单记录和适用税费。MindMapAny 负责交付产品、账号支持，以及退款申请的初步处理。'],
       },
     ],
   },

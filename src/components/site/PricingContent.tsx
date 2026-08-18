@@ -44,10 +44,33 @@ export function PricingContent({ locale }: { locale: Locale }) {
   // 年付是主推项，默认选中；这也是竞品的普遍做法
   const [period, setPeriod] = useState<BillingPeriod>('annual');
   const pct = savePercent();
+  /*
+   * 当前套餐。页面本身是静态生成的（7 个语言的 SEO 页面），所以只能加载后再问 ——
+   * 服务端渲染会让整页失去缓存，而这里要标的只是四张卡里的一张。
+   *
+   * 初始值是 null 而不是 'free'：还没问到和确定是免费用户是两回事，
+   * 当成免费用户会让付费用户在那一瞬间看到「购买」按钮，正是要避免的那一幕。
+   */
+  const [currentPlan, setCurrentPlan] = useState<Plan | null>(null);
+  const onPaidPlan = currentPlan !== null && currentPlan !== 'free';
 
   useEffect(() => {
     trackEvent('pricing_viewed', { locale });
   }, [locale]);
+
+  useEffect(() => {
+    let alive = true;
+    fetch('/api/account', { credentials: 'same-origin' })
+      .then((res) => (res.ok ? (res.json() as Promise<{ signedIn?: boolean; plan?: Plan } | null>) : null))
+      .then((data: { signedIn?: boolean; plan?: Plan } | null) => {
+        if (alive && data?.signedIn && data.plan) setCurrentPlan(data.plan);
+      })
+      // 问不到就按游客渲染：定价页不该因为一个接口挂了就打不开
+      .catch(() => undefined);
+    return () => {
+      alive = false;
+    };
+  }, []);
 
   const coreLimits = (plan: Plan): string[] => {
     const limits = PLAN_LIMITS[plan];
@@ -113,6 +136,7 @@ export function PricingContent({ locale }: { locale: Locale }) {
             const plan = copy.plans[planId];
             const featured = planId === FEATURED;
             const paid = planId !== 'free';
+            const isCurrent = currentPlan === planId;
             const price = paid ? PRICES[planId] : null;
             // 年付卡上显示的是「折合每月」，下面一行才是实际扣款总额 —— 和月付并排时才可比
             const headline = price ? money(period === 'annual' ? price.annualTotal / 12 : price.monthly) : '$0';
@@ -125,13 +149,19 @@ export function PricingContent({ locale }: { locale: Locale }) {
             return (
               <article
                 key={planId}
+                /* 当前套餐的高亮压过「最受欢迎」：对已经付费的人来说，
+                   「我在哪一档」比「大家买哪一档」更要紧 */
                 className={`relative flex flex-col rounded-2xl border bg-surface p-5 shadow-sm sm:p-6 ${
-                  featured ? 'border-brand-500 shadow-xl shadow-brand-900/10 ring-1 ring-brand-500' : ''
+                  isCurrent
+                    ? 'border-accent-500 shadow-xl shadow-accent-900/10 ring-1 ring-accent-500'
+                    : featured
+                      ? 'border-brand-500 shadow-xl shadow-brand-900/10 ring-1 ring-brand-500'
+                      : ''
                 }`}
               >
                 {/* 徽章浮在卡片上边缘之外，不占卡内高度 —— 做成卡内横幅会把这一列
                     整体压低三十来像素，四张卡的价格行就对不齐了。 */}
-                {featured && (
+                {featured && !isCurrent && (
                   <span className="absolute -top-3 left-1/2 -translate-x-1/2 whitespace-nowrap rounded-full bg-brand-600 px-3 py-1 text-[10px] font-bold tracking-wide text-white shadow-sm">
                     {copy.mostPopular}
                   </span>
@@ -168,14 +198,32 @@ export function PricingContent({ locale }: { locale: Locale }) {
                   ))}
                 </ul>
 
-                {paid ? (
-                  <a
-                    href={`/api/checkout?plan=${planId}&period=${period}`}
-                    onClick={() => trackEvent('checkout_started', { plan: planId, period, locale })}
-                    className={`btn mt-5 h-11 w-full ${featured ? 'btn-primary' : 'btn-secondary'}`}
-                  >
-                    {plan.action} <span aria-hidden="true">→</span>
-                  </a>
+                {isCurrent ? (
+                  /* 当前套餐不给按钮：这里没有任何该点的动作，做成禁用按钮反而
+                     像是坏了。取消订阅在下面单独给一个低调的链接。 */
+                  <div className="mt-5">
+                    <div className="flex h-11 w-full items-center justify-center gap-2 rounded-xl border border-accent-500 bg-accent-500/10 text-sm font-bold text-accent-600">
+                      <span aria-hidden="true">✓</span>
+                      {copy.currentPlan}
+                    </div>
+                    <p className="mt-2 text-center text-[11px] leading-4 text-text-subtle">
+                      {paid ? copy.currentPlanNote : ''}
+                    </p>
+                  </div>
+                ) : paid ? (
+                  <>
+                    <a
+                      href={`/api/checkout?plan=${planId}&period=${period}`}
+                      onClick={() => trackEvent('checkout_started', { plan: planId, period, locale, from: currentPlan ?? 'anonymous' })}
+                      className={`btn mt-5 h-11 w-full ${featured ? 'btn-primary' : 'btn-secondary'}`}
+                    >
+                      {plan.action} <span aria-hidden="true">→</span>
+                    </a>
+                    {/* 已经在付费的人才需要这句：换挡会不会被扣两笔，是这一步最大的顾虑 */}
+                    {onPaidPlan && (
+                      <p className="mt-2 text-center text-[11px] leading-4 text-text-subtle">{copy.switchNote}</p>
+                    )}
+                  </>
                 ) : (
                   <Link href="/app/new" className="btn btn-secondary mt-5 h-11 w-full">
                     {plan.action} <span aria-hidden="true">→</span>
@@ -185,6 +233,14 @@ export function PricingContent({ locale }: { locale: Locale }) {
             );
           })}
         </div>
+
+        {onPaidPlan && (
+          <p className="mt-6 text-center text-sm text-text-muted">
+            <Link href={localizedPath('/app/billing', locale)} className="font-semibold text-brand-600 underline-offset-4 hover:underline dark:text-brand-300">
+              {copy.manageAction}
+            </Link>
+          </p>
+        )}
 
         <div className="mt-10 rounded-2xl border bg-surface p-6 sm:flex sm:items-center sm:justify-between sm:gap-8 sm:p-8">
           <div>

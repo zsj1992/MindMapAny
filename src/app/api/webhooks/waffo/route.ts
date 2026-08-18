@@ -1,7 +1,7 @@
 import { NextResponse } from 'next/server';
 import { verifyWebhook } from '@waffo/pancake-ts';
 import { claimBillingEvent, grantSubscription, releaseBillingEvent, revokeSubscription } from '@/lib/db/repositories/billing';
-import { waffoTestMode } from '@/lib/billing/waffo';
+import { cancelWaffoSubscription, waffoTestMode } from '@/lib/billing/waffo';
 import type { Plan } from '@/lib/credits';
 
 export const runtime = 'nodejs';
@@ -98,7 +98,28 @@ export async function POST(req: Request) {
     if (action === 'grant') {
       if (!plan) return await unresolved(event.id, event.eventType, 'unknown_plan', details);
       const granted = await grantSubscription({ ...details, plan, status: event.eventType });
-      if (!granted) return await unresolved(event.id, event.eventType, 'profile_not_found', details);
+      if (!granted.ok) return await unresolved(event.id, event.eventType, 'profile_not_found', details);
+      /*
+       * 换套餐时 Waffo 是「开一笔新订阅」，旧那笔不管它就会一直扣下去。
+       * 必须在发货之后取消旧的：顺序反过来的话，取消成功而发货失败，
+       * 用户就既没了旧套餐也没拿到新套餐。
+       *
+       * 取消失败不回滚这次发货，也不返回 500 —— 钱已经收了，套餐必须给到；
+       * 重投这条事件也修不好一个第三方接口的失败。只能记下来人工处理，
+       * 所以这行日志的措辞要能直接搜到。
+       */
+      if (granted.supersededSubscriptionId) {
+        const outcome = await cancelWaffoSubscription(granted.supersededSubscriptionId);
+        if (outcome) {
+          console.info('[billing] superseded_subscription_canceled', {
+            orderId: granted.supersededSubscriptionId, outcome, replacedBy: details.subscriptionId,
+          });
+        } else {
+          console.error('[billing] superseded_subscription_cancel_failed', {
+            orderId: granted.supersededSubscriptionId, replacedBy: details.subscriptionId, userId,
+          });
+        }
+      }
     } else if (action === 'revoke') {
       const revoked = await revokeSubscription({ ...details, status: event.eventType });
       if (!revoked) {
