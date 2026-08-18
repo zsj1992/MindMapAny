@@ -72,13 +72,13 @@ export function SubscriptionPanel({ locale, children }: { locale: Locale; childr
   if (!state.signedIn) {
     return (
       <>
-        <div className="mt-7 rounded-2xl border bg-bg-subtle p-5">
+        {children}
+        <div className="mt-7">
           <p className="text-sm leading-6 text-text-muted">{t.signedOutHint}</p>
           <Link href={`/login?next=${encodeURIComponent(localizedPath('/billing', locale))}`} className="btn btn-primary mt-4 h-11 px-6">
             {t.signInAction}
           </Link>
         </div>
-        {children}
       </>
     );
   }

@@ -14,12 +14,14 @@ export function BillingContent({ locale }: { locale: Locale }) {
         <div className="rounded-3xl border bg-surface p-7 shadow-xl shadow-brand-900/5 sm:p-10">
           <span className="eyebrow">{copy.eyebrow}</span>
           <h1 className="mt-4 text-3xl font-bold tracking-[-0.03em] sm:text-4xl">{copy.heading}</h1>
-          <p className="mt-4 text-base leading-8 text-text-muted">{copy.intro}</p>
 
           {/* 登录的人直接看到自己的套餐和取消按钮；游客看到的还是这份说明。
               说明本身作为 children 交给面板，由它决定还显不显示 —— 已经登录的人
               不需要再读一遍「怎么登录」。 */}
           <SubscriptionPanel locale={locale}>
+            {/* 引导语和步骤都只对还没登录的人有意义 —— 已经看到自己套餐的人
+                不需要再被告知「请用订阅时的账号登录」 */}
+            <p className="mt-4 text-base leading-8 text-text-muted">{copy.intro}</p>
             <div className="mt-7 rounded-2xl border bg-bg-subtle p-5">
               <ol className="space-y-3 text-sm leading-6 text-text-muted">
                 {copy.steps.map((step, index) => (
