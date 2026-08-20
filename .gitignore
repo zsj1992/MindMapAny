@@ -54,3 +54,9 @@ next-env.d.ts
 # GSC 原始快照：可由 npm run gsc 重新生成，行数多，不进版本库
 docs/seo/data/*.json
 
+# 第三方外链提交技能仓库（backlink_skills）：只作本地工具使用，不进版本库
+/tools/backlink_skills/
+/tools/*.zip
+
+# 外链战役抓取证据（HTML/截图/响应，可由 scripts/backlink-*.mjs 重新生成）
+docs/seo/backlink-campaign/evidence/
