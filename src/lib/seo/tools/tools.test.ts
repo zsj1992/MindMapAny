@@ -1,5 +1,7 @@
 import assert from 'node:assert/strict';
 import { readFileSync, readdirSync } from 'node:fs';
+import { join } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { ALL_TOOL_PAGES } from '../content';
 import { TOOL_COPY } from './registry';
 
@@ -39,12 +41,13 @@ const FOREIGN_SCRIPT: Record<string, { pattern: RegExp; label: string }> = {
   'fr.ts': { pattern: /[一-鿿가-힯぀-ヿ]/, label: 'CJK 字符' },
 };
 
-const dir = new URL('.', import.meta.url).pathname;
+// fileURLToPath 而不是 .pathname：Windows 上 .pathname 会多个前导斜杠，路径直接废掉
+const dir = fileURLToPath(new URL('.', import.meta.url));
 for (const file of readdirSync(dir)) {
   const rule = FOREIGN_SCRIPT[file];
   if (!rule) continue;
   // 注释是中文写的，只检查文案字符串本身
-  const body = readFileSync(`${dir}${file}`, 'utf8').replace(/\/\*\*[\s\S]*?\*\//g, '');
+  const body = readFileSync(join(dir, file), 'utf8').replace(/\/\*\*[\s\S]*?\*\//g, '');
   for (const [single, double] of body.matchAll(/'([^']*)'|"([^"]*)"/g)) {
     const value = single ?? double ?? '';
     assert.ok(!rule.pattern.test(value), `${file} 的文案里混入了${rule.label}：${value}`);

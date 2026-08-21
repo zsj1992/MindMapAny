@@ -47,6 +47,20 @@
 - **aistage.net** — /submit 返回 403
 - **noxilo.com / humanornot.co** — 无有效提交入口 / 非目录站（不合格）
 
+## 第三轮：docs/growth 分发清单核验（2026-08-20）
+
+按 `docs/growth/DISTRIBUTION.md` 的用户规划清单实测 10 个站点：
+
+| 站点 | 结果 |
+|---|---|
+| Uneed | ⏳ 表单已填（name+url），站点抓取后需注册保存（`uneed.best/submit-a-tool`） |
+| AlternativeTo / SaaSHub / Toolify | ⏸ Cloudflare 拦截，需浏览器人工 |
+| There's An AI For That | ⏸ Cloudflare 已过、表单可渲染，但需注册账号 + 排期 + 选免费套餐 |
+| Futurepedia / Dang.ai / Fazier / StackShare | ⏸ 登录墙 / 限流 |
+| aitools.fyi | 💳 入口已变为 BoostMyTool 付费提交服务（表单含卡号字段），免费通道不存在 |
+
+本轮无新增确认提交（全部为登录/Cloudflare/付费门槛，符合清单里"待填"的预期）；实测结论已固化到 `docs/growth/DISTRIBUTION.md` 与 `BACKLINK-KIT.md`。
+
 ## 合规说明
 
 - 只提交真实产品信息（取自项目源码）；未付费、未绕过验证码/登录/Cloudflare、未同意回链、未群发。

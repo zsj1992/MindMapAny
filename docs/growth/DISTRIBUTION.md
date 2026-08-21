@@ -1,6 +1,6 @@
 # 分发清单
 
-> 物料在 [`LAUNCH-COPY.md`](./LAUNCH-COPY.md)，提交前先打开那份，别现编。
+> 物料在 [`LAUNCH-COPY.md`](./LAUNCH-COPY.md)，提交前先打开那份，别现编。逐站表单怎么填、素材文件在哪，看 [`BACKLINK-KIT.md`](./BACKLINK-KIT.md)。
 
 ## 为什么现在做这个而不是做 SEO
 
@@ -20,16 +20,16 @@
 
 ## 清单
 
-状态：☐ 未提交 · ⏳ 待审 · ✅ 已收录
+状态：☐ 未提交 · ⏳ 待审 · ✅ 已收录 · ⏸ 需人工（注册/登录/Cloudflare）· 💳 付费
 
 ### 一、竞品替代类（优先）
 
 | 站点 | 提交入口 | 费用 | 状态 |
 |---|---|---|---|
-| AlternativeTo | alternativeto.net → Add Application | 免费 | ☐ |
-| SaaSHub | saashub.com → Submit | 免费 | ☐ |
-| OpenAlternative | openalternative.co | 免费 | ☐ |
-| StackShare | stackshare.io | 免费 | ☐ |
+| AlternativeTo | alternativeto.net → Add Application | 免费 | ⏸ Cloudflare 拦截 + 需注册账号 |
+| SaaSHub | saashub.com → Submit | 免费 | ⏸ Cloudflare 拦截 |
+| ~~OpenAlternative~~ | 只收开源项目，本项目未开源，跳过（见 BACKLINK-KIT） | — | — |
+| StackShare | stackshare.io | 免费 | ⏸ Vercel 限流(429)，需重试/浏览器提交 |
 
 > 提交时**一定要填「替代品」字段**，指向 Mapify、MindMapAI、Xmind。这是这类站的价值所在，不填等于白提。
 
@@ -37,16 +37,17 @@
 
 | 站点 | 提交入口 | 费用 | 状态 |
 |---|---|---|---|
-| There's An AI For That | theresanaiforthat.com/submit | 免费排队 / 付费加速 | ☐ |
-| Futurepedia | futurepedia.io/submit-tool | 免费 + 付费快审 | ☐ |
-| Toolify | toolify.ai/submit | 免费 | ☐ |
-| aitools.fyi | aitools.fyi/submit | 免费 | ☐ |
-| Dang.ai | dang.ai/submit | 免费 | ☐ |
-| Uneed | uneed.best | 免费 | ☐ |
-| Fazier | fazier.com | 免费 | ☐ |
-| BetaList | betalist.com/submit | 免费排队 / 付费 | ☐ |
+| There's An AI For That | theresanaiforthat.com/submit | 免费排队 / 付费加速 | ⏸ 表单已渲染但需注册账号 + 排期 + 选免费套餐 |
+| Futurepedia | futurepedia.io/submit-tool | 免费 + 付费快审 | ⏸ 需注册（Join For Free），登录后才有提交表单 |
+| Toolify | toolify.ai/submit | 免费 | ⏸ Cloudflare 拦截 |
+| aitools.fyi | aitools.fyi/submit | 免费 | 💳 入口实际跳转 BoostMyTool 付费提交服务（表单含 Name on card 字段） |
+| Dang.ai | dang.ai/submit | 免费 | ⏸ 重定向登录页 |
+| Uneed | uneed.best | 免费 | ⏳ 表单已填（name+url），站点抓取后需注册保存 |
+| Fazier | fazier.com | 免费 | ⏸ 需登录 |
+| BetaList | betalist.com/submit | 免费排队 / 付费 | ☐ 需 Twitter 账号，暂缺，跳过 |
 
 > 付费加速先别买。免费位收录了再看数据决定值不值——目录站的转介量差异极大，有的一天几十个访问，有的一个月零。
+> 2026-08-20 实测：除 Uneed 外全部被 Cloudflare 或登录墙拦截，自动化无法完成；aitools.fyi 提交入口已变为付费服务（BoostMyTool）。
 
 ### 三、社区（插件过审后）
 
